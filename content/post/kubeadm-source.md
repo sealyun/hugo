@@ -10,7 +10,7 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
-[k8s离线安装包](http://lameleg.com/offline-install.html) 三步安装，简单到难以置信
+[k8s离线安装包](http://sealyun.com/pro/products/) 三步安装，简单到难以置信
 
 # kubeadm源码分析
 
