@@ -6,10 +6,19 @@
     <description>Recent content in Posts on sealyun</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 11 Jul 2014 10:54:24 +0200</lastBuildDate>
+    <lastBuildDate>Thu, 24 May 2018 10:54:24 +0200</lastBuildDate>
     
 	<atom:link href="https://sealyun.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>k8s离线包解析</title>
+      <link>https://sealyun.com/post/sealyun-k8s-offline/</link>
+      <pubDate>Thu, 24 May 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/sealyun-k8s-offline/</guid>
+      <description>k8s离线包解析 产品地址 鸣谢 大家好，首先感谢大家对我们产品的支持，特别是一些老客户的持续支持，让我可以有动力把这个事情持续进行下去。 感谢大家</description>
+    </item>
     
     <item>
       <title>Docker架构分析</title>

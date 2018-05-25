@@ -54,6 +54,7 @@ if len(i.cfg.Etcd.Endpoints) == 0 {
 ```
 
 4. 等待APIserver和kubelet启动成功，这里就会遇到我们经常遇到的镜像拉不下来的错误，其实有时kubelet因为别的原因也会报这个错，让人误以为是镜像弄不下来
+
 ```
 if err := waitForAPIAndKubelet(waiter); err != nil {
 	ctx := map[string]string{

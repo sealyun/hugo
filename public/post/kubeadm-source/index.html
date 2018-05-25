@@ -87,7 +87,7 @@
 
 <meta itemprop="datePublished" content="2014-07-11T10:54:24&#43;02:00" />
 <meta itemprop="dateModified" content="2014-07-11T10:54:24&#43;02:00" />
-<meta itemprop="wordCount" content="2902">
+<meta itemprop="wordCount" content="2891">
 
 
 
@@ -181,7 +181,15 @@
 <ul>
 <li><a href="#kubeadm源码分析">kubeadm源码分析</a>
 <ul>
-<li><a href="#kubeadm-init">kubeadm init</a></li>
+<li><a href="#kubeadm-init">kubeadm init</a>
+<ul>
+<li><a href="#证书生成">证书生成</a></li>
+<li><a href="#创建k8s配置文件">创建k8s配置文件</a></li>
+<li><a href="#创建static-pod-yaml文件">创建static pod yaml文件</a></li>
+<li><a href="#等待kubelet启动成功">等待kubelet启动成功</a></li>
+<li><a href="#创建dns和kubeproxy">创建DNS和kubeproxy</a></li>
+</ul></li>
+<li><a href="#kubeadm-join">kubeadm join</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -192,7 +200,7 @@
     <div class="post-content">
       
 
-<p><a href="http://lameleg.com/offline-install.html">k8s离线安装包</a> 三步安装，简单到难以置信</p>
+<p><a href="http://sealyun.com/pro/products/">k8s离线安装包</a> 三步安装，简单到难以置信</p>
 
 <h1 id="kubeadm源码分析">kubeadm源码分析</h1>
 
@@ -239,116 +247,113 @@ if len(i.cfg.Etcd.Endpoints) == 0 {
 }
 </code></pre></li>
 
-<li><p>等待APIserver和kubelet启动成功，这里就会遇到我们经常遇到的镜像拉不下来的错误，其实有时kubelet因为别的原因也会报这个错，让人误以为是镜像弄不下来
-```
-if err := waitForAPIAndKubelet(waiter); err != nil {
-	ctx := map[string]string{
-		&ldquo;Error&rdquo;:                  fmt.Sprintf(&ldquo;%v&rdquo;, err),
-		&ldquo;APIServerImage&rdquo;:         images.GetCoreImage(kubeadmconstants.KubeAPIServer, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
-		&ldquo;ControllerManagerImage&rdquo;: images.GetCoreImage(kubeadmconstants.KubeControllerManager, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
-		&ldquo;SchedulerImage&rdquo;:         images.GetCoreImage(kubeadmconstants.KubeScheduler, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
-	}</p></li>
+<li><p>等待APIserver和kubelet启动成功，这里就会遇到我们经常遇到的镜像拉不下来的错误，其实有时kubelet因为别的原因也会报这个错，让人误以为是镜像弄不下来</p></li>
 </ol>
 
-<p>	kubeletFailTempl.Execute(out, ctx)</p>
+<pre><code>if err := waitForAPIAndKubelet(waiter); err != nil {
+	ctx := map[string]string{
+		&quot;Error&quot;:                  fmt.Sprintf(&quot;%v&quot;, err),
+		&quot;APIServerImage&quot;:         images.GetCoreImage(kubeadmconstants.KubeAPIServer, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
+		&quot;ControllerManagerImage&quot;: images.GetCoreImage(kubeadmconstants.KubeControllerManager, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
+		&quot;SchedulerImage&quot;:         images.GetCoreImage(kubeadmconstants.KubeScheduler, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
+	}
 
-<p>	return fmt.Errorf(&ldquo;couldn&rsquo;t initialize a Kubernetes cluster&rdquo;)
-}</p>
+	kubeletFailTempl.Execute(out, ctx)
 
-<pre><code>
-5. 给master加标签，加污点, 所以想要pod调度到master上可以把污点清除了
+	return fmt.Errorf(&quot;couldn't initialize a Kubernetes cluster&quot;)
+}
 </code></pre>
 
-<p>if err := markmasterphase.MarkMaster(client, i.cfg.NodeName); err != nil {
-	return fmt.Errorf(&ldquo;error marking master: %v&rdquo;, err)
-}</p>
+<ol>
+<li><p>给master加标签，加污点, 所以想要pod调度到master上可以把污点清除了</p>
 
-<pre><code>
-6. 生成tocken
+<pre><code>if err := markmasterphase.MarkMaster(client, i.cfg.NodeName); err != nil {
+	return fmt.Errorf(&quot;error marking master: %v&quot;, err)
+}
+</code></pre></li>
+
+<li><p>生成tocken</p>
+
+<pre><code>if err := nodebootstraptokenphase.UpdateOrCreateToken(client, i.cfg.Token, false, i.cfg.TokenTTL.Duration, kubeadmconstants.DefaultTokenUsages, []string{kubeadmconstants.NodeBootstrapTokenAuthGroup}, tokenDescription); err != nil {
+	return fmt.Errorf(&quot;error updating or creating token: %v&quot;, err)
+}
+</code></pre></li>
+
+<li><p>调用clientgo创建dns和kube-proxy</p></li>
+</ol>
+
+<pre><code>if err := dnsaddonphase.EnsureDNSAddon(i.cfg, client); err != nil {
+	return fmt.Errorf(&quot;error ensuring dns addon: %v&quot;, err)
+}
+
+if err := proxyaddonphase.EnsureProxyAddon(i.cfg, client); err != nil {
+	return fmt.Errorf(&quot;error ensuring proxy addon: %v&quot;, err)
+}
 </code></pre>
 
-<p>if err := nodebootstraptokenphase.UpdateOrCreateToken(client, i.cfg.Token, false, i.cfg.TokenTTL.Duration, kubeadmconstants.DefaultTokenUsages, []string{kubeadmconstants.NodeBootstrapTokenAuthGroup}, tokenDescription); err != nil {
-	return fmt.Errorf(&ldquo;error updating or creating token: %v&rdquo;, err)
-}</p>
+<p>笔者批判代码无脑式的一个流程到底，要是笔者操刀定抽象成接口 RenderConf Save Run Clean等，DNS kube-porxy以及其它组件去实现，然后问题就是没把dns和kubeproxy的配置渲染出来，可能是它们不是static pod的原因, 然后就是join时的bug下文提到</p>
 
-<pre><code>
-7. 调用clientgo创建dns和kube-proxy
+<h3 id="证书生成">证书生成</h3>
 
-</code></pre>
+<p>循环的调用了这一坨函数，我们只需要看其中一两个即可，其它的都差不多</p>
 
-<p>if err := dnsaddonphase.EnsureDNSAddon(i.cfg, client); err != nil {
-	return fmt.Errorf(&ldquo;error ensuring dns addon: %v&rdquo;, err)
-}</p>
-
-<p>if err := proxyaddonphase.EnsureProxyAddon(i.cfg, client); err != nil {
-	return fmt.Errorf(&ldquo;error ensuring proxy addon: %v&rdquo;, err)
-}</p>
-
-<pre><code>
-笔者批判代码无脑式的一个流程到底，要是笔者操刀定抽象成接口 RenderConf Save Run Clean等，DNS kube-porxy以及其它组件去实现，然后问题就是没把dns和kubeproxy的配置渲染出来，可能是它们不是static pod的原因, 然后就是join时的bug下文提到
-
-### 证书生成 
-循环的调用了这一坨函数，我们只需要看其中一两个即可，其它的都差不多
-
-</code></pre>
-
-<p>certActions := []func(cfg *kubeadmapi.MasterConfiguration) error{
+<pre><code>certActions := []func(cfg *kubeadmapi.MasterConfiguration) error{
 	CreateCACertAndKeyfiles,
 	CreateAPIServerCertAndKeyFiles,
 	CreateAPIServerKubeletClientCertAndKeyFiles,
 	CreateServiceAccountKeyAndPublicKeyFiles,
 	CreateFrontProxyCACertAndKeyFiles,
 	CreateFrontProxyClientCertAndKeyFiles,
-}</p>
-
-<pre><code>根证书生成：
-
-</code></pre>
-
-<p>//返回了根证书的公钥和私钥
-func NewCACertAndKey() (*x509.Certificate, *rsa.PrivateKey, error) {</p>
-
-<p>	caCert, caKey, err := pkiutil.NewCertificateAuthority()
-	if err != nil {
-		return nil, nil, fmt.Errorf(&ldquo;failure while generating CA certificate and key: %v&rdquo;, err)
-	}</p>
-
-<p>	return caCert, caKey, nil
-}</p>
-
-<pre><code>k8s.io/client-go/util/cert 这个库里面有两个函数，一个生成key的一个生成cert的：
-
-</code></pre>
-
-<p>key, err := certutil.NewPrivateKey()
-config := certutil.Config{
-	CommonName: &ldquo;kubernetes&rdquo;,
 }
-cert, err := certutil.NewSelfSignedCACert(config, key)</p>
-
-<pre><code>config里面我们也可以填充一些别的证书信息：
 </code></pre>
 
-<p>type Config struct {
+<p>根证书生成：</p>
+
+<pre><code>
+//返回了根证书的公钥和私钥
+func NewCACertAndKey() (*x509.Certificate, *rsa.PrivateKey, error) {
+
+	caCert, caKey, err := pkiutil.NewCertificateAuthority()
+	if err != nil {
+		return nil, nil, fmt.Errorf(&quot;failure while generating CA certificate and key: %v&quot;, err)
+	}
+
+	return caCert, caKey, nil
+}
+
+</code></pre>
+
+<p>k8s.io/client-go/util/cert 这个库里面有两个函数，一个生成key的一个生成cert的：</p>
+
+<pre><code>key, err := certutil.NewPrivateKey()
+config := certutil.Config{
+	CommonName: &quot;kubernetes&quot;,
+}
+cert, err := certutil.NewSelfSignedCACert(config, key)
+</code></pre>
+
+<p>config里面我们也可以填充一些别的证书信息：</p>
+
+<pre><code>type Config struct {
 	CommonName   string
 	Organization []string
 	AltNames     AltNames
 	Usages       []x509.ExtKeyUsage
-}</p>
-
-<pre><code>私钥就是封装了rsa库里面的函数：
+}
 </code></pre>
 
-<p>	&ldquo;crypto/rsa&rdquo;
-	&ldquo;crypto/x509&rdquo;
+<p>私钥就是封装了rsa库里面的函数：</p>
+
+<pre><code>	&quot;crypto/rsa&quot;
+	&quot;crypto/x509&quot;
 func NewPrivateKey() (*rsa.PrivateKey, error) {
 	return rsa.GenerateKey(cryptorand.Reader, rsaKeySize)
-}</p>
-
-<pre><code>自签证书,所以根证书里只有CommonName信息，Organization相当于没设置：
+}
 </code></pre>
 
-<p>func NewSelfSignedCACert(cfg Config, key *rsa.PrivateKey) (*x509.Certificate, error) {
+<p>自签证书,所以根证书里只有CommonName信息，Organization相当于没设置：</p>
+
+<pre><code>func NewSelfSignedCACert(cfg Config, key *rsa.PrivateKey) (*x509.Certificate, error) {
 	now := time.Now()
 	tmpl := x509.Certificate{
 		SerialNumber: new(big.Int).SetInt64(0),
@@ -361,94 +366,92 @@ func NewPrivateKey() (*rsa.PrivateKey, error) {
 		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
 		BasicConstraintsValid: true,
 		IsCA: true,
-	}</p>
+	}
 
-<p>	certDERBytes, err := x509.CreateCertificate(cryptorand.Reader, &amp;tmpl, &amp;tmpl, key.Public(), key)
+	certDERBytes, err := x509.CreateCertificate(cryptorand.Reader, &amp;tmpl, &amp;tmpl, key.Public(), key)
 	if err != nil {
 		return nil, err
 	}
 	return x509.ParseCertificate(certDERBytes)
-}</p>
-
-<pre><code>生成好之后把之写入文件：
+}
 </code></pre>
 
-<p>pkiutil.WriteCertAndKey(pkiDir, baseName, cert, key);
-certutil.WriteCert(certificatePath, certutil.EncodeCertPEM(cert))</p>
+<p>生成好之后把之写入文件：</p>
 
-<pre><code>这里调用了pem库进行了编码
+<pre><code> pkiutil.WriteCertAndKey(pkiDir, baseName, cert, key);
+certutil.WriteCert(certificatePath, certutil.EncodeCertPEM(cert))
 </code></pre>
 
-<p>encoding/pem</p>
+<p>这里调用了pem库进行了编码</p>
 
-<p>func EncodeCertPEM(cert *x509.Certificate) []byte {
+<pre><code>encoding/pem
+
+func EncodeCertPEM(cert *x509.Certificate) []byte {
 	block := pem.Block{
 		Type:  CertificateBlockType,
 		Bytes: cert.Raw,
 	}
 	return pem.EncodeToMemory(&amp;block)
-}</p>
-
-<pre><code>
-然后我们看apiserver的证书生成：
+}
 </code></pre>
 
-<p>caCert, caKey, err := loadCertificateAuthorithy(cfg.CertificatesDir, kubeadmconstants.CACertAndKeyBaseName)
+<p>然后我们看apiserver的证书生成：</p>
+
+<pre><code>caCert, caKey, err := loadCertificateAuthorithy(cfg.CertificatesDir, kubeadmconstants.CACertAndKeyBaseName)
 //从根证书生成apiserver证书
-apiCert, apiKey, err := NewAPIServerCertAndKey(cfg, caCert, caKey)</p>
-
-<pre><code>
-这时需要关注AltNames了比较重要，所有需要访问master的地址域名都得加进去，对应配置文件中apiServerCertSANs字段,其它东西与根证书无差别
+apiCert, apiKey, err := NewAPIServerCertAndKey(cfg, caCert, caKey)
 </code></pre>
 
-<p>config := certutil.Config{
+<p>这时需要关注AltNames了比较重要，所有需要访问master的地址域名都得加进去，对应配置文件中apiServerCertSANs字段,其它东西与根证书无差别</p>
+
+<pre><code>config := certutil.Config{
 	CommonName: kubeadmconstants.APIServerCertCommonName,
 	AltNames:   *altNames,
 	Usages:     []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-}</p>
-
-<pre><code>
-### 创建k8s配置文件
-可以看到创建了这些文件
+}
 </code></pre>
 
-<p>return createKubeConfigFiles(
+<h3 id="创建k8s配置文件">创建k8s配置文件</h3>
+
+<p>可以看到创建了这些文件</p>
+
+<pre><code>return createKubeConfigFiles(
 	outDir,
 	cfg,
 	kubeadmconstants.AdminKubeConfigFileName,
 	kubeadmconstants.KubeletKubeConfigFileName,
 	kubeadmconstants.ControllerManagerKubeConfigFileName,
 	kubeadmconstants.SchedulerKubeConfigFileName,
-)</p>
-
-<pre><code>k8s封装了两个渲染配置的函数：
-区别是你的kubeconfig文件里会不会产生token，比如你进入dashboard需要一个token，或者你调用api需要一个token那么请生成带token的配置
-生成的conf文件基本一直只是比如ClientName这些东西不同，所以加密后的证书也不同，ClientName会被加密到证书里，然后k8s取出来当用户使用
-
-所以重点来了，我们做多租户时也要这样去生成。然后给该租户绑定角色。
+)
 </code></pre>
 
-<p>return kubeconfigutil.CreateWithToken(
+<p>k8s封装了两个渲染配置的函数：
+区别是你的kubeconfig文件里会不会产生token，比如你进入dashboard需要一个token，或者你调用api需要一个token那么请生成带token的配置
+生成的conf文件基本一直只是比如ClientName这些东西不同，所以加密后的证书也不同，ClientName会被加密到证书里，然后k8s取出来当用户使用</p>
+
+<p>所以重点来了，我们做多租户时也要这样去生成。然后给该租户绑定角色。</p>
+
+<pre><code>return kubeconfigutil.CreateWithToken(
 	spec.APIServer,
-	&ldquo;kubernetes&rdquo;,
+	&quot;kubernetes&quot;,
 	spec.ClientName,
 	certutil.EncodeCertPEM(spec.CACert),
 	spec.TokenAuth.Token,
-), nil</p>
+), nil
 
-<p>return kubeconfigutil.CreateWithCerts(
+return kubeconfigutil.CreateWithCerts(
 	spec.APIServer,
-	&ldquo;kubernetes&rdquo;,
+	&quot;kubernetes&quot;,
 	spec.ClientName,
 	certutil.EncodeCertPEM(spec.CACert),
 	certutil.EncodePrivateKeyPEM(clientKey),
 	certutil.EncodeCertPEM(clientCert),
-), nil</p>
-
-<pre><code>然后就是填充Config结构体喽, 最后写到文件里，略
+), nil
 </code></pre>
 
-<p>&ldquo;k8s.io/client-go/tools/clientcmd/api
+<p>然后就是填充Config结构体喽, 最后写到文件里，略</p>
+
+<pre><code>&quot;k8s.io/client-go/tools/clientcmd/api
 return &amp;clientcmdapi.Config{
 	Clusters: map[string]*clientcmdapi.Cluster{
 		clusterName: {
@@ -464,22 +467,22 @@ return &amp;clientcmdapi.Config{
 	},
 	AuthInfos:      map[string]*clientcmdapi.AuthInfo{},
 	CurrentContext: contextName,
-}</p>
-
-<pre><code>
-### 创建static pod yaml文件
-这里返回了apiserver manager scheduler的pod结构体,
+}
 </code></pre>
 
-<p>specs := GetStaticPodSpecs(cfg, k8sVersion)
+<h3 id="创建static-pod-yaml文件">创建static pod yaml文件</h3>
+
+<p>这里返回了apiserver manager scheduler的pod结构体,</p>
+
+<pre><code>specs := GetStaticPodSpecs(cfg, k8sVersion)
 staticPodSpecs := map[string]v1.Pod{
 	kubeadmconstants.KubeAPIServer: staticpodutil.ComponentPod(v1.Container{
 		Name:          kubeadmconstants.KubeAPIServer,
 		Image:         images.GetCoreImage(kubeadmconstants.KubeAPIServer, cfg.GetControlPlaneImageRepository(), cfg.KubernetesVersion, cfg.UnifiedControlPlaneImage),
 		Command:       getAPIServerCommand(cfg, k8sVersion),
 		VolumeMounts:  staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(kubeadmconstants.KubeAPIServer)),
-		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeAPIServer, int(cfg.API.BindPort), &ldquo;/healthz&rdquo;, v1.URISchemeHTTPS),
-		Resources:     staticpodutil.ComponentResources(&ldquo;250m&rdquo;),
+		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeAPIServer, int(cfg.API.BindPort), &quot;/healthz&quot;, v1.URISchemeHTTPS),
+		Resources:     staticpodutil.ComponentResources(&quot;250m&quot;),
 		Env:           getProxyEnvVars(),
 	}, mounts.GetVolumes(kubeadmconstants.KubeAPIServer)),
 	kubeadmconstants.KubeControllerManager: staticpodutil.ComponentPod(v1.Container{
@@ -487,8 +490,8 @@ staticPodSpecs := map[string]v1.Pod{
 		Image:         images.GetCoreImage(kubeadmconstants.KubeControllerManager, cfg.GetControlPlaneImageRepository(), cfg.KubernetesVersion, cfg.UnifiedControlPlaneImage),
 		Command:       getControllerManagerCommand(cfg, k8sVersion),
 		VolumeMounts:  staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(kubeadmconstants.KubeControllerManager)),
-		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeControllerManager, 10252, &ldquo;/healthz&rdquo;, v1.URISchemeHTTP),
-		Resources:     staticpodutil.ComponentResources(&ldquo;200m&rdquo;),
+		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeControllerManager, 10252, &quot;/healthz&quot;, v1.URISchemeHTTP),
+		Resources:     staticpodutil.ComponentResources(&quot;200m&quot;),
 		Env:           getProxyEnvVars(),
 	}, mounts.GetVolumes(kubeadmconstants.KubeControllerManager)),
 	kubeadmconstants.KubeScheduler: staticpodutil.ComponentPod(v1.Container{
@@ -496,15 +499,15 @@ staticPodSpecs := map[string]v1.Pod{
 		Image:         images.GetCoreImage(kubeadmconstants.KubeScheduler, cfg.GetControlPlaneImageRepository(), cfg.KubernetesVersion, cfg.UnifiedControlPlaneImage),
 		Command:       getSchedulerCommand(cfg),
 		VolumeMounts:  staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(kubeadmconstants.KubeScheduler)),
-		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeScheduler, 10251, &ldquo;/healthz&rdquo;, v1.URISchemeHTTP),
-		Resources:     staticpodutil.ComponentResources(&ldquo;100m&rdquo;),
+		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeScheduler, 10251, &quot;/healthz&quot;, v1.URISchemeHTTP),
+		Resources:     staticpodutil.ComponentResources(&quot;100m&quot;),
 		Env:           getProxyEnvVars(),
 	}, mounts.GetVolumes(kubeadmconstants.KubeScheduler)),
-}</p>
+}
 
-<p>//获取特定版本的镜像
+//获取特定版本的镜像
 func GetCoreImage(image, repoPrefix, k8sVersion, overrideImage string) string {
-	if overrideImage != &ldquo;&rdquo; {
+	if overrideImage != &quot;&quot; {
 		return overrideImage
 	}
 	kubernetesImageTag := kubeadmutil.KubernetesVersionToImageTag(k8sVersion)
@@ -514,51 +517,52 @@ func GetCoreImage(image, repoPrefix, k8sVersion, overrideImage string) string {
 		etcdImageTag = etcdImageVersion.String()
 	}
 	return map[string]string{
-		constants.Etcd:                  fmt.Sprintf(&ldquo;%s/%s-%s:%s&rdquo;, repoPrefix, &ldquo;etcd&rdquo;, runtime.GOARCH, etcdImageTag),
-		constants.KubeAPIServer:         fmt.Sprintf(&ldquo;%s/%s-%s:%s&rdquo;, repoPrefix, &ldquo;kube-apiserver&rdquo;, runtime.GOARCH, kubernetesImageTag),
-		constants.KubeControllerManager: fmt.Sprintf(&ldquo;%s/%s-%s:%s&rdquo;, repoPrefix, &ldquo;kube-controller-manager&rdquo;, runtime.GOARCH, kubernetesImageTag),
-		constants.KubeScheduler:         fmt.Sprintf(&ldquo;%s/%s-%s:%s&rdquo;, repoPrefix, &ldquo;kube-scheduler&rdquo;, runtime.GOARCH, kubernetesImageTag),
+		constants.Etcd:                  fmt.Sprintf(&quot;%s/%s-%s:%s&quot;, repoPrefix, &quot;etcd&quot;, runtime.GOARCH, etcdImageTag),
+		constants.KubeAPIServer:         fmt.Sprintf(&quot;%s/%s-%s:%s&quot;, repoPrefix, &quot;kube-apiserver&quot;, runtime.GOARCH, kubernetesImageTag),
+		constants.KubeControllerManager: fmt.Sprintf(&quot;%s/%s-%s:%s&quot;, repoPrefix, &quot;kube-controller-manager&quot;, runtime.GOARCH, kubernetesImageTag),
+		constants.KubeScheduler:         fmt.Sprintf(&quot;%s/%s-%s:%s&quot;, repoPrefix, &quot;kube-scheduler&quot;, runtime.GOARCH, kubernetesImageTag),
 	}[image]
 }
 //然后就把这个pod写到文件里了，比较简单
- staticpodutil.WriteStaticPodToDisk(componentName, manifestDir, spec);</p>
-
-<pre><code>创建etcd的一样，不多废话
-
-### 等待kubelet启动成功
-这个错误非常容易遇到，看到这个基本就是kubelet没起来，我们需要检查：selinux swap 和Cgroup driver是不是一致
-setenforce 0 &amp;&amp; swapoff -a &amp;&amp; systemctl restart kubelet如果不行请保证 kubelet的Cgroup driver与docker一致，docker info|grep Cg
+ staticpodutil.WriteStaticPodToDisk(componentName, manifestDir, spec); 
 </code></pre>
 
-<p>go func(errC chan error, waiter apiclient.Waiter) {
-	// This goroutine can only make kubeadm init fail. If this check succeeds, it won&rsquo;t do anything special
-	if err := waiter.WaitForHealthyKubelet(40*time.Second, &ldquo;<a href="http://localhost:10255/healthz&quot;">http://localhost:10255/healthz&quot;</a>); err != nil {
+<p>创建etcd的一样，不多废话</p>
+
+<h3 id="等待kubelet启动成功">等待kubelet启动成功</h3>
+
+<p>这个错误非常容易遇到，看到这个基本就是kubelet没起来，我们需要检查：selinux swap 和Cgroup driver是不是一致
+setenforce 0 &amp;&amp; swapoff -a &amp;&amp; systemctl restart kubelet如果不行请保证 kubelet的Cgroup driver与docker一致，docker info|grep Cg</p>
+
+<pre><code>go func(errC chan error, waiter apiclient.Waiter) {
+	// This goroutine can only make kubeadm init fail. If this check succeeds, it won't do anything special
+	if err := waiter.WaitForHealthyKubelet(40*time.Second, &quot;http://localhost:10255/healthz&quot;); err != nil {
 		errC &lt;- err
 	}
-}(errorChan, waiter)</p>
+}(errorChan, waiter)
 
-<p>go func(errC chan error, waiter apiclient.Waiter) {
-	// This goroutine can only make kubeadm init fail. If this check succeeds, it won&rsquo;t do anything special
-	if err := waiter.WaitForHealthyKubelet(60*time.Second, &ldquo;<a href="http://localhost:10255/healthz/syncloop&quot;">http://localhost:10255/healthz/syncloop&quot;</a>); err != nil {
+go func(errC chan error, waiter apiclient.Waiter) {
+	// This goroutine can only make kubeadm init fail. If this check succeeds, it won't do anything special
+	if err := waiter.WaitForHealthyKubelet(60*time.Second, &quot;http://localhost:10255/healthz/syncloop&quot;); err != nil {
 		errC &lt;- err
 	}
-}(errorChan, waiter)</p>
-
-<pre><code>
-### 创建DNS和kubeproxy
-我就是在此发现coreDNS的
+}(errorChan, waiter)
 </code></pre>
 
-<p>if features.Enabled(cfg.FeatureGates, features.CoreDNS) {
+<h3 id="创建dns和kubeproxy">创建DNS和kubeproxy</h3>
+
+<p>我就是在此发现coreDNS的</p>
+
+<pre><code>if features.Enabled(cfg.FeatureGates, features.CoreDNS) {
 	return coreDNSAddon(cfg, client, k8sVersion)
 }
-return kubeDNSAddon(cfg, client, k8sVersion)</p>
-
-<pre><code>然后coreDNS的yaml配置模板直接是写在代码里的：
-/app/phases/addons/dns/manifests.go
+return kubeDNSAddon(cfg, client, k8sVersion)
 </code></pre>
 
-<p>	CoreDNSDeployment = `
+<p>然后coreDNS的yaml配置模板直接是写在代码里的：
+/app/phases/addons/dns/manifests.go</p>
+
+<pre><code>	CoreDNSDeployment = `
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
@@ -581,66 +585,66 @@ spec:
       - key: CriticalAddonsOnly
         operator: Exists
       - key: {{ .MasterTaintKey }}
-&hellip;</p>
-
-<pre><code>然后渲染模板，最后调用k8sapi创建,这种创建方式可以学习一下，虽然有点拙劣，这地方写的远不如kubectl好
+...
 </code></pre>
 
-<p>coreDNSConfigMap := &amp;v1.ConfigMap{}
-if err := kuberuntime.DecodeInto(legacyscheme.Codecs.UniversalDecoder(), configBytes, coreDNSConfigMap); err != nil {
-	return fmt.Errorf(&ldquo;unable to decode CoreDNS configmap %v&rdquo;, err)
-}</p>
+<p>然后渲染模板，最后调用k8sapi创建,这种创建方式可以学习一下，虽然有点拙劣，这地方写的远不如kubectl好</p>
 
-<p>// Create the ConfigMap for CoreDNS or update it in case it already exists
+<pre><code>coreDNSConfigMap := &amp;v1.ConfigMap{}
+if err := kuberuntime.DecodeInto(legacyscheme.Codecs.UniversalDecoder(), configBytes, coreDNSConfigMap); err != nil {
+	return fmt.Errorf(&quot;unable to decode CoreDNS configmap %v&quot;, err)
+}
+
+// Create the ConfigMap for CoreDNS or update it in case it already exists
 if err := apiclient.CreateOrUpdateConfigMap(client, coreDNSConfigMap); err != nil {
 	return err
-}</p>
-
-<p>coreDNSClusterRoles := &amp;rbac.ClusterRole{}
-if err := kuberuntime.DecodeInto(legacyscheme.Codecs.UniversalDecoder(), []byte(CoreDNSClusterRole), coreDNSClusterRoles); err != nil {
-	return fmt.Errorf(&ldquo;unable to decode CoreDNS clusterroles %v&rdquo;, err)
 }
-&hellip;</p>
 
-<pre><code>
-这里值得一提的是kubeproxy的configmap真应该把apiserver地址传入进来，允许自定义，因为做高可用时需要指定虚拟ip，得修改，很麻烦
-kubeproxy大差不差，不说了,想改的话改： app/phases/addons/proxy/manifests.go
-
-## kubeadm join
-kubeadm join比较简单，一句话就可以说清楚，获取cluster info, 创建kubeconfig，怎么创建的kubeinit里面已经说了。带上token让kubeadm有权限
-可以拉取
+coreDNSClusterRoles := &amp;rbac.ClusterRole{}
+if err := kuberuntime.DecodeInto(legacyscheme.Codecs.UniversalDecoder(), []byte(CoreDNSClusterRole), coreDNSClusterRoles); err != nil {
+	return fmt.Errorf(&quot;unable to decode CoreDNS clusterroles %v&quot;, err)
+}
+...
 </code></pre>
 
-<p>return https.RetrieveValidatedClusterInfo(cfg.DiscoveryFile)</p>
+<p>这里值得一提的是kubeproxy的configmap真应该把apiserver地址传入进来，允许自定义，因为做高可用时需要指定虚拟ip，得修改，很麻烦
+kubeproxy大差不差，不说了,想改的话改： app/phases/addons/proxy/manifests.go</p>
 
-<p>cluster info内容
+<h2 id="kubeadm-join">kubeadm join</h2>
+
+<p>kubeadm join比较简单，一句话就可以说清楚，获取cluster info, 创建kubeconfig，怎么创建的kubeinit里面已经说了。带上token让kubeadm有权限
+可以拉取</p>
+
+<pre><code>return https.RetrieveValidatedClusterInfo(cfg.DiscoveryFile)
+
+cluster info内容
 type Cluster struct {
 	// LocationOfOrigin indicates where this object came from.  It is used for round tripping config post-merge, but never serialized.
 	LocationOfOrigin string
-	// Server is the address of the kubernetes cluster (<a href="https://hostname:port">https://hostname:port</a>).
-	Server string <code>json:&quot;server&quot;</code>
-	// InsecureSkipTLSVerify skips the validity check for the server&rsquo;s certificate. This will make your HTTPS connections insecure.
+	// Server is the address of the kubernetes cluster (https://hostname:port).
+	Server string `json:&quot;server&quot;`
+	// InsecureSkipTLSVerify skips the validity check for the server's certificate. This will make your HTTPS connections insecure.
 	// +optional
-	InsecureSkipTLSVerify bool <code>json:&quot;insecure-skip-tls-verify,omitempty&quot;</code>
+	InsecureSkipTLSVerify bool `json:&quot;insecure-skip-tls-verify,omitempty&quot;`
 	// CertificateAuthority is the path to a cert file for the certificate authority.
 	// +optional
-	CertificateAuthority string <code>json:&quot;certificate-authority,omitempty&quot;</code>
+	CertificateAuthority string `json:&quot;certificate-authority,omitempty&quot;`
 	// CertificateAuthorityData contains PEM-encoded certificate authority certificates. Overrides CertificateAuthority
 	// +optional
-	CertificateAuthorityData []byte <code>json:&quot;certificate-authority-data,omitempty&quot;</code>
-	// Extensions holds additional information. This is useful for extenders so that reads and writes don&rsquo;t clobber unknown fields
+	CertificateAuthorityData []byte `json:&quot;certificate-authority-data,omitempty&quot;`
+	// Extensions holds additional information. This is useful for extenders so that reads and writes don't clobber unknown fields
 	// +optional
-	Extensions map[string]runtime.Object <code>json:&quot;extensions,omitempty&quot;</code>
-}</p>
+	Extensions map[string]runtime.Object `json:&quot;extensions,omitempty&quot;`
+}
 
-<p>return kubeconfigutil.CreateWithToken(
+return kubeconfigutil.CreateWithToken(
 	clusterinfo.Server,
-	&ldquo;kubernetes&rdquo;,
+	&quot;kubernetes&quot;,
 	TokenUser,
 	clusterinfo.CertificateAuthorityData,
 	cfg.TLSBootstrapToken,
 ), nil
-```</p>
+</code></pre>
 
 <p>CreateWithToken上文提到了不再赘述，这样就能去生成kubelet配置文件了，然后把kubelet启动起来即可</p>
 
