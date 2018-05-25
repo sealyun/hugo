@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content=" 配置docker engine使engine挂掉时容器继续运行 两种方式： * 修改/etc/docker/daemon.json 如果不想engine重启，给engine发送SIGHUP信号使engine重新加载配置文件 * 直接加启动参数：&ndash;live-restore, 如用systemd管理修改这个配置文件：/usr/lib/systemd/system/docker.service, 然后执行systemctl daemon-reload &amp;&amp; service docker restart
+加了这个参数之后，重启engine就不会使容器退出了
+实践 此功能在做engine升级时非常有用，现在就以docker1.12升级到1.13为例详细介绍。
+我们有一个容器正在运行，已经运行了两个星期了(ps:我们已经配置了 &ndash;live-restore启动参数)
+[root@dev-86-201 ~]# docker ps CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 4c73d9658275 dev.reg.iflytek.com/devops/whoami:latest &quot;/whoamI&quot; 2 weeks ago Up 10 minutes 80/tcp 0Fack  " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/keep_containers_alive_deamon_downtme/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content=" 配置docker engine使engine挂掉时容器继续运行 两种方式： * 修改/etc/docker/daemon.json 如果不想engine重启，给engine发送SIGHUP信号使engine重新加载配置文件 * 直接加启动参数：&ndash;live-restore, 如用systemd管理修改这个配置文件：/usr/lib/systemd/system/docker.service, 然后执行systemctl daemon-reload &amp;&amp; service docker restart
+加了这个参数之后，重启engine就不会使容器退出了
+实践 此功能在做engine升级时非常有用，现在就以docker1.12升级到1.13为例详细介绍。
+我们有一个容器正在运行，已经运行了两个星期了(ps:我们已经配置了 &ndash;live-restore启动参数)
+[root@dev-86-201 ~]# docker ps CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 4c73d9658275 dev.reg.iflytek.com/devops/whoami:latest &quot;/whoamI&quot; 2 weeks ago Up 10 minutes 80/tcp 0Fack  ">
+
+
+
+<meta itemprop="wordCount" content="43">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content=" 配置docker engine使engine挂掉时容器继续运行 两种方式： * 修改/etc/docker/daemon.json 如果不想engine重启，给engine发送SIGHUP信号使engine重新加载配置文件 * 直接加启动参数：&ndash;live-restore, 如用systemd管理修改这个配置文件：/usr/lib/systemd/system/docker.service, 然后执行systemctl daemon-reload &amp;&amp; service docker restart
+加了这个参数之后，重启engine就不会使容器退出了
+实践 此功能在做engine升级时非常有用，现在就以docker1.12升级到1.13为例详细介绍。
+我们有一个容器正在运行，已经运行了两个星期了(ps:我们已经配置了 &ndash;live-restore启动参数)
+[root@dev-86-201 ~]# docker ps CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 4c73d9658275 dev.reg.iflytek.com/devops/whoami:latest &quot;/whoamI&quot; 2 weeks ago Up 10 minutes 80/tcp 0Fack  "/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h2 id="配置docker-engine使engine挂掉时容器继续运行">配置docker engine使engine挂掉时容器继续运行</h2>
+
+<p>两种方式：
+* 修改/etc/docker/daemon.json 如果不想engine重启，给engine发送SIGHUP信号使engine重新加载配置文件
+* 直接加启动参数：&ndash;live-restore,  如用systemd管理修改这个配置文件：/usr/lib/systemd/system/docker.service,
+  然后执行systemctl daemon-reload &amp;&amp; service docker restart</p>
+
+<p>加了这个参数之后，重启engine就不会使容器退出了</p>
+
+<h2 id="实践">实践</h2>
+
+<p>此功能在做engine升级时非常有用，现在就以docker1.12升级到1.13为例详细介绍。</p>
+
+<p>我们有一个容器正在运行，已经运行了两个星期了(ps:我们已经配置了 &ndash;live-restore启动参数)</p>
+
+<pre><code>[root@dev-86-201 ~]# docker ps
+CONTAINER ID        IMAGE                                      COMMAND             CREATED             STATUS              PORTS               NAMES
+4c73d9658275        dev.reg.iflytek.com/devops/whoami:latest   &quot;/whoamI&quot;           2 weeks ago         Up 10 minutes       80/tcp              0Fack
+</code></pre>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

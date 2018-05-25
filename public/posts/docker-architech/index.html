@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="Docker架构分析 [root@docker-build-86-050 ~]# ls /usr/bin |grep docker docker docker-compose docker-containerd docker-containerd-ctr docker-containerd-shim dockerd docker-proxy docker-runc  大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥
+初窥得出的结论是：
+ docker是cli没啥可说的 dockerd是docker engine守护进程，dockerd启动时会启动containerd子进程。 dockerd与containerd通过rpc进行通信（待验证，可能是通过ctr） ctr是containerd的cli containerd通过shim操作runc，runc真正控制容器生命周期 启动一个容器就会启动一个shim进程 shim直接调用runc的包函数,shim与containerd之前通过rpc通信 真正用户想启动的进程由runc的init进程启动，即runc init [args ...]  进程关系模型：
+docker ctr | | V V dockerd -&gt; containerd ---&gt; shim -&gt; runc -&gt; runc init -&gt; process |-- &gt; shim -&gt; runc -&gt; runc init -&gt; process &#43;-- &gt; shim -&gt; runc -&gt; runc init -&gt; process  [root@docker-build-86-050 ~]# ps -aux|grep docker root 3925 0." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/docker-architech/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="Docker架构分析 [root@docker-build-86-050 ~]# ls /usr/bin |grep docker docker docker-compose docker-containerd docker-containerd-ctr docker-containerd-shim dockerd docker-proxy docker-runc  大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥
+初窥得出的结论是：
+ docker是cli没啥可说的 dockerd是docker engine守护进程，dockerd启动时会启动containerd子进程。 dockerd与containerd通过rpc进行通信（待验证，可能是通过ctr） ctr是containerd的cli containerd通过shim操作runc，runc真正控制容器生命周期 启动一个容器就会启动一个shim进程 shim直接调用runc的包函数,shim与containerd之前通过rpc通信 真正用户想启动的进程由runc的init进程启动，即runc init [args ...]  进程关系模型：
+docker ctr | | V V dockerd -&gt; containerd ---&gt; shim -&gt; runc -&gt; runc init -&gt; process |-- &gt; shim -&gt; runc -&gt; runc init -&gt; process &#43;-- &gt; shim -&gt; runc -&gt; runc init -&gt; process  [root@docker-build-86-050 ~]# ps -aux|grep docker root 3925 0.">
+
+
+
+<meta itemprop="wordCount" content="853">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="Docker架构分析 [root@docker-build-86-050 ~]# ls /usr/bin |grep docker docker docker-compose docker-containerd docker-containerd-ctr docker-containerd-shim dockerd docker-proxy docker-runc  大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥
+初窥得出的结论是：
+ docker是cli没啥可说的 dockerd是docker engine守护进程，dockerd启动时会启动containerd子进程。 dockerd与containerd通过rpc进行通信（待验证，可能是通过ctr） ctr是containerd的cli containerd通过shim操作runc，runc真正控制容器生命周期 启动一个容器就会启动一个shim进程 shim直接调用runc的包函数,shim与containerd之前通过rpc通信 真正用户想启动的进程由runc的init进程启动，即runc init [args ...]  进程关系模型：
+docker ctr | | V V dockerd -&gt; containerd ---&gt; shim -&gt; runc -&gt; runc init -&gt; process |-- &gt; shim -&gt; runc -&gt; runc init -&gt; process &#43;-- &gt; shim -&gt; runc -&gt; runc init -&gt; process  [root@docker-build-86-050 ~]# ps -aux|grep docker root 3925 0."/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h2 id="docker架构分析">Docker架构分析</h2>
+
+<pre><code>[root@docker-build-86-050 ~]# ls /usr/bin |grep docker
+docker
+docker-compose
+docker-containerd
+docker-containerd-ctr
+docker-containerd-shim
+dockerd
+docker-proxy
+docker-runc
+</code></pre>
+
+<p>大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥</p>
+
+<p>初窥得出的结论是：</p>
+
+<ul>
+<li>docker是cli没啥可说的</li>
+<li>dockerd是docker engine守护进程，dockerd启动时会启动containerd子进程。</li>
+<li>dockerd与containerd通过rpc进行通信（待验证，可能是通过ctr）</li>
+<li>ctr是containerd的cli</li>
+<li>containerd通过shim操作runc，runc真正控制容器生命周期</li>
+<li>启动一个容器就会启动一个shim进程</li>
+<li>shim直接调用runc的包函数,shim与containerd之前通过rpc通信</li>
+<li>真正用户想启动的进程由runc的init进程启动，即<code>runc init [args ...]</code></li>
+</ul>
+
+<p>进程关系模型：</p>
+
+<pre><code>docker     ctr
+  |         |
+  V         V
+dockerd -&gt; containerd ---&gt; shim -&gt; runc -&gt; runc init -&gt; process
+                      |-- &gt; shim -&gt; runc -&gt; runc init -&gt; process
+                      +-- &gt; shim -&gt; runc -&gt; runc init -&gt; process
+</code></pre>
+
+<pre><code>[root@docker-build-86-050 ~]# ps -aux|grep docker
+root      3925  0.0  0.1 2936996 74020 ?       Ssl  3月06  68:14 /usr/bin/dockerd --storage-driver=aufs -H 0.0.0.0:2375 --label ip=10.1.86.50 -H unix:///var/run/docker.sock --insecure-registry 192.168.86.106 --insecure-registry 10.1.86.51 --insecure-registry dev.reg.iflytek.com
+root      3939  0.0  0.0 1881796 27096 ?       Ssl  3月06   9:10 docker-containerd -l unix:///var/run/docker/libcontainerd/docker-containerd.sock --shim docker-containerd-shim --metrics-interval=0 --start-timeout 2m --state-dir /var/run/docker/libcontainerd/containerd --runtime docker-runc
+root     21238  0.0  0.0 487664  6212 ?        Sl   4月20   0:00 docker-containerd-shim 48119c50a0ca8a53967364f75fb709017cc272ae248b78062e0dafaa22108d21 /var/run/docker/libcontainerd/48119c50a0ca8a53967364f75fb709017cc272ae248b78062e0dafaa22108d21 docker-runc
+</code></pre>
+
+<h2 id="dockerd-与-containerd-之间的基情">dockerd 与 containerd 之间的基情</h2>
+
+<p>首先dockerd的main函数相信你能找到<code>cmd/dockerd/docker.go</code></p>
+
+<p>其它的先略过,直接进start看一看：</p>
+
+<pre><code>err = daemonCli.start(opts)
+</code></pre>
+
+<p>这函数里我们先去关注两件事：</p>
+
+<ol>
+<li>创建了多个Hosts，这是给client去连接的，dockerd启动时用-H参数指定，可以是多个，如指定一个tcp 指定一个unix sock( -H unix:///var/run/docker.sock)</li>
+<li>创建了containerd子进程</li>
+</ol>
+
+<p>这个New很重要</p>
+
+<pre><code>containerdRemote, err := libcontainerd.New(cli.getLibcontainerdRoot(), cli.getPlatformRemoteOptions()...)
+</code></pre>
+
+<p>进去看看：</p>
+
+<pre><code>...
+    err := r.runContainerdDaemon(); 
+...
+    conn, err := grpc.Dial(r.rpcAddr, dialOpts...)
+    if err != nil {
+        return nil, fmt.Errorf(&quot;error connecting to containerd: %v&quot;, err)
+    }
+
+    r.rpcConn = conn
+    r.apiClient = containerd.NewAPIClient(conn)
+...
+</code></pre>
+
+<p>启动了一个containerd进程，并与之建立连接。通过protobuf进行rpc通信， grpc相关介绍看<a href="http://lameleg.com/tech/rpc-protobuf.html">这里</a></p>
+
+<p>具体如何创建containerd进程的可以进入runContainerDaemon里细看</p>
+
+<pre><code>    cmd := exec.Command(containerdBinary, args...)
+    // redirect containerd logs to docker logs
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+    cmd.SysProcAttr = setSysProcAttr(true)
+    cmd.Env = nil
+    // clear the NOTIFY_SOCKET from the env when starting containerd
+    for _, e := range os.Environ() {
+        if !strings.HasPrefix(e, &quot;NOTIFY_SOCKET&quot;) {
+            cmd.Env = append(cmd.Env, e)
+        }
+    }
+    if err := cmd.Start(); err != nil {
+        return err
+    }
+</code></pre>
+
+<p>看不明白的话，去标准库里恶补一下cmd怎么用。 cmd.Start()异步创建进程，创建完直接返回</p>
+
+<p>所以创建一个协程等待子进程退出</p>
+
+<pre><code>    go func() {
+        cmd.Wait()
+        close(r.daemonWaitCh)
+    }() // Reap our child when needed
+
+</code></pre>
+
+<h2 id="docker-containerd-shim是何方神圣-与containerd和runc又有什么关系">docker-containerd-shim是何方神圣 与containerd和runc又有什么关系？</h2>
+
+<p>代码中的一句话解释：<code>shim for container lifecycle and reconnection</code>, 容器生命周期和重连, 所以可以顺着这个思路去看。</p>
+
+<p>先看containerd/linux/runtime.go里的一段代码：
+Runtime 的Create方法里有这一行,这里的Runtime对象也是注册到register里面的，可以看init函数，然后containerd进程启动时去加载了这个Runtime</p>
+
+<pre><code>s, err := newShim(path, r.remote)
+</code></pre>
+
+<p>缩减版内容:</p>
+
+<pre><code>func newShim(path string, remote bool) (shim.ShimClient, error) {
+    l, err := sys.CreateUnixSocket(socket) //创建了一个UnixSocket
+    cmd := exec.Command(&quot;containerd-shim&quot;)
+    f, err := l.(*net.UnixListener).File()
+    cmd.ExtraFiles = append(cmd.ExtraFiles, f) //留意一下这个，非常非常重要，不知道这个原理可能就看不懂shim里面的代码了
+    if err := reaper.Default.Start(cmd); err != nil { //启动了一个shim进程
+    }
+    return connectShim(socket) // 这里返回了与shim进程通信的客户端
+}
+</code></pre>
+
+<p>再去看看shim的代码：
+shim进程启动干的最主要的一件事就是启动一个grpc server:</p>
+
+<pre><code>if err := serve(server, &quot;shim.sock&quot;); err != nil {
+</code></pre>
+
+<p>进去一探究竟：</p>
+
+<pre><code>func serve(server *grpc.Server, path string) error {
+    l, err := net.FileListener(os.NewFile(3, &quot;socket&quot;))
+    logrus.WithField(&quot;socket&quot;, path).Debug(&quot;serving api on unix socket&quot;)
+    go func() {
+        if err := server.Serve(l); err != nil &amp;&amp;
+        }
+    }()
+}
+</code></pre>
+
+<p>我曾经因为这个<code>os.NewFile(3, &quot;socket&quot;)</code>看了半天看不懂，为啥是3？联系<code>cmd.ExtraFiles = append(cmd.ExtraFiles, f)</code> 创建shim进程时的这句，问题解决了。</p>
+
+<p>这个3的文件描述符，就是containerd用于创建UnixSocket的文件，这样containerd的client刚好与这边启动的 grpc server连接上了，可以远程调用其接口了：</p>
+
+<pre><code>type ContainerServiceClient interface {
+    Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+    Start(ctx context.Context, in *StartRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+    Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+    Info(ctx context.Context, in *InfoRequest, opts ...grpc.CallOption) (*containerd_v1_types1.Container, error)
+    List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
+    Kill(ctx context.Context, in *KillRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+    Events(ctx context.Context, in *EventsRequest, opts ...grpc.CallOption) (ContainerService_EventsClient, error)
+    Exec(ctx context.Context, in *ExecRequest, opts ...grpc.CallOption) (*ExecResponse, error)
+    Pty(ctx context.Context, in *PtyRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+    CloseStdin(ctx context.Context, in *CloseStdinRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+}
+
+</code></pre>
+
+<p><a href="https://github.com/fanux/fanux.github.io/tree/master/demo/grpc">containerd与shim通信模型介绍</a></p>
+
+<p>再看shim与runc的关系，这个比较简单了，直接进入shim service 实现的Create方法即可</p>
+
+<pre><code>sv = shim.New(path)
+</code></pre>
+
+<pre><code>func (s *Service) Create(ctx context.Context, r *shimapi.CreateRequest) (*shimapi.CreateResponse, error) {
+    process, err := newInitProcess(ctx, s.path, r)
+    return &amp;shimapi.CreateResponse{
+        Pid: uint32(pid),
+    }, nil
+}
+</code></pre>
+
+<p>进入到newInitProcess里面：</p>
+
+<pre><code>func newInitProcess(context context.Context, path string, r *shimapi.CreateRequest) (*initProcess, error) {
+    runtime := &amp;runc.Runc{
+        Command:      r.Runtime,
+        Log:          filepath.Join(path, &quot;log.json&quot;),
+        LogFormat:    runc.JSON,
+        PdeathSignal: syscall.SIGKILL,
+    }
+    p := &amp;initProcess{
+        id:     r.ID,
+        bundle: r.Bundle,
+        runc:   runtime,
+    }
+  
+    if err := p.runc.Create(context, r.ID, r.Bundle, opts); err != nil {
+        return nil, err
+    }
+    return p, nil
+}
+</code></pre>
+
+<p>可以看到，在这里调用了runc的API去真正执行创建容器的操作。其本质是调用了<code>runc create --bundle [bundle] [containerid]</code> 命令,在此不多作介绍了</p>
+
+<h2 id="shim进程与runc进程之间">shim进程与runc进程之间</h2>
+
+<p>上文可知，shim进程创建runc子进程。</p>
+
+<h2 id="runc-与-容器内第一个进程-init进程">runc 与 容器内第一个进程 init进程</h2>
+
+<p>看docker创建了这么多子进程，然后到了runc我们期待的自己Dockerfile中的CMD进程就要被创建了，想想都有点小激动，然而。。。</p>
+
+<p>runc进程启动后会去启动init进程，去创建容器，然后在容器中创建进程，那才是真正我们需要的进程</p>
+
+<p>关于runc init进程关键看StartInitialization方法（main_unix.go）</p>
+
+<h2 id="docker-containerd-ctr-与-docker-containerd">docker-containerd-ctr 与 docker-containerd</h2>
+
+<p>ctr 是一个containerd的client，之间通过proto rpc通信, containerd监听了unix:///run/containerd/containerd.sock。</p>
+
+<pre><code>[root@dev-86-201 ~]# docker-containerd --help
+NAME:
+   containerd - High performance container daemon
+
+USAGE:
+   docker-containerd [global options] command [command options] [arguments...]
+
+VERSION:
+   0.2.0 commit: 0ac3cd1be170d180b2baed755e8f0da547ceb267
+
+COMMANDS:
+   help, h    Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --debug                            enable debug output in the logs
+   --state-dir &quot;/run/containerd&quot;                runtime state directory
+   --metrics-interval &quot;5m0s&quot;                    interval for flushing metrics to the store
+   --listen, -l &quot;unix:///run/containerd/containerd.sock&quot;    proto://address on which the GRPC API will listen
+   --runtime, -r &quot;runc&quot;                        name or path of the OCI compliant runtime to use when executing containers
+   --runtime-args [--runtime-args option --runtime-args option]    specify additional runtime args
+   --shim &quot;containerd-shim&quot;                    Name or path of shim
+   --pprof-address                         http address to listen for pprof events
+   --start-timeout &quot;15s&quot;                    timeout duration for waiting on a container to start before it is killed
+   --retain-count &quot;500&quot;                        number of past events to keep in the event log
+   --graphite-address                         Address of graphite server
+   --help, -h                            show help
+   --version, -v                        print the version
+</code></pre>
+
+<pre><code>[root@dev-86-201 ~]# docker-containerd-ctr --help
+NAME:
+   ctr - High performance container daemon cli
+
+USAGE:
+   docker-containerd-ctr [global options] command [command options] [arguments...]
+
+VERSION:
+   0.2.0 commit: 0ac3cd1be170d180b2baed755e8f0da547ceb267
+
+COMMANDS:
+   checkpoints    list all checkpoints
+   containers    interact with running containers
+   events    receive events from the containerd daemon
+   state    get a raw dump of the containerd state
+   version    return the daemon version
+   help, h    Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --debug                        enable debug output in the logs
+   --address &quot;unix:///run/containerd/containerd.sock&quot;    proto://address of GRPC API
+   --conn-timeout &quot;1s&quot;                    GRPC connection timeout
+   --help, -h                        show help
+   --version, -v                    print the version
+</code></pre>
+
+<h2 id="runc-架构破析">runc 架构破析</h2>
+
+<p>比较复杂也比较重要，所以我将单独写一篇相关的介绍 <a href="http://lameleg.com/tech/runc.html">这里</a></p>
+
+<h4 id="使用runc直接创建容器">使用runc直接创建容器</h4>
+
+<pre><code>mkdir /mycontainer
+cd /mycontainer
+mkdir rootfs
+docker export $(docker create busybox) | tar -C rootfs -xvf -
+# 生成容器的配置文件config.json
+runc spec
+runc run mycontainerid
+</code></pre>
+
+<h4 id="容器状态文件">容器状态文件</h4>
+
+<p>默认存在/run/runc目录下,不管是docker engine创建的容器还是通过runc直接创建的容器都会在/run/runc目录下创建一个以容器名命名的目录，下面有个state.json文件用于存储文件状态</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="kubernetes RBAC实战 环境准备 先用kubeadm安装好kubernetes集群，包地址在此 好用又方便，服务周到，童叟无欺
+本文目的，让名为devuser的用户只能有权限访问特定namespace下的pod
+命令行kubectl访问 安装cfssl 此工具生成证书非常方便, pem证书与crt证书,编码一致可直接使用
+wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 chmod &#43;x cfssl_linux-amd64 mv cfssl_linux-amd64 /bin/cfssl wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 chmod &#43;x cfssljson_linux-amd64 mv cfssljson_linux-amd64 /bin/cfssljson wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 chmod &#43;x cfssl-certinfo_linux-amd64 mv cfssl-certinfo_linux-amd64 /bin/cfssl-certinfo  签发客户端证书 根据ca证书与么钥签发用户证书 根证书已经在/etc/kubernetes/pki目录下了
+[root@master1 ~]# ls /etc/kubernetes/pki/ apiserver.crt ca-config.json devuser-csr.json front-proxy-ca.key sa.pub apiserver.key ca.crt devuser-key.pem front-proxy-client.crt apiserver-kubelet-client.crt ca.key devuser.pem front-proxy-client.key apiserver-kubelet-client.key devuser.csr front-proxy-ca.crt sa.key  注意以下几个文件： ca.crt ca.key ca-config.json devuser-csr.json
+创建ca-config.json文件
+cat &gt; ca-config.json &lt;&lt;EOF { &quot;signing&quot;: { &quot;default&quot;: { &quot;expiry&quot;: &quot;87600h&quot; }, &quot;profiles&quot;: { &quot;kubernetes&quot;: { &quot;usages&quot;: [ &quot;signing&quot;, &quot;key encipherment&quot;, &quot;server auth&quot;, &quot;client auth&quot; ], &quot;expiry&quot;: &quot;87600h&quot; } } } } EOF  创建devuser-csr." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/k8s-rbac/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="kubernetes RBAC实战 环境准备 先用kubeadm安装好kubernetes集群，包地址在此 好用又方便，服务周到，童叟无欺
+本文目的，让名为devuser的用户只能有权限访问特定namespace下的pod
+命令行kubectl访问 安装cfssl 此工具生成证书非常方便, pem证书与crt证书,编码一致可直接使用
+wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 chmod &#43;x cfssl_linux-amd64 mv cfssl_linux-amd64 /bin/cfssl wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 chmod &#43;x cfssljson_linux-amd64 mv cfssljson_linux-amd64 /bin/cfssljson wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 chmod &#43;x cfssl-certinfo_linux-amd64 mv cfssl-certinfo_linux-amd64 /bin/cfssl-certinfo  签发客户端证书 根据ca证书与么钥签发用户证书 根证书已经在/etc/kubernetes/pki目录下了
+[root@master1 ~]# ls /etc/kubernetes/pki/ apiserver.crt ca-config.json devuser-csr.json front-proxy-ca.key sa.pub apiserver.key ca.crt devuser-key.pem front-proxy-client.crt apiserver-kubelet-client.crt ca.key devuser.pem front-proxy-client.key apiserver-kubelet-client.key devuser.csr front-proxy-ca.crt sa.key  注意以下几个文件： ca.crt ca.key ca-config.json devuser-csr.json
+创建ca-config.json文件
+cat &gt; ca-config.json &lt;&lt;EOF { &quot;signing&quot;: { &quot;default&quot;: { &quot;expiry&quot;: &quot;87600h&quot; }, &quot;profiles&quot;: { &quot;kubernetes&quot;: { &quot;usages&quot;: [ &quot;signing&quot;, &quot;key encipherment&quot;, &quot;server auth&quot;, &quot;client auth&quot; ], &quot;expiry&quot;: &quot;87600h&quot; } } } } EOF  创建devuser-csr.">
+
+
+
+<meta itemprop="wordCount" content="574">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="kubernetes RBAC实战 环境准备 先用kubeadm安装好kubernetes集群，包地址在此 好用又方便，服务周到，童叟无欺
+本文目的，让名为devuser的用户只能有权限访问特定namespace下的pod
+命令行kubectl访问 安装cfssl 此工具生成证书非常方便, pem证书与crt证书,编码一致可直接使用
+wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 chmod &#43;x cfssl_linux-amd64 mv cfssl_linux-amd64 /bin/cfssl wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 chmod &#43;x cfssljson_linux-amd64 mv cfssljson_linux-amd64 /bin/cfssljson wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 chmod &#43;x cfssl-certinfo_linux-amd64 mv cfssl-certinfo_linux-amd64 /bin/cfssl-certinfo  签发客户端证书 根据ca证书与么钥签发用户证书 根证书已经在/etc/kubernetes/pki目录下了
+[root@master1 ~]# ls /etc/kubernetes/pki/ apiserver.crt ca-config.json devuser-csr.json front-proxy-ca.key sa.pub apiserver.key ca.crt devuser-key.pem front-proxy-client.crt apiserver-kubelet-client.crt ca.key devuser.pem front-proxy-client.key apiserver-kubelet-client.key devuser.csr front-proxy-ca.crt sa.key  注意以下几个文件： ca.crt ca.key ca-config.json devuser-csr.json
+创建ca-config.json文件
+cat &gt; ca-config.json &lt;&lt;EOF { &quot;signing&quot;: { &quot;default&quot;: { &quot;expiry&quot;: &quot;87600h&quot; }, &quot;profiles&quot;: { &quot;kubernetes&quot;: { &quot;usages&quot;: [ &quot;signing&quot;, &quot;key encipherment&quot;, &quot;server auth&quot;, &quot;client auth&quot; ], &quot;expiry&quot;: &quot;87600h&quot; } } } } EOF  创建devuser-csr."/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h2 id="kubernetes-rbac实战">kubernetes RBAC实战</h2>
+
+<h2 id="环境准备">环境准备</h2>
+
+<p>先用kubeadm安装好kubernetes集群，<a href="https://market.aliyun.com/products/56014009/cmxz022571.html#sku=yuncode1657100000">包地址在此</a> 好用又方便，服务周到，童叟无欺</p>
+
+<p>本文目的，让名为devuser的用户只能有权限访问特定namespace下的pod</p>
+
+<h2 id="命令行kubectl访问">命令行kubectl访问</h2>
+
+<h3 id="安装cfssl">安装cfssl</h3>
+
+<p>此工具生成证书非常方便, pem证书与crt证书,编码一致可直接使用</p>
+
+<pre><code>wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+chmod +x cfssl_linux-amd64
+mv cfssl_linux-amd64 /bin/cfssl
+
+wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+chmod +x cfssljson_linux-amd64
+mv cfssljson_linux-amd64 /bin/cfssljson
+
+wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64
+chmod +x cfssl-certinfo_linux-amd64
+mv cfssl-certinfo_linux-amd64 /bin/cfssl-certinfo
+</code></pre>
+
+<h3 id="签发客户端证书">签发客户端证书</h3>
+
+<p>根据ca证书与么钥签发用户证书
+根证书已经在/etc/kubernetes/pki目录下了</p>
+
+<pre><code>[root@master1 ~]# ls /etc/kubernetes/pki/
+apiserver.crt                 ca-config.json  devuser-csr.json    front-proxy-ca.key      sa.pub
+apiserver.key                 ca.crt          devuser-key.pem     front-proxy-client.crt
+apiserver-kubelet-client.crt  ca.key          devuser.pem         front-proxy-client.key
+apiserver-kubelet-client.key  devuser.csr     front-proxy-ca.crt  sa.key
+</code></pre>
+
+<p>注意以下几个文件： <code>ca.crt ca.key ca-config.json devuser-csr.json</code></p>
+
+<p>创建ca-config.json文件</p>
+
+<pre><code>cat &gt; ca-config.json &lt;&lt;EOF
+{
+  &quot;signing&quot;: {
+    &quot;default&quot;: {
+      &quot;expiry&quot;: &quot;87600h&quot;
+    },
+    &quot;profiles&quot;: {
+      &quot;kubernetes&quot;: {
+        &quot;usages&quot;: [
+            &quot;signing&quot;,
+            &quot;key encipherment&quot;,
+            &quot;server auth&quot;,
+            &quot;client auth&quot;
+        ],
+        &quot;expiry&quot;: &quot;87600h&quot;
+      }
+    }
+  }
+}
+EOF
+</code></pre>
+
+<p>创建devuser-csr.json文件：
+k8s的用户名就是从CN上获取的。 组是从O上获取的。这个用户或者组用于后面的角色绑定使用</p>
+
+<pre><code>cat &gt; devuser-csr.json &lt;&lt;EOF
+{
+  &quot;CN&quot;: &quot;devuser&quot;,
+  &quot;hosts&quot;: [],
+  &quot;key&quot;: {
+    &quot;algo&quot;: &quot;rsa&quot;,
+    &quot;size&quot;: 2048
+  },
+  &quot;names&quot;: [
+    {
+      &quot;C&quot;: &quot;CN&quot;,
+      &quot;ST&quot;: &quot;BeiJing&quot;,
+      &quot;L&quot;: &quot;BeiJing&quot;,
+      &quot;O&quot;: &quot;k8s&quot;,
+      &quot;OU&quot;: &quot;System&quot;
+    }
+  ]
+}
+EOF
+</code></pre>
+
+<p>生成user的证书：</p>
+
+<pre><code>$ cfssl gencert -ca=ca.crt -ca-key=ca.key -config=ca-config.json -profile=kubernetes devuser-csr.json | cfssljson -bare devuser
+</code></pre>
+
+<p>就会生成下面的文件：</p>
+
+<pre><code>devuser.csr  devuser-key.pem  devuser.pem
+</code></pre>
+
+<blockquote>
+<p>校验证书</p>
+</blockquote>
+
+<pre><code># cfssl-certinfo -cert kubernetes.pem
+</code></pre>
+
+<h3 id="生成config文件">生成config文件</h3>
+
+<p>kubeadm已经生成了admin.conf，我们可以直接利用这个文件，省的自己再去配置集群参数</p>
+
+<pre><code>$  cp /etc/kubernetes/admin.conf devuser.kubeconfig
+</code></pre>
+
+<p>设置客户端认证参数:</p>
+
+<pre><code>kubectl config set-credentials devuser \
+--client-certificate=/etc/kubernetes/ssl/devuser.pem \
+--client-key=/etc/kubernetes/ssl/devuser-key.pem \
+--embed-certs=true \
+--kubeconfig=devuser.kubeconfig
+</code></pre>
+
+<p>设置上下文参数：</p>
+
+<pre><code>kubectl config set-context kubernetes \
+--cluster=kubernetes \
+--user=devuser \
+--namespace=kube-system \
+--kubeconfig=devuser.kubeconfig
+</code></pre>
+
+<p>设置莫认上下文：</p>
+
+<pre><code>kubectl config use-context kubernetes --kubeconfig=devuser.kubeconfig
+</code></pre>
+
+<p>以上执行一个步骤就可以看一下 devuser.kubeconfig的变化。里面最主要的三个东西</p>
+
+<ul>
+<li>cluster: 集群信息，包含集群地址与公钥</li>
+<li>user: 用户信息，客户端证书与私钥，正真的信息是从证书里读取出来的，人能看到的只是给人看的。</li>
+<li>context: 维护一个三元组，namespace cluster 与 user</li>
+</ul>
+
+<h3 id="创建角色">创建角色</h3>
+
+<p>创建一个叫pod-reader的角色</p>
+
+<pre><code>[root@master1 ~]# cat pod-reader.yaml
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: kube-system
+  name: pod-reader
+rules:
+- apiGroups: [&quot;&quot;] # &quot;&quot; indicates the core API group
+  resources: [&quot;pods&quot;]
+  verbs: [&quot;get&quot;, &quot;watch&quot;, &quot;list&quot;]
+</code></pre>
+
+<pre><code>kubectl create -f pod-reader.yaml
+</code></pre>
+
+<h3 id="绑定用户">绑定用户</h3>
+
+<p>创建一个角色绑定，把pod-reader角色绑定到 devuser上</p>
+
+<pre><code>[root@master1 ~]# cat devuser-role-bind.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+  namespace: kube-system
+subjects:
+- kind: User
+  name: devuser   # 目标用户
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader  # 角色信息
+  apiGroup: rbac.authorization.k8s.io
+</code></pre>
+
+<pre><code>kubectl create -f devuser-role-bind.yaml
+</code></pre>
+
+<h3 id="使用新的config文件">使用新的config文件</h3>
+
+<pre><code>$ rm .kube/config &amp;&amp; cp devuser.kubeconfig .kube/config
+</code></pre>
+
+<p>效果, 已经没有别的namespace的权限了，也不能访问node信息了：</p>
+
+<pre><code>[root@master1 ~]# kubectl get node
+Error from server (Forbidden): nodes is forbidden: User &quot;devuser&quot; cannot list nodes at the cluster scope
+
+[root@master1 ~]# kubectl get pod -n kube-system
+NAME                                       READY     STATUS    RESTARTS   AGE
+calico-kube-controllers-55449f8d88-74x8f   1/1       Running   0          8d
+calico-node-clpqr                          2/2       Running   0          8d
+kube-apiserver-master1                     1/1       Running   2          8d
+kube-controller-manager-master1            1/1       Running   1          8d
+kube-dns-545bc4bfd4-p6trj                  3/3       Running   0          8d
+kube-proxy-tln54                           1/1       Running   0          8d
+kube-scheduler-master1                     1/1       Running   1          8d
+
+[root@master1 ~]# kubectl get pod -n default
+Error from server (Forbidden): pods is forbidden: User &quot;devuser&quot; cannot list pods in the namespace &quot;default&quot;: role.rbac.authorization.k8s.io &quot;pod-reader&quot; not found
+</code></pre>
+
+<h2 id="dashboard访问">dashboard访问</h2>
+
+<h3 id="service-account原理">service account原理</h3>
+
+<p>k8s里面有两种用户，一种是User，一种就是service account，User给人用的，service account给进程用的，让进程有相关的权限。</p>
+
+<p>如dasboard就是一个进程，我们就可以创建一个service account给它，让它去访问k8s。</p>
+
+<p>我们看一下是如何把admin权限赋给dashboard的：</p>
+
+<pre><code>╰─➤  cat dashboard-admin.yaml
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-dashboard
+  labels:
+    k8s-app: kubernetes-dashboard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-dashboard
+  namespace: kube-system
+</code></pre>
+
+<p>把 kubernetes-dashboard 这个ServiceAccount绑定到cluster-admin这个ClusterRole上，这个cluster role非常牛逼，啥权限都有</p>
+
+<pre><code>[root@master1 ~]# kubectl describe clusterrole cluster-admin -n kube-system
+Name:         cluster-admin
+Labels:       kubernetes.io/bootstrapping=rbac-defaults
+Annotations:  rbac.authorization.kubernetes.io/autoupdate=true
+PolicyRule:
+  Resources  Non-Resource URLs  Resource Names  Verbs
+  ---------  -----------------  --------------  -----
+             [*]                []              [*]
+  *.*        []                 []              [*]
+</code></pre>
+
+<p>而创建dashboard时创建了这个service account:</p>
+
+<pre><code>apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    k8s-app: kubernetes-dashboard
+  name: kubernetes-dashboard
+  namespace: kube-system
+</code></pre>
+
+<p>然后deployment里指定service account</p>
+
+<pre><code>      volumes:
+      - name: kubernetes-dashboard-certs
+        secret:
+          secretName: kubernetes-dashboard-certs
+      - name: tmp-volume
+        emptyDir: {}
+      serviceAccountName: kubernetes-dashboard
+</code></pre>
+
+<h3 id="更安全的做法">更安全的做法</h3>
+
+<pre><code>[root@master1 ~]# cat admin-token.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: admin
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: &quot;true&quot;
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: admin
+  namespace: kube-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin
+  namespace: kube-system
+  labels:
+    kubernetes.io/cluster-service: &quot;true&quot;
+    addonmanager.kubernetes.io/mode: Reconcile
+</code></pre>
+
+<pre><code>[root@master1 ~]# kubectl get secret -n kube-system|grep admin
+admin-token-7rdhf                        kubernetes.io/service-account-token   3         14m
+</code></pre>
+
+<pre><code>[root@master1 ~]# kubectl describe secret admin-token-7rdhf -n kube-system
+Name:         admin-token-7rdhf
+Namespace:    kube-system
+Labels:       &lt;none&gt;
+Annotations:  kubernetes.io/service-account.name=admin
+              kubernetes.io/service-account.uid=affe82d4-d10b-11e7-ad03-00163e01d684
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+ca.crt:     1025 bytes
+namespace:  11 bytes
+token:      eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi10b2tlbi03cmRoZiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJhZG1pbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImFmZmU4MmQ0LWQxMGItMTFlNy1hZDAzLTAwMTYzZTAxZDY4NCIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTphZG1pbiJ9.jSfQhFsY7V0ZmfqxM8lM_UUOoUhI86axDSeyVVtldSUY-BeP2Nw4q-ooKGJTBBsrOWvMiQePcQxJTKR1K4EIfnA2FOnVm4IjMa40pr7-oRVY37YnR_1LMalG9vrWmqFiqIsKe9hjkoFDuCaP7UIuv16RsV7hRlL4IToqmJMyJ1xj2qb1oW4P1pdaRr4Pw02XBz9yBpD1fs-lbwheu1UKcEnbHS_0S3zlmAgCrpwDFl2UYOmgUKQVpJhX4wBRRQbwo1Sn4rEFVI1NIa9l_lM7Mf6YEquLHRu3BCZTdu9YfY9pevQz4OfHE0NOvDIqmGRL8Z9kPADAXbljWzcD1m1xCQ
+</code></pre>
+
+<p>用此token在界面上登录即可</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

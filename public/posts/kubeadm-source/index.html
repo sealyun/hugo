@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="k8s离线安装包 三步安装，简单到难以置信
+kubeadm源码分析 说句实在话，kubeadm的代码写的真心一般，质量不是很高。
+几个关键点来先说一下kubeadm干的几个核心的事：
+ kubeadm 生成证书在/etc/kubernetes/pki目录下 kubeadm 生成static pod yaml配置，全部在/etc/kubernetes/manifasts下 kubeadm 生成kubelet配置，kubectl配置等 在/etc/kubernetes下 kubeadm 通过client go去启动dns  kubeadm init 代码入口 cmd/kubeadm/app/cmd/init.go 建议大家去看看cobra
+找到Run函数来分析下主要流程：
+ 如果证书不存在，就创建证书，所以如果我们有自己的证书可以把它放在/etc/kubernetes/pki下即可, 下文细看如果生成证书
+	if res, _ := certsphase.UsingExternalCA(i.cfg); !res { if err := certsphase.CreatePKIAssets(i.cfg); err != nil { return err }  创建kubeconfig文件
+	if err := kubeconfigphase.CreateInitKubeConfigFiles(kubeConfigDir, i.cfg); err != nil { return err }  创建manifest文件，etcd apiserver manager scheduler都在这里创建, 可以看到如果你的配置文件里已经写了etcd的地址了，就不创建了，这我们就可以自己装etcd集群，而不用默认单点的etcd，很有用
+controlplanephase.CreateInitStaticPodManifestFiles(manifestDir, i." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/kubeadm-source/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="k8s离线安装包 三步安装，简单到难以置信
+kubeadm源码分析 说句实在话，kubeadm的代码写的真心一般，质量不是很高。
+几个关键点来先说一下kubeadm干的几个核心的事：
+ kubeadm 生成证书在/etc/kubernetes/pki目录下 kubeadm 生成static pod yaml配置，全部在/etc/kubernetes/manifasts下 kubeadm 生成kubelet配置，kubectl配置等 在/etc/kubernetes下 kubeadm 通过client go去启动dns  kubeadm init 代码入口 cmd/kubeadm/app/cmd/init.go 建议大家去看看cobra
+找到Run函数来分析下主要流程：
+ 如果证书不存在，就创建证书，所以如果我们有自己的证书可以把它放在/etc/kubernetes/pki下即可, 下文细看如果生成证书
+	if res, _ := certsphase.UsingExternalCA(i.cfg); !res { if err := certsphase.CreatePKIAssets(i.cfg); err != nil { return err }  创建kubeconfig文件
+	if err := kubeconfigphase.CreateInitKubeConfigFiles(kubeConfigDir, i.cfg); err != nil { return err }  创建manifest文件，etcd apiserver manager scheduler都在这里创建, 可以看到如果你的配置文件里已经写了etcd的地址了，就不创建了，这我们就可以自己装etcd集群，而不用默认单点的etcd，很有用
+controlplanephase.CreateInitStaticPodManifestFiles(manifestDir, i.">
+
+
+
+<meta itemprop="wordCount" content="1027">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="k8s离线安装包 三步安装，简单到难以置信
+kubeadm源码分析 说句实在话，kubeadm的代码写的真心一般，质量不是很高。
+几个关键点来先说一下kubeadm干的几个核心的事：
+ kubeadm 生成证书在/etc/kubernetes/pki目录下 kubeadm 生成static pod yaml配置，全部在/etc/kubernetes/manifasts下 kubeadm 生成kubelet配置，kubectl配置等 在/etc/kubernetes下 kubeadm 通过client go去启动dns  kubeadm init 代码入口 cmd/kubeadm/app/cmd/init.go 建议大家去看看cobra
+找到Run函数来分析下主要流程：
+ 如果证书不存在，就创建证书，所以如果我们有自己的证书可以把它放在/etc/kubernetes/pki下即可, 下文细看如果生成证书
+	if res, _ := certsphase.UsingExternalCA(i.cfg); !res { if err := certsphase.CreatePKIAssets(i.cfg); err != nil { return err }  创建kubeconfig文件
+	if err := kubeconfigphase.CreateInitKubeConfigFiles(kubeConfigDir, i.cfg); err != nil { return err }  创建manifest文件，etcd apiserver manager scheduler都在这里创建, 可以看到如果你的配置文件里已经写了etcd的地址了，就不创建了，这我们就可以自己装etcd集群，而不用默认单点的etcd，很有用
+controlplanephase.CreateInitStaticPodManifestFiles(manifestDir, i."/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<p><a href="http://lameleg.com/offline-install.html">k8s离线安装包</a> 三步安装，简单到难以置信</p>
+
+<h1 id="kubeadm源码分析">kubeadm源码分析</h1>
+
+<p>说句实在话，kubeadm的代码写的真心一般，质量不是很高。</p>
+
+<p>几个关键点来先说一下kubeadm干的几个核心的事：</p>
+
+<ul>
+<li>kubeadm 生成证书在/etc/kubernetes/pki目录下</li>
+<li>kubeadm 生成static pod yaml配置，全部在/etc/kubernetes/manifasts下</li>
+<li>kubeadm 生成kubelet配置，kubectl配置等 在/etc/kubernetes下</li>
+<li>kubeadm 通过client go去启动dns</li>
+</ul>
+
+<h2 id="kubeadm-init">kubeadm init</h2>
+
+<p>代码入口 <code>cmd/kubeadm/app/cmd/init.go</code> 建议大家去看看cobra</p>
+
+<p>找到Run函数来分析下主要流程：</p>
+
+<ol>
+<li><p>如果证书不存在，就创建证书，所以如果我们有自己的证书可以把它放在/etc/kubernetes/pki下即可, 下文细看如果生成证书</p>
+
+<pre><code>	if res, _ := certsphase.UsingExternalCA(i.cfg); !res {
+		if err := certsphase.CreatePKIAssets(i.cfg); err != nil {
+			return err
+		}
+</code></pre></li>
+
+<li><p>创建kubeconfig文件</p>
+
+<pre><code>		if err := kubeconfigphase.CreateInitKubeConfigFiles(kubeConfigDir, i.cfg); err != nil {
+			return err
+		}
+</code></pre></li>
+
+<li><p>创建manifest文件，etcd apiserver manager scheduler都在这里创建, 可以看到如果你的配置文件里已经写了etcd的地址了，就不创建了，这我们就可以自己装etcd集群，而不用默认单点的etcd，很有用</p>
+
+<pre><code>controlplanephase.CreateInitStaticPodManifestFiles(manifestDir, i.cfg); 
+if len(i.cfg.Etcd.Endpoints) == 0 {
+	if err := etcdphase.CreateLocalEtcdStaticPodManifestFile(manifestDir, i.cfg); err != nil {
+		return fmt.Errorf(&quot;error creating local etcd static pod manifest file: %v&quot;, err)
+	}
+}
+</code></pre></li>
+
+<li><p>等待APIserver和kubelet启动成功，这里就会遇到我们经常遇到的镜像拉不下来的错误，其实有时kubelet因为别的原因也会报这个错，让人误以为是镜像弄不下来
+```
+if err := waitForAPIAndKubelet(waiter); err != nil {
+	ctx := map[string]string{
+		&ldquo;Error&rdquo;:                  fmt.Sprintf(&ldquo;%v&rdquo;, err),
+		&ldquo;APIServerImage&rdquo;:         images.GetCoreImage(kubeadmconstants.KubeAPIServer, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
+		&ldquo;ControllerManagerImage&rdquo;: images.GetCoreImage(kubeadmconstants.KubeControllerManager, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
+		&ldquo;SchedulerImage&rdquo;:         images.GetCoreImage(kubeadmconstants.KubeScheduler, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
+	}</p></li>
+</ol>
+
+<p>	kubeletFailTempl.Execute(out, ctx)</p>
+
+<p>	return fmt.Errorf(&ldquo;couldn&rsquo;t initialize a Kubernetes cluster&rdquo;)
+}</p>
+
+<pre><code>
+5. 给master加标签，加污点, 所以想要pod调度到master上可以把污点清除了
+</code></pre>
+
+<p>if err := markmasterphase.MarkMaster(client, i.cfg.NodeName); err != nil {
+	return fmt.Errorf(&ldquo;error marking master: %v&rdquo;, err)
+}</p>
+
+<pre><code>
+6. 生成tocken
+</code></pre>
+
+<p>if err := nodebootstraptokenphase.UpdateOrCreateToken(client, i.cfg.Token, false, i.cfg.TokenTTL.Duration, kubeadmconstants.DefaultTokenUsages, []string{kubeadmconstants.NodeBootstrapTokenAuthGroup}, tokenDescription); err != nil {
+	return fmt.Errorf(&ldquo;error updating or creating token: %v&rdquo;, err)
+}</p>
+
+<pre><code>
+7. 调用clientgo创建dns和kube-proxy
+
+</code></pre>
+
+<p>if err := dnsaddonphase.EnsureDNSAddon(i.cfg, client); err != nil {
+	return fmt.Errorf(&ldquo;error ensuring dns addon: %v&rdquo;, err)
+}</p>
+
+<p>if err := proxyaddonphase.EnsureProxyAddon(i.cfg, client); err != nil {
+	return fmt.Errorf(&ldquo;error ensuring proxy addon: %v&rdquo;, err)
+}</p>
+
+<pre><code>
+笔者批判代码无脑式的一个流程到底，要是笔者操刀定抽象成接口 RenderConf Save Run Clean等，DNS kube-porxy以及其它组件去实现，然后问题就是没把dns和kubeproxy的配置渲染出来，可能是它们不是static pod的原因, 然后就是join时的bug下文提到
+
+### 证书生成 
+循环的调用了这一坨函数，我们只需要看其中一两个即可，其它的都差不多
+
+</code></pre>
+
+<p>certActions := []func(cfg *kubeadmapi.MasterConfiguration) error{
+	CreateCACertAndKeyfiles,
+	CreateAPIServerCertAndKeyFiles,
+	CreateAPIServerKubeletClientCertAndKeyFiles,
+	CreateServiceAccountKeyAndPublicKeyFiles,
+	CreateFrontProxyCACertAndKeyFiles,
+	CreateFrontProxyClientCertAndKeyFiles,
+}</p>
+
+<pre><code>根证书生成：
+
+</code></pre>
+
+<p>//返回了根证书的公钥和私钥
+func NewCACertAndKey() (*x509.Certificate, *rsa.PrivateKey, error) {</p>
+
+<p>	caCert, caKey, err := pkiutil.NewCertificateAuthority()
+	if err != nil {
+		return nil, nil, fmt.Errorf(&ldquo;failure while generating CA certificate and key: %v&rdquo;, err)
+	}</p>
+
+<p>	return caCert, caKey, nil
+}</p>
+
+<pre><code>k8s.io/client-go/util/cert 这个库里面有两个函数，一个生成key的一个生成cert的：
+
+</code></pre>
+
+<p>key, err := certutil.NewPrivateKey()
+config := certutil.Config{
+	CommonName: &ldquo;kubernetes&rdquo;,
+}
+cert, err := certutil.NewSelfSignedCACert(config, key)</p>
+
+<pre><code>config里面我们也可以填充一些别的证书信息：
+</code></pre>
+
+<p>type Config struct {
+	CommonName   string
+	Organization []string
+	AltNames     AltNames
+	Usages       []x509.ExtKeyUsage
+}</p>
+
+<pre><code>私钥就是封装了rsa库里面的函数：
+</code></pre>
+
+<p>	&ldquo;crypto/rsa&rdquo;
+	&ldquo;crypto/x509&rdquo;
+func NewPrivateKey() (*rsa.PrivateKey, error) {
+	return rsa.GenerateKey(cryptorand.Reader, rsaKeySize)
+}</p>
+
+<pre><code>自签证书,所以根证书里只有CommonName信息，Organization相当于没设置：
+</code></pre>
+
+<p>func NewSelfSignedCACert(cfg Config, key *rsa.PrivateKey) (*x509.Certificate, error) {
+	now := time.Now()
+	tmpl := x509.Certificate{
+		SerialNumber: new(big.Int).SetInt64(0),
+		Subject: pkix.Name{
+			CommonName:   cfg.CommonName,
+			Organization: cfg.Organization,
+		},
+		NotBefore:             now.UTC(),
+		NotAfter:              now.Add(duration365d * 10).UTC(),
+		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
+		BasicConstraintsValid: true,
+		IsCA: true,
+	}</p>
+
+<p>	certDERBytes, err := x509.CreateCertificate(cryptorand.Reader, &amp;tmpl, &amp;tmpl, key.Public(), key)
+	if err != nil {
+		return nil, err
+	}
+	return x509.ParseCertificate(certDERBytes)
+}</p>
+
+<pre><code>生成好之后把之写入文件：
+</code></pre>
+
+<p>pkiutil.WriteCertAndKey(pkiDir, baseName, cert, key);
+certutil.WriteCert(certificatePath, certutil.EncodeCertPEM(cert))</p>
+
+<pre><code>这里调用了pem库进行了编码
+</code></pre>
+
+<p>encoding/pem</p>
+
+<p>func EncodeCertPEM(cert *x509.Certificate) []byte {
+	block := pem.Block{
+		Type:  CertificateBlockType,
+		Bytes: cert.Raw,
+	}
+	return pem.EncodeToMemory(&amp;block)
+}</p>
+
+<pre><code>
+然后我们看apiserver的证书生成：
+</code></pre>
+
+<p>caCert, caKey, err := loadCertificateAuthorithy(cfg.CertificatesDir, kubeadmconstants.CACertAndKeyBaseName)
+//从根证书生成apiserver证书
+apiCert, apiKey, err := NewAPIServerCertAndKey(cfg, caCert, caKey)</p>
+
+<pre><code>
+这时需要关注AltNames了比较重要，所有需要访问master的地址域名都得加进去，对应配置文件中apiServerCertSANs字段,其它东西与根证书无差别
+</code></pre>
+
+<p>config := certutil.Config{
+	CommonName: kubeadmconstants.APIServerCertCommonName,
+	AltNames:   *altNames,
+	Usages:     []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+}</p>
+
+<pre><code>
+### 创建k8s配置文件
+可以看到创建了这些文件
+</code></pre>
+
+<p>return createKubeConfigFiles(
+	outDir,
+	cfg,
+	kubeadmconstants.AdminKubeConfigFileName,
+	kubeadmconstants.KubeletKubeConfigFileName,
+	kubeadmconstants.ControllerManagerKubeConfigFileName,
+	kubeadmconstants.SchedulerKubeConfigFileName,
+)</p>
+
+<pre><code>k8s封装了两个渲染配置的函数：
+区别是你的kubeconfig文件里会不会产生token，比如你进入dashboard需要一个token，或者你调用api需要一个token那么请生成带token的配置
+生成的conf文件基本一直只是比如ClientName这些东西不同，所以加密后的证书也不同，ClientName会被加密到证书里，然后k8s取出来当用户使用
+
+所以重点来了，我们做多租户时也要这样去生成。然后给该租户绑定角色。
+</code></pre>
+
+<p>return kubeconfigutil.CreateWithToken(
+	spec.APIServer,
+	&ldquo;kubernetes&rdquo;,
+	spec.ClientName,
+	certutil.EncodeCertPEM(spec.CACert),
+	spec.TokenAuth.Token,
+), nil</p>
+
+<p>return kubeconfigutil.CreateWithCerts(
+	spec.APIServer,
+	&ldquo;kubernetes&rdquo;,
+	spec.ClientName,
+	certutil.EncodeCertPEM(spec.CACert),
+	certutil.EncodePrivateKeyPEM(clientKey),
+	certutil.EncodeCertPEM(clientCert),
+), nil</p>
+
+<pre><code>然后就是填充Config结构体喽, 最后写到文件里，略
+</code></pre>
+
+<p>&ldquo;k8s.io/client-go/tools/clientcmd/api
+return &amp;clientcmdapi.Config{
+	Clusters: map[string]*clientcmdapi.Cluster{
+		clusterName: {
+			Server: serverURL,
+			CertificateAuthorityData: caCert,
+		},
+	},
+	Contexts: map[string]*clientcmdapi.Context{
+		contextName: {
+			Cluster:  clusterName,
+			AuthInfo: userName,
+		},
+	},
+	AuthInfos:      map[string]*clientcmdapi.AuthInfo{},
+	CurrentContext: contextName,
+}</p>
+
+<pre><code>
+### 创建static pod yaml文件
+这里返回了apiserver manager scheduler的pod结构体,
+</code></pre>
+
+<p>specs := GetStaticPodSpecs(cfg, k8sVersion)
+staticPodSpecs := map[string]v1.Pod{
+	kubeadmconstants.KubeAPIServer: staticpodutil.ComponentPod(v1.Container{
+		Name:          kubeadmconstants.KubeAPIServer,
+		Image:         images.GetCoreImage(kubeadmconstants.KubeAPIServer, cfg.GetControlPlaneImageRepository(), cfg.KubernetesVersion, cfg.UnifiedControlPlaneImage),
+		Command:       getAPIServerCommand(cfg, k8sVersion),
+		VolumeMounts:  staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(kubeadmconstants.KubeAPIServer)),
+		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeAPIServer, int(cfg.API.BindPort), &ldquo;/healthz&rdquo;, v1.URISchemeHTTPS),
+		Resources:     staticpodutil.ComponentResources(&ldquo;250m&rdquo;),
+		Env:           getProxyEnvVars(),
+	}, mounts.GetVolumes(kubeadmconstants.KubeAPIServer)),
+	kubeadmconstants.KubeControllerManager: staticpodutil.ComponentPod(v1.Container{
+		Name:          kubeadmconstants.KubeControllerManager,
+		Image:         images.GetCoreImage(kubeadmconstants.KubeControllerManager, cfg.GetControlPlaneImageRepository(), cfg.KubernetesVersion, cfg.UnifiedControlPlaneImage),
+		Command:       getControllerManagerCommand(cfg, k8sVersion),
+		VolumeMounts:  staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(kubeadmconstants.KubeControllerManager)),
+		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeControllerManager, 10252, &ldquo;/healthz&rdquo;, v1.URISchemeHTTP),
+		Resources:     staticpodutil.ComponentResources(&ldquo;200m&rdquo;),
+		Env:           getProxyEnvVars(),
+	}, mounts.GetVolumes(kubeadmconstants.KubeControllerManager)),
+	kubeadmconstants.KubeScheduler: staticpodutil.ComponentPod(v1.Container{
+		Name:          kubeadmconstants.KubeScheduler,
+		Image:         images.GetCoreImage(kubeadmconstants.KubeScheduler, cfg.GetControlPlaneImageRepository(), cfg.KubernetesVersion, cfg.UnifiedControlPlaneImage),
+		Command:       getSchedulerCommand(cfg),
+		VolumeMounts:  staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(kubeadmconstants.KubeScheduler)),
+		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeScheduler, 10251, &ldquo;/healthz&rdquo;, v1.URISchemeHTTP),
+		Resources:     staticpodutil.ComponentResources(&ldquo;100m&rdquo;),
+		Env:           getProxyEnvVars(),
+	}, mounts.GetVolumes(kubeadmconstants.KubeScheduler)),
+}</p>
+
+<p>//获取特定版本的镜像
+func GetCoreImage(image, repoPrefix, k8sVersion, overrideImage string) string {
+	if overrideImage != &ldquo;&rdquo; {
+		return overrideImage
+	}
+	kubernetesImageTag := kubeadmutil.KubernetesVersionToImageTag(k8sVersion)
+	etcdImageTag := constants.DefaultEtcdVersion
+	etcdImageVersion, err := constants.EtcdSupportedVersion(k8sVersion)
+	if err == nil {
+		etcdImageTag = etcdImageVersion.String()
+	}
+	return map[string]string{
+		constants.Etcd:                  fmt.Sprintf(&ldquo;%s/%s-%s:%s&rdquo;, repoPrefix, &ldquo;etcd&rdquo;, runtime.GOARCH, etcdImageTag),
+		constants.KubeAPIServer:         fmt.Sprintf(&ldquo;%s/%s-%s:%s&rdquo;, repoPrefix, &ldquo;kube-apiserver&rdquo;, runtime.GOARCH, kubernetesImageTag),
+		constants.KubeControllerManager: fmt.Sprintf(&ldquo;%s/%s-%s:%s&rdquo;, repoPrefix, &ldquo;kube-controller-manager&rdquo;, runtime.GOARCH, kubernetesImageTag),
+		constants.KubeScheduler:         fmt.Sprintf(&ldquo;%s/%s-%s:%s&rdquo;, repoPrefix, &ldquo;kube-scheduler&rdquo;, runtime.GOARCH, kubernetesImageTag),
+	}[image]
+}
+//然后就把这个pod写到文件里了，比较简单
+ staticpodutil.WriteStaticPodToDisk(componentName, manifestDir, spec);</p>
+
+<pre><code>创建etcd的一样，不多废话
+
+### 等待kubelet启动成功
+这个错误非常容易遇到，看到这个基本就是kubelet没起来，我们需要检查：selinux swap 和Cgroup driver是不是一致
+setenforce 0 &amp;&amp; swapoff -a &amp;&amp; systemctl restart kubelet如果不行请保证 kubelet的Cgroup driver与docker一致，docker info|grep Cg
+</code></pre>
+
+<p>go func(errC chan error, waiter apiclient.Waiter) {
+	// This goroutine can only make kubeadm init fail. If this check succeeds, it won&rsquo;t do anything special
+	if err := waiter.WaitForHealthyKubelet(40*time.Second, &ldquo;<a href="http://localhost:10255/healthz&quot;">http://localhost:10255/healthz&quot;</a>); err != nil {
+		errC &lt;- err
+	}
+}(errorChan, waiter)</p>
+
+<p>go func(errC chan error, waiter apiclient.Waiter) {
+	// This goroutine can only make kubeadm init fail. If this check succeeds, it won&rsquo;t do anything special
+	if err := waiter.WaitForHealthyKubelet(60*time.Second, &ldquo;<a href="http://localhost:10255/healthz/syncloop&quot;">http://localhost:10255/healthz/syncloop&quot;</a>); err != nil {
+		errC &lt;- err
+	}
+}(errorChan, waiter)</p>
+
+<pre><code>
+### 创建DNS和kubeproxy
+我就是在此发现coreDNS的
+</code></pre>
+
+<p>if features.Enabled(cfg.FeatureGates, features.CoreDNS) {
+	return coreDNSAddon(cfg, client, k8sVersion)
+}
+return kubeDNSAddon(cfg, client, k8sVersion)</p>
+
+<pre><code>然后coreDNS的yaml配置模板直接是写在代码里的：
+/app/phases/addons/dns/manifests.go
+</code></pre>
+
+<p>	CoreDNSDeployment = `
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: coredns
+  namespace: kube-system
+  labels:
+    k8s-app: kube-dns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kube-dns
+  template:
+    metadata:
+      labels:
+        k8s-app: kube-dns
+    spec:
+      serviceAccountName: coredns
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: {{ .MasterTaintKey }}
+&hellip;</p>
+
+<pre><code>然后渲染模板，最后调用k8sapi创建,这种创建方式可以学习一下，虽然有点拙劣，这地方写的远不如kubectl好
+</code></pre>
+
+<p>coreDNSConfigMap := &amp;v1.ConfigMap{}
+if err := kuberuntime.DecodeInto(legacyscheme.Codecs.UniversalDecoder(), configBytes, coreDNSConfigMap); err != nil {
+	return fmt.Errorf(&ldquo;unable to decode CoreDNS configmap %v&rdquo;, err)
+}</p>
+
+<p>// Create the ConfigMap for CoreDNS or update it in case it already exists
+if err := apiclient.CreateOrUpdateConfigMap(client, coreDNSConfigMap); err != nil {
+	return err
+}</p>
+
+<p>coreDNSClusterRoles := &amp;rbac.ClusterRole{}
+if err := kuberuntime.DecodeInto(legacyscheme.Codecs.UniversalDecoder(), []byte(CoreDNSClusterRole), coreDNSClusterRoles); err != nil {
+	return fmt.Errorf(&ldquo;unable to decode CoreDNS clusterroles %v&rdquo;, err)
+}
+&hellip;</p>
+
+<pre><code>
+这里值得一提的是kubeproxy的configmap真应该把apiserver地址传入进来，允许自定义，因为做高可用时需要指定虚拟ip，得修改，很麻烦
+kubeproxy大差不差，不说了,想改的话改： app/phases/addons/proxy/manifests.go
+
+## kubeadm join
+kubeadm join比较简单，一句话就可以说清楚，获取cluster info, 创建kubeconfig，怎么创建的kubeinit里面已经说了。带上token让kubeadm有权限
+可以拉取
+</code></pre>
+
+<p>return https.RetrieveValidatedClusterInfo(cfg.DiscoveryFile)</p>
+
+<p>cluster info内容
+type Cluster struct {
+	// LocationOfOrigin indicates where this object came from.  It is used for round tripping config post-merge, but never serialized.
+	LocationOfOrigin string
+	// Server is the address of the kubernetes cluster (<a href="https://hostname:port">https://hostname:port</a>).
+	Server string <code>json:&quot;server&quot;</code>
+	// InsecureSkipTLSVerify skips the validity check for the server&rsquo;s certificate. This will make your HTTPS connections insecure.
+	// +optional
+	InsecureSkipTLSVerify bool <code>json:&quot;insecure-skip-tls-verify,omitempty&quot;</code>
+	// CertificateAuthority is the path to a cert file for the certificate authority.
+	// +optional
+	CertificateAuthority string <code>json:&quot;certificate-authority,omitempty&quot;</code>
+	// CertificateAuthorityData contains PEM-encoded certificate authority certificates. Overrides CertificateAuthority
+	// +optional
+	CertificateAuthorityData []byte <code>json:&quot;certificate-authority-data,omitempty&quot;</code>
+	// Extensions holds additional information. This is useful for extenders so that reads and writes don&rsquo;t clobber unknown fields
+	// +optional
+	Extensions map[string]runtime.Object <code>json:&quot;extensions,omitempty&quot;</code>
+}</p>
+
+<p>return kubeconfigutil.CreateWithToken(
+	clusterinfo.Server,
+	&ldquo;kubernetes&rdquo;,
+	TokenUser,
+	clusterinfo.CertificateAuthorityData,
+	cfg.TLSBootstrapToken,
+), nil
+```</p>
+
+<p>CreateWithToken上文提到了不再赘述，这样就能去生成kubelet配置文件了，然后把kubelet启动起来即可</p>
+
+<p>kubeadm join的问题就是渲染配置时没有使用命令行传入的apiserver地址，而用clusterinfo里的地址，这不利于我们做高可用，可能我们传入一个虚拟ip，但是配置里还是apiser的地址</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

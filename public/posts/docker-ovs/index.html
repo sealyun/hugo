@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="初始化环境 升级内核： rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm yum --enablerepo=elrepo-kernel install kernel-ml-devel kernel-ml awk -F\&#39; &#39;$1==&quot;menuentry &quot; {print $2}&#39; /etc/grub2.cfg grub2-set-default 0 reboot uname -a 安装docker: yum install -y yum-utils yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo yum-config-manager --disable docker-ce-edge yum makecache fast yum install docker-ce service docker start 安装open vswitch: yum -y install wget openssl-devel gcc make python-devel openssl-devel kernel-devel graphviz kernel-debug-devel autoconf automake rpm-build redhat-rpm-config libtool python-twisted-core python-zope-interface PyQt4 desktop-file-utils libcap-ng-devel groff checkpolicy selinux-policy-devel adduser ovs su - ovs yum localinstall /home/ovs/rpmbuild/RPMS/x86_64/openvswitch-2." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/docker-ovs/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="初始化环境 升级内核： rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm yum --enablerepo=elrepo-kernel install kernel-ml-devel kernel-ml awk -F\&#39; &#39;$1==&quot;menuentry &quot; {print $2}&#39; /etc/grub2.cfg grub2-set-default 0 reboot uname -a 安装docker: yum install -y yum-utils yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo yum-config-manager --disable docker-ce-edge yum makecache fast yum install docker-ce service docker start 安装open vswitch: yum -y install wget openssl-devel gcc make python-devel openssl-devel kernel-devel graphviz kernel-debug-devel autoconf automake rpm-build redhat-rpm-config libtool python-twisted-core python-zope-interface PyQt4 desktop-file-utils libcap-ng-devel groff checkpolicy selinux-policy-devel adduser ovs su - ovs yum localinstall /home/ovs/rpmbuild/RPMS/x86_64/openvswitch-2.">
+
+
+
+<meta itemprop="wordCount" content="494">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="初始化环境 升级内核： rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm yum --enablerepo=elrepo-kernel install kernel-ml-devel kernel-ml awk -F\&#39; &#39;$1==&quot;menuentry &quot; {print $2}&#39; /etc/grub2.cfg grub2-set-default 0 reboot uname -a 安装docker: yum install -y yum-utils yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo yum-config-manager --disable docker-ce-edge yum makecache fast yum install docker-ce service docker start 安装open vswitch: yum -y install wget openssl-devel gcc make python-devel openssl-devel kernel-devel graphviz kernel-debug-devel autoconf automake rpm-build redhat-rpm-config libtool python-twisted-core python-zope-interface PyQt4 desktop-file-utils libcap-ng-devel groff checkpolicy selinux-policy-devel adduser ovs su - ovs yum localinstall /home/ovs/rpmbuild/RPMS/x86_64/openvswitch-2."/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h1 id="初始化环境">初始化环境</h1>
+
+<pre><code>升级内核：
+      rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+      rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+      yum --enablerepo=elrepo-kernel install  kernel-ml-devel kernel-ml
+      awk -F\' '$1==&quot;menuentry &quot; {print $2}' /etc/grub2.cfg
+      grub2-set-default 0
+      reboot
+      uname -a
+
+安装docker:
+     yum install -y yum-utils
+     yum-config-manager     --add-repo     https://download.docker.com/linux/centos/docker-ce.repo
+     yum-config-manager --disable docker-ce-edge
+     yum makecache fast
+     yum install docker-ce
+     service docker start
+
+
+安装open vswitch:
+     yum -y install wget openssl-devel gcc make python-devel openssl-devel kernel-devel graphviz kernel-debug-devel autoconf automake rpm-build redhat-rpm-config libtool python-twisted-core python-zope-interface PyQt4 desktop-file-utils libcap-ng-devel groff checkpolicy selinux-policy-devel
+     adduser ovs
+     su - ovs
+     yum localinstall /home/ovs/rpmbuild/RPMS/x86_64/openvswitch-2.5.0-1.el7.centos.x86_64.rpm -y
+     systemctl start openvswitch.service
+     systemctl is-active openvswitch
+     ovs-vsctl -V
+     systemctl enable openvswitch
+
+安装pipework:
+     yum install git
+     git clone https://github.com/jpetazzo/pipework
+     cp pipework/pipework /bin
+</code></pre>
+
+<p>一些工具安装：
+yum install bridge-utils  # 如果brctl不能用</p>
+
+<p>yum install net-tools     # 如果route命令不能用</p>
+
+<h1 id="单节点上使用ovs-vlan划分网络">单节点上使用ovs vlan划分网络</h1>
+
+<p>启动四个容器：</p>
+
+<pre><code>docker run -itd --name con1 ubuntu:14.04 /bin/bash
+docker run -itd --name con2 ubuntu:14.04 /bin/bash
+docker run -itd --name con3 ubuntu:14.04 /bin/bash
+docker run -itd --name con4 ubuntu:14.04 /bin/bash
+</code></pre>
+
+<p>创建ovs网桥并绑定端口</p>
+
+<pre><code>pipework ovs0 con1 192.168.0.1/24 @100
+pipework ovs0 con2 192.168.0.2/24 @100
+
+pipework ovs0 con3 192.168.0.3/24 @200
+pipework ovs0 con4 192.168.0.4/24 @200
+</code></pre>
+
+<p>这样con1 和 con2是通的，con3和con4是通的，这个比较简单。pipework干的具体的事是：</p>
+
+<pre><code>ovs-vsctl add-port ovs0 [容器的虚拟网卡设备] tag=100
+</code></pre>
+
+<p>ovs划分vlan处理的原理也非常简单，包进入到switch时打上tag，发出去时去掉tag，发出去的端口与包的tag不匹配时不处理，这便实现了二层隔离。</p>
+
+<p>access端口与trunk端口的区别是，trunk端口可接受多个tag。</p>
+
+<h1 id="跨主机vlan">跨主机vlan</h1>
+
+<p>准备两个主机，在host1上：</p>
+
+<pre><code>docker run -itd --name con1 ubuntu:14.04 /bin/bash
+docker run -itd --name con2 ubuntu:14.04 /bin/bash
+pipework ovs0 con1 192.168.0.1/24 @100
+pipework ovs0 con2 192.168.0.2/24 @200
+</code></pre>
+
+<p>如果是单张网卡的话，把eth0桥接到switch上时会造成网络中断，所以以下几步不要通过ssh操作：
+如果非得ssh去操作的话把以下命令放在一条命令中执行（用&amp;&amp;连接各个命令）</p>
+
+<pre><code>ovs-vsctl add-port ovs0 eth0
+ifconfig ovs0 10.1.86.201 netmask 255.255.255.0   # 这里地址和掩码与eth0的配置一致
+ifconfig ovs0 up
+ifconfig eth0 0.0.0.0
+route add default gw 10.1.86.1  # 执行之前看看eth0的gw是什么，保持一致，这样eth0就桥接到ovs0上去了。
+</code></pre>
+
+<p>查看switch端口：</p>
+
+<pre><code>[root@dev-86-204 ~]# ovs-vsctl show
+c5ddf9e8-daac-4ed2-80f5-16e6365425fa
+    Bridge &quot;ovs0&quot;
+        Port &quot;veth1pl41885&quot;
+            tag: 100
+            Interface &quot;veth1pl41885&quot;
+        Port &quot;ovs0&quot;
+            Interface &quot;ovs0&quot;
+                type: internal
+        Port &quot;eth0&quot;
+            Interface &quot;eth0&quot;
+        Port &quot;veth1pl41805&quot;
+            tag: 200
+            Interface &quot;veth1pl41805&quot;
+    ovs_version: &quot;2.5.1&quot;
+</code></pre>
+
+<p>在host2上：</p>
+
+<pre><code>docker run -itd --name con3 ubuntu:14.04 /bin/bash
+docker run -itd --name con4 ubuntu:14.04 /bin/bash
+pipework ovs0 con3 192.168.0.3/24 @100
+pipework ovs0 con4 192.168.0.4/24 @200
+</code></pre>
+
+<p>同样要桥接eth0到ovs0上,同host1的操作，然后con1与con3可通，con2与con4可通.</p>
+
+<h1 id="gre实现overlay网络">GRE实现overlay网络</h1>
+
+<p>linux内核需要3.11以上，本尊在3.10内核上实践失败，在虚拟机中升级内核时虚拟机启动不了，CPU飙到100%，以后再试。</p>
+
+<p>发现把容器直接挂ovs网桥上是可以通的</p>
+
+<p>gre与下面的vxlan非常类似，只需要在添加往外连的端口时改成下面命令即可：</p>
+
+<pre><code>ovs-vsctl add-port ovs0 gre0 -- set interface gre0 type=gre options:remote_ip=172.31.244.185
+</code></pre>
+
+<h1 id="vxlan实现跨主机通信">Vxlan实现跨主机通信</h1>
+
+<pre><code>   host1:10.1.86.203 
+   ovs0
+    |
+    |-veth1 &lt;-------&gt; eth1 192.168.0.3  con3
+    |
+    |-vxlan1-------------+
+    |                    |
+                         |
+    host2:10.1.86.204    |
+    ovs0                 |
+     |                   |
+     |-vxlan1------------+
+     |
+     |-veth1 &lt;--------&gt; eth1 192.168.0.4 con4
+     |
+</code></pre>
+
+<p>可以看到con3和con4在搭建vxlan之前是无法通信的。</p>
+
+<p>在host1上：</p>
+
+<pre><code>[root@dev-86-203 ~]# docker run --name con3 -itd ubuntu:14.04 /bin/bash
+[root@dev-86-203 ~]# ovs-vsctl add-br ovs0
+[root@dev-86-203 ~]# pipework ovs0 con3 192.168.0.3/24   # 给容器分配地址并挂到ovs0上
+
+[root@dev-86-203 ~]# ovs-vsctl add-port ovs0 vxlan1 -- set interface vxlan1 type=vxlan options:remote_ip=10.1.86.204 options:key=flow # 创建vxlan
+
+[root@dev-86-203 ~]# ovs-vsctl show
+5e371797-db70-451c-a0f2-d70c6d00cd05
+    Bridge &quot;ovs0&quot;
+        Port &quot;veth1pl3342&quot;
+            Interface &quot;veth1pl3342&quot;
+        Port &quot;ovs0&quot;
+            Interface &quot;ovs0&quot;
+                type: internal
+        Port &quot;vxlan1&quot;
+            Interface &quot;vxlan1&quot;
+                type: vxlan
+                options: {key=flow, remote_ip=&quot;10.1.86.204&quot;}
+    ovs_version: &quot;2.5.1&quot;
+</code></pre>
+
+<p>host2上同理：</p>
+
+<pre><code>[root@dev-86-204 ~]# docker run --name con4 -itd ubuntu:14.04 /bin/bash
+[root@dev-86-204 ~]# ovs-vsctl add-br ovs0
+[root@dev-86-204 ~]# pipework ovs0 con4 192.168.0.4/24   # 给容器分配地址并挂到ovs0上
+
+[root@dev-86-204 ~]# ovs-vsctl add-port ovs0 vxlan1 -- set interface vxlan1 type=vxlan options:remote_ip=10.1.86.203 options:key=flow # 创建vxlan
+
+[root@dev-86-204 ~]# ovs-vsctl show
+c5ddf9e8-daac-4ed2-80f5-16e6365425fa
+    Bridge &quot;ovs0&quot;
+        Port &quot;ovs0&quot;
+            Interface &quot;ovs0&quot;
+                type: internal
+        Port &quot;veth1pl52846&quot;
+            Interface &quot;veth1pl52846&quot;
+        Port &quot;vxlan1&quot;
+            Interface &quot;vxlan1&quot;
+                type: vxlan
+                options: {key=flow, remote_ip=&quot;10.1.86.203&quot;}
+    ovs_version: &quot;2.5.1&quot;
+</code></pre>
+
+<p>验证：</p>
+
+<pre><code>[root@dev-86-204 ~]# docker exec con4 ping 192.168.0.3  # con4容器中ping con3的地址，可通
+PING 192.168.0.3 (192.168.0.3) 56(84) bytes of data.
+64 bytes from 192.168.0.3: icmp_seq=1 ttl=64 time=0.251 ms
+64 bytes from 192.168.0.3: icmp_seq=2 ttl=64 time=0.170 ms
+</code></pre>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

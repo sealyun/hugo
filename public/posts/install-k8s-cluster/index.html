@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="使用kubeadm安装安全高可用kubernetes集群 系统架构图  kubectl dashboard | V &#43;------------------------&#43; join | LB 10.1.245.94 | &lt;--- Nodes &#43;------------------------&#43; | |--master1 manager1 schedule1 10.1.245.93 |--master2 manager2 schedule2 10.1.245.95 =============&gt; etcd cluster http://10.1.245.93:2379,http://10.1.245.94:2379,http://10.1.245.95:2379 |--master3 manager3 schedule3 10.1.245.94  起动etcd集群 cat etcd.yaml
+version: &#39;2&#39; services: etcd: container_name: etcd_infra0 image: quay.io/coreos/etcd:v3.1.10 command: | etcd --name infra0 --initial-advertise-peer-urls http://10.1.245.94:2380 --listen-peer-urls http://10.1.245.94:2380 --listen-client-urls http://10.1.245.94:2379,http://127.0.0.1:2379 --advertise-client-urls http://10.1.245.94:2379 --data-dir /etcd-data.etcd --initial-cluster-token etcd-cluster-1 -initial-cluster infra0=http://10.1.245.93:2380,infra1=http://10.1.245.94:2379,infra2=http://10.1.245.95:2379 --initial-cluster-state new volumes: - /data/etcd-data.etcd:/etcd-data.etcd network_mode: &quot;host&quot;  其它两个节点照抄，修改ip即可" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/install-k8s-cluster/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="使用kubeadm安装安全高可用kubernetes集群 系统架构图  kubectl dashboard | V &#43;------------------------&#43; join | LB 10.1.245.94 | &lt;--- Nodes &#43;------------------------&#43; | |--master1 manager1 schedule1 10.1.245.93 |--master2 manager2 schedule2 10.1.245.95 =============&gt; etcd cluster http://10.1.245.93:2379,http://10.1.245.94:2379,http://10.1.245.95:2379 |--master3 manager3 schedule3 10.1.245.94  起动etcd集群 cat etcd.yaml
+version: &#39;2&#39; services: etcd: container_name: etcd_infra0 image: quay.io/coreos/etcd:v3.1.10 command: | etcd --name infra0 --initial-advertise-peer-urls http://10.1.245.94:2380 --listen-peer-urls http://10.1.245.94:2380 --listen-client-urls http://10.1.245.94:2379,http://127.0.0.1:2379 --advertise-client-urls http://10.1.245.94:2379 --data-dir /etcd-data.etcd --initial-cluster-token etcd-cluster-1 -initial-cluster infra0=http://10.1.245.93:2380,infra1=http://10.1.245.94:2379,infra2=http://10.1.245.95:2379 --initial-cluster-state new volumes: - /data/etcd-data.etcd:/etcd-data.etcd network_mode: &quot;host&quot;  其它两个节点照抄，修改ip即可">
+
+
+
+<meta itemprop="wordCount" content="447">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="使用kubeadm安装安全高可用kubernetes集群 系统架构图  kubectl dashboard | V &#43;------------------------&#43; join | LB 10.1.245.94 | &lt;--- Nodes &#43;------------------------&#43; | |--master1 manager1 schedule1 10.1.245.93 |--master2 manager2 schedule2 10.1.245.95 =============&gt; etcd cluster http://10.1.245.93:2379,http://10.1.245.94:2379,http://10.1.245.95:2379 |--master3 manager3 schedule3 10.1.245.94  起动etcd集群 cat etcd.yaml
+version: &#39;2&#39; services: etcd: container_name: etcd_infra0 image: quay.io/coreos/etcd:v3.1.10 command: | etcd --name infra0 --initial-advertise-peer-urls http://10.1.245.94:2380 --listen-peer-urls http://10.1.245.94:2380 --listen-client-urls http://10.1.245.94:2379,http://127.0.0.1:2379 --advertise-client-urls http://10.1.245.94:2379 --data-dir /etcd-data.etcd --initial-cluster-token etcd-cluster-1 -initial-cluster infra0=http://10.1.245.93:2380,infra1=http://10.1.245.94:2379,infra2=http://10.1.245.95:2379 --initial-cluster-state new volumes: - /data/etcd-data.etcd:/etcd-data.etcd network_mode: &quot;host&quot;  其它两个节点照抄，修改ip即可"/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h1 id="使用kubeadm安装安全高可用kubernetes集群">使用kubeadm安装安全高可用kubernetes集群</h1>
+
+<h2 id="系统架构图">系统架构图</h2>
+
+<pre><code>          kubectl dashboard
+                 |
+                 V 
+     +------------------------+ join
+     | LB  10.1.245.94        | &lt;--- Nodes
+     +------------------------+
+     |                                                   
+     |--master1 manager1 schedule1   10.1.245.93                                                
+     |--master2 manager2 schedule2   10.1.245.95    =============&gt;  etcd cluster  http://10.1.245.93:2379,http://10.1.245.94:2379,http://10.1.245.95:2379
+     |--master3 manager3 schedule3   10.1.245.94                                              
+</code></pre>
+
+<h2 id="起动etcd集群">起动etcd集群</h2>
+
+<p>cat etcd.yaml</p>
+
+<pre><code>version: '2'
+services:
+    etcd:
+        container_name: etcd_infra0
+        image: quay.io/coreos/etcd:v3.1.10
+        command: |
+                etcd --name infra0
+                --initial-advertise-peer-urls http://10.1.245.94:2380
+                --listen-peer-urls http://10.1.245.94:2380
+                --listen-client-urls http://10.1.245.94:2379,http://127.0.0.1:2379
+                --advertise-client-urls http://10.1.245.94:2379
+                --data-dir /etcd-data.etcd
+                --initial-cluster-token etcd-cluster-1
+                -initial-cluster infra0=http://10.1.245.93:2380,infra1=http://10.1.245.94:2379,infra2=http://10.1.245.95:2379
+                --initial-cluster-state new
+        volumes:
+           - /data/etcd-data.etcd:/etcd-data.etcd
+        network_mode: &quot;host&quot;
+</code></pre>
+
+<p>其它两个节点照抄，修改ip即可</p>
+
+<p>使用docker-compose启动，如果没装：</p>
+
+<pre><code>$ pip install docker-compose
+</code></pre>
+
+<p>三个节点分别启动：</p>
+
+<pre><code>$ docker-compose -f etcd.yaml up -d
+</code></pre>
+
+<p>检查是不是安装成功:</p>
+
+<pre><code>$ docker exec etcd_infra0 etcdctl menber list
+</code></pre>
+
+<h2 id="kubeadm配置">kubeadm配置</h2>
+
+<p>config.yaml</p>
+
+<pre><code>apiVersion: kubeadm.k8s.io/v1alpha1
+kind: MasterConfiguration
+apiServerCertSANs:
+- 172.31.244.231
+- 172.31.244.232
+- 172.31.244.233
+- 172.31.244.234
+- master1
+- master2
+- master3
+- node1
+- 47.75.1.72
+
+etcd:
+  endpoints:
+  - http://172.31.244.232:2379
+  - http://172.31.244.233:2379
+  - http://172.31.244.234:2379
+
+apiServerExtraArgs:
+  endpoint-reconciler-type: lease
+
+networking:
+  podSubnet: 192.168.0.0/16
+kubernetesVersion: v1.9.2
+featureGates:
+   CoreDNS: true
+</code></pre>
+
+<p>注意版本号
+apiServerCertSANs与证书配置有关，把你所有master的ip和lb的ip都写进去，或者你允许的域名等</p>
+
+<pre><code>$ kubeadm init --config config.yaml
+</code></pre>
+
+<h2 id="启动多个master">启动多个master</h2>
+
+<blockquote>
+<p>别的master节点初始化好之后，把第一个master的/etc/kubernetes目录拷贝到别的master节点上</p>
+</blockquote>
+
+<pre><code>$ scp -r root@10.1.245.93:/etc/kubernetes /etc
+</code></pre>
+
+<blockquote>
+<p>修改该目录下各conf的ip，改成本机ip, 如下命令搜出来的都要改</p>
+</blockquote>
+
+<pre><code>grep 245.93 . -rn
+</code></pre>
+
+<blockquote>
+<p>启动kubelet</p>
+</blockquote>
+
+<pre><code>systemctl start kubelet
+</code></pre>
+
+<h2 id="启动loadbalance">启动loadbalance</h2>
+
+<p>我比较推荐使用四层代理
+HAproxy配置:
+cat /root/haproxy/haproxy.cfg</p>
+
+<pre><code>global
+  daemon
+  log 127.0.0.1 local0
+  log 127.0.0.1 local1 notice
+  maxconn 4096
+
+defaults
+  log               global
+  retries           3
+  maxconn           2000
+  timeout connect   5s
+  timeout client    50s
+  timeout server    50s
+
+frontend k8s
+  bind *:6444
+  mode tcp
+  default_backend k8s-backend
+
+backend k8s-backend
+  balance roundrobin
+  mode tcp
+  server k8s-1 10.1.245.93:6443 check
+  server k8s-1 10.1.245.94:6443 check
+  server k8s-2 10.1.245.95:6443 check
+</code></pre>
+
+<pre><code>docker run --net=host -v /root/haproxy:/usr/local/etc/haproxy --name ha -d haproxy:1.7
+</code></pre>
+
+<h2 id="join-node节点">join node节点</h2>
+
+<p>还是在node节点执行第一个master输出的命令，不过IP换成LB的ip地址，就是上面haproxy的地址  如</p>
+
+<pre><code>$ kubeadm join --token &lt;token&gt; 10.1.245.94:6444 --discovery-token-ca-cert-hash sha256:&lt;hash&gt;
+</code></pre>
+
+<h2 id="kubectl配置">kubectl配置</h2>
+
+<p>修改~/.kube/config文件,ip改成LB的ip 10.1.245.94:6444</p>
+
+<p>或者通过命令修改：</p>
+
+<pre><code>$ kubectl config set-cluster kubernetes --server=https://47.52.227.242:6443 --kubeconfig=$HOME/.kube/config
+</code></pre>
+
+<h1 id="问题">问题</h1>
+
+<p>~<del>上述方式这样安装完是有问题的，用kubectl get node 只能看到一个master，虽然任意一个master挂了kubectl可以正常访问集群，但是dns什么的是无法切换到别的节点上的。
+要想看到三个master，必须到三个master上都执行kubeinit,把ca.crt ca.key拷贝到对应机器，要注意一定要使用相同根证书，不然会出证书错误。</del>~</p>
+
+<p>应该把证书都拷贝过去，只删除apiserver.crt 和apiserver.key</p>
+
+<p>==================================华丽分割线===================================</p>
+
+<h3 id="启动第一个master">启动第一个master</h3>
+
+<pre><code>apiVersion: kubeadm.k8s.io/v1alpha1
+kind: MasterConfiguration
+apiServerCertSANs:
+- 172.31.244.235
+- 172.31.244.236
+- 172.31.244.237
+- 172.31.244.238
+- master1
+- master2
+- master3
+- node1
+- 47.75.6.242
+
+etcd:
+  endpoints:
+  - http://172.31.244.235:2379
+
+apiServerExtraArgs:
+  endpoint-reconciler-type: lease
+
+networking:
+  podSubnet: 192.168.0.0/16
+kubernetesVersion: v1.9.1
+featureGates:
+   CoreDNS: true
+</code></pre>
+
+<h3 id="创建网络">创建网络</h3>
+
+<p>kubectl apply -f calico.yaml</p>
+
+<h3 id="join-node节点-1">join node节点</h3>
+
+<p>略</p>
+
+<h3 id="启动别的master">启动别的master</h3>
+
+<p>cp /etc/kubernetes/pki 到其它master节点相同目录, 其它两节点删除 apiserver.crt apiserver.key
+不删的话启动完了你只能看到一个master。 然后和master1一样去启动.</p>
+
+<h3 id="启动多dns副本">启动多DNS副本</h3>
+
+<pre><code>kubectl edit deploy coredns -n kube-system
+</code></pre>
+
+<p>replicas: 3</p>
+
+<pre><code>[root@master1 ~]# kubectl get pod -n kube-system -o wide|grep core
+coredns-65dcdb4cf-4j5s8                  1/1       Running   0          39m       192.168.137.65    master1
+coredns-65dcdb4cf-ngx4h                  1/1       Running   0          38s       192.168.180.1     master2
+coredns-65dcdb4cf-qbsr6                  1/1       Running   0          38s       192.168.166.132   node1
+</code></pre>
+
+<p>这样，启动了三个dns</p>
+
+<h3 id="配置kubelet-与kubeproxy">配置kubelet 与kubeproxy</h3>
+
+<h3 id="dns破坏性测试">DNS破坏性测试</h3>
+
+<h3 id="网络破坏性测试">网络破坏性测试</h3>
+
+<h3 id="master节点破坏性测试">master节点破坏性测试</h3>
+
+<p>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;再分割&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-</p>
+
+<h3 id="安装etcd">安装etcd</h3>
+
+<h3 id="安装master0">安装master0</h3>
+
+<h3 id="安装calico-替换etcd">安装calico,替换etcd</h3>
+
+<h3 id="拷贝pki-删掉apiserver-crt-apiserver-key">拷贝pki(删掉apiserver.crt apiserver.key)</h3>
+
+<h3 id="启动别的apiserver">启动别的apiserver</h3>
+
+<h3 id="启动负载均衡器">启动负载均衡器</h3>
+
+<p>/etc/haproxy/haproxy.cfg :</p>
+
+<pre><code>global
+  daemon
+  log 127.0.0.1 local0
+  log 127.0.0.1 local1 notice
+  maxconn 4096
+
+defaults
+  log               global
+  retries           3
+  maxconn           2000
+  timeout connect   5s
+  timeout client    50s
+  timeout server    50s
+
+frontend k8s
+  bind *:6444
+  mode tcp
+  default_backend k8s-backend
+
+backend k8s-backend
+  balance roundrobin
+  mode tcp
+  server k8s-0 172.21.161.28:6443 check 
+  server k8s-1 172.21.161.29:6443 check 
+  server k8s-2 172.21.161.30:6443 check 
+</code></pre>
+
+<pre><code>docker  run --restart=always --net=host -v /etc/haproxy:/usr/local/etc/haproxy --name ha -d haproxy:1.7
+</code></pre>
+
+<h3 id="修改kubelet配置">修改kubelet配置</h3>
+
+<p>修改node节点的kubelet配置为负载均衡器地址。 配置： /etc/kubernetes/kubelet.conf</p>
+
+<h3 id="修改kubeproxy配置">修改kubeproxy配置</h3>
+
+<h3 id="启动coredns副本">启动coreDNS副本</h3>
+
+<h3 id="启动三个busybox验证-验证dns-创建pod和telnet-10-96-0-1-443">启动三个busybox验证, 验证dns,创建pod和telnet 10.96.0.1 443</h3>
+
+<h3 id="删掉一个master">删掉一个master</h3>
+
+<h3 id="再删掉一个master">再删掉一个master</h3>
+
+<h3 id="恢复一个master">恢复一个master</h3>
+
+<h3 id="再删掉最后一个master">再删掉最后一个master</h3>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

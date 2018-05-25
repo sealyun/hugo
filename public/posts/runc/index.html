@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="runc 架构破析 这里的spec.Process就是我们真正要运行的容器中的进程。
+return r.run(&amp;spec.Process)  把这个塞到libcontainer.Process里去了：
+ lp := &amp;libcontainer.Process{ Args: p.Args, Env: p.Env, // TODO: fix libcontainer&#39;s API to better support uid/gid in a typesafe way. User: fmt.Sprintf(&quot;%d:%d&quot;, p.User.UID, p.User.GID), Cwd: p.Cwd, Label: p.SelinuxLabel, NoNewPrivileges: &amp;p.NoNewPrivileges, AppArmorProfile: p.ApparmorProfile, }  我试了个busybox的容器，把p.Args和p.Env打印出来看一下,正是config.json中的内容：
+fmt.Println(&quot;Args: &quot;, p.Args, &quot;env&quot;, p.Env) //Args: [sh] env [PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin TERM=xterm]  这里真正调用的是container的Start 或者Run方法
+ var ( startFn = r.container.Start ) if !r.create { startFn = r.container.Run } if err = startFn(process); err !" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/runc/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="runc 架构破析 这里的spec.Process就是我们真正要运行的容器中的进程。
+return r.run(&amp;spec.Process)  把这个塞到libcontainer.Process里去了：
+ lp := &amp;libcontainer.Process{ Args: p.Args, Env: p.Env, // TODO: fix libcontainer&#39;s API to better support uid/gid in a typesafe way. User: fmt.Sprintf(&quot;%d:%d&quot;, p.User.UID, p.User.GID), Cwd: p.Cwd, Label: p.SelinuxLabel, NoNewPrivileges: &amp;p.NoNewPrivileges, AppArmorProfile: p.ApparmorProfile, }  我试了个busybox的容器，把p.Args和p.Env打印出来看一下,正是config.json中的内容：
+fmt.Println(&quot;Args: &quot;, p.Args, &quot;env&quot;, p.Env) //Args: [sh] env [PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin TERM=xterm]  这里真正调用的是container的Start 或者Run方法
+ var ( startFn = r.container.Start ) if !r.create { startFn = r.container.Run } if err = startFn(process); err !">
+
+
+
+<meta itemprop="wordCount" content="453">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="runc 架构破析 这里的spec.Process就是我们真正要运行的容器中的进程。
+return r.run(&amp;spec.Process)  把这个塞到libcontainer.Process里去了：
+ lp := &amp;libcontainer.Process{ Args: p.Args, Env: p.Env, // TODO: fix libcontainer&#39;s API to better support uid/gid in a typesafe way. User: fmt.Sprintf(&quot;%d:%d&quot;, p.User.UID, p.User.GID), Cwd: p.Cwd, Label: p.SelinuxLabel, NoNewPrivileges: &amp;p.NoNewPrivileges, AppArmorProfile: p.ApparmorProfile, }  我试了个busybox的容器，把p.Args和p.Env打印出来看一下,正是config.json中的内容：
+fmt.Println(&quot;Args: &quot;, p.Args, &quot;env&quot;, p.Env) //Args: [sh] env [PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin TERM=xterm]  这里真正调用的是container的Start 或者Run方法
+ var ( startFn = r.container.Start ) if !r.create { startFn = r.container.Run } if err = startFn(process); err !"/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h2 id="runc-架构破析">runc 架构破析</h2>
+
+<p>这里的spec.Process就是我们真正要运行的容器中的进程。</p>
+
+<pre><code>return r.run(&amp;spec.Process)
+</code></pre>
+
+<p>把这个塞到libcontainer.Process里去了：</p>
+
+<pre><code> lp := &amp;libcontainer.Process{
+     Args: p.Args,
+     Env:  p.Env,
+     // TODO: fix libcontainer's API to better support uid/gid in a typesafe way.
+     User:            fmt.Sprintf(&quot;%d:%d&quot;, p.User.UID, p.User.GID),
+     Cwd:             p.Cwd,
+     Label:           p.SelinuxLabel,
+     NoNewPrivileges: &amp;p.NoNewPrivileges,
+     AppArmorProfile: p.ApparmorProfile,
+ }
+</code></pre>
+
+<p>我试了个busybox的容器，把p.Args和p.Env打印出来看一下,正是config.json中的内容：</p>
+
+<pre><code>fmt.Println(&quot;Args: &quot;, p.Args, &quot;env&quot;, p.Env)
+//Args:  [sh] env [PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin TERM=xterm]
+</code></pre>
+
+<p>这里真正调用的是container的Start 或者Run方法</p>
+
+<pre><code>    var (
+        startFn = r.container.Start
+    )
+    if !r.create {
+        startFn = r.container.Run
+    }
+    if err = startFn(process); err != nil {
+        return -1, err
+    }
+
+</code></pre>
+
+<p>我们看linux_container的Run实现,在libcontainer/container_linux.go下面：
+相信你能找到这,这个parent到底是何方神圣？：</p>
+
+<pre><code>parent, err := c.newParentProcess(process, isInit)
+                    |
+                    +---&gt; cmd, err := c.commandTemplate(p, childPipe)
+</code></pre>
+
+<p>这个cmd启动是的啥？我们容器中entrypoint 或者CMD?? 事实证明都不是：</p>
+
+<pre><code>cmd := exec.Command(c.initArgs[0], c.initArgs[1:]...)
+fmt.Println(&quot;cmd is: &quot;, c.initArgs[0], c.initArgs[1:])
+//cmd is:  /proc/self/exe [init]
+</code></pre>
+
+<p>linux菜鸟表示看不懂了，<code>/proc/self/exe</code>是什么鬼？赶紧百度一下。强(sha)大(bi)百度告诉我们这代表当前进程，所以实际上是想调用<code>runc init</code></p>
+
+<pre><code>[root@dev-86-206 ~]# ll /proc/self
+lrwxrwxrwx. 1 root root 0 4月  24 19:56 /proc/self -&gt; 108590
+</code></pre>
+
+<pre><code>[root@dev-86-206 ~]# ll /proc/108590
+总用量 0
+lrwxrwxrwx.  1 root root 0 5月  31 15:25 exe -&gt; /go/bin/cattle
+</code></pre>
+
+<p>是不是明白了什么，最终/proc/self/exe链接到自己了</p>
+
+<h2 id="runc-run进程与runc-init进程之间的通信">runc run进程与runc init进程之间的通信</h2>
+
+<h4 id="runc-run进程">runc run进程</h4>
+
+<p>大家记住一点，容器外面的一些设置runc run去做，在init启动时就设置了init的namespace所以容器内需要做什么都由init去实现。
+比较典型的如在实现bridge网桥时，在容器里面创建eth0网卡就由init进程实现</p>
+
+<p>run先把bootstrapData发给init，具体是什么回头讨论</p>
+
+<pre><code>                run            init
+                 |               |
+                 |--------------&gt;| bootstrapData
+setNs            |               |
+createNetwork    |               |
+                 |--------------&gt;| sendConfig
+                 |&lt;--------------| procReady 我准备好啦
+启动程序吧procRun|--------------&gt;| 
+                 |&lt;--------------| procHooks 执行钩子
+继续procResume   |--------------&gt;| 
+                 |               |
+</code></pre>
+
+<p>看看sendConfig发了些什么：</p>
+
+<pre><code>func (p *initProcess) sendConfig() error {
+    fmt.Println(&quot;sendconfig to init process, config is: &quot;, p.config)
+    //sendconfig to init process, config is:  
+    //&amp;{[sh] [PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin TERM=xterm] / 0xc420018780   true 0:0 [] 0xc4200ec1e0 [0xc420075380] 0 test [{7 1024 1024}] true false}
+    return utils.WriteJSON(p.parentPipe, p.config)
+}
+</code></pre>
+
+<p>就是我们要启动进程的信息, 除了initProcess还有个setnsProcess 两者区别是：
+TODO</p>
+
+<h4 id="runc-init进程">runc init进程</h4>
+
+<p>我们想在init里面如上面一样打印一些调试信息就会发现不太管用了,因为已经在子进程中了,所以我们把调试信息输出到文件中</p>
+
+<pre><code>factory, _ := libcontainer.New(&quot;&quot;)
+factory.StartInitialization(); 
+</code></pre>
+
+<p>libcontainer/factory_linux.go里面有实现
+在pipe中获取到config信息</p>
+
+<pre><code>newContainerInit(t initType, pipe *os.File, consoleSocket *os.File, stateDirFD int) 
+    if err := json.NewDecoder(pipe).Decode(&amp;config); err != nil {
+} 
+
+就是我们需要启动进程的信息
+//{[sh] [PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin TERM=xterm] / 0xc42005e480   true 0:0 [] 0xc4200dc1e0 [0xc420070240] 0 test [{7 1024 1024}] true false}
+</code></pre>
+
+<p>所以我们去看linuxStandardInit的Init方法即可：
+做好一些准备后给run进程发送准备好了的信息，表示可以进行Execv启动进程了</p>
+
+<pre><code>    // Tell our parent that we're ready to Execv. This must be done before the
+    // Seccomp rules have been applied, because we need to be able to read and
+    // write to a socket.
+    if err := syncParentReady(l.pipe); err != nil {
+        return err
+    }
+</code></pre>
+
+<p>我们要的东西：</p>
+
+<pre><code>    if err := syscall.Exec(name, l.config.Args[0:], os.Environ()); err != nil {
+        return newSystemErrorWithCause(err, &quot;exec user process&quot;)
+    }
+</code></pre>
+
+<h3 id="切换rootfs">切换rootfs</h3>
+
+<pre><code>这里有个有意思的地方，我们使用dlv调试runc
+</code></pre>
+
+<pre><code>root@1db95ddcd993:/go/src/pro/ci-sftp# dlv --wd ./ exec runc -- run test
+(dlv) break main.main
+Breakpoint 1 set at 0x6c8a0b for main.main() /go/src/github.com/opencontainers/runc/main.go:51
+(dlv) continue
+&gt; main.main() /go/src/github.com/opencontainers/runc/main.go:51 (hits goroutine(1):1 total:1) (PC: 0x6c8a0b)
+    46: value for &quot;bundle&quot; is the current directory.
+    47: )
+    48:
+    49:
+    50:
+=&gt;  51: func main() {
+    52:     app := cli.NewApp()
+    53:     app.Name = &quot;runc&quot;
+    54:     app.Usage = usage
+    55:
+    56:     var v []string
+(dlv) next
+&gt; main.main() /go/src/github.com/opencontainers/runc/main.go:54 (PC: 0x6c8a50)
+    49:
+    50:
+    51: func main() {
+    52:     app := cli.NewApp()
+    53:     app.Name = &quot;runc&quot;
+=&gt;  54:     app.Usage = usage
+    55:
+    56:     var v []string
+    57:     if version != &quot;&quot; {
+    58:         v = append(v, version)
+    59:     }
+(dlv) p app.Name
+&quot;runc&quot;
+</code></pre>
+
+<p><a href="https://github.com/derekparker/delve/tree/master/Documentation/cli">delve command line</a></p>
+
+<h2 id="总结">总结</h2>
+
+<p>至此我们容器创建流程大的架构梳理了一遍，为了看清整个架构忽略了很多细节，当然我会在其它文章中介绍别的一些细节内容. 欢迎大家关注<a href="lameleg.com">sealyun</a></p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

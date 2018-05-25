@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="如何让镜像尽可能小 很容器想到from scratch, 就是没任何基础镜像
+FROM scratch COPY p / ENTRYPOINT [&quot;/p&quot;]  有几点要注意：
+ ENTRYPOINT 或者CMD 必须要用[]这种模式，如果直接/p会用sh去启动，而scratch没有shell导致失败 二进制程序必须静态编译，也就是不能依赖libc什么的动态库  动态编译的bin程序：
+[root@dev-86-205 ci-sftp]# ldd p linux-vdso.so.1 =&gt; (0x00007ffd6ef7b000) libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x00007fa28f94e000) libc.so.6 =&gt; /lib64/libc.so.6 (0x00007fa28f58d000) /lib64/ld-linux-x86-64.so.2 (0x00007fa28fb72000)  这种情况下出来的bin程序可能会出现问题：
+standard_init_linux.go:175: exec user process caused &quot;no such file or directory”  静态编译的bin程序,这是我们scratch需要的：
+[root@dev-86-205 ci-sftp]# ldd p 不是动态可执行文件  golang中静态编译命令：
+go build --ldflags &#39;-linkmode external -extldflags &quot;-static”&#39;  如果不静态编译那可能得拷贝一堆动态库到镜像中，很多lowB就是那么做的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/scratch/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="如何让镜像尽可能小 很容器想到from scratch, 就是没任何基础镜像
+FROM scratch COPY p / ENTRYPOINT [&quot;/p&quot;]  有几点要注意：
+ ENTRYPOINT 或者CMD 必须要用[]这种模式，如果直接/p会用sh去启动，而scratch没有shell导致失败 二进制程序必须静态编译，也就是不能依赖libc什么的动态库  动态编译的bin程序：
+[root@dev-86-205 ci-sftp]# ldd p linux-vdso.so.1 =&gt; (0x00007ffd6ef7b000) libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x00007fa28f94e000) libc.so.6 =&gt; /lib64/libc.so.6 (0x00007fa28f58d000) /lib64/ld-linux-x86-64.so.2 (0x00007fa28fb72000)  这种情况下出来的bin程序可能会出现问题：
+standard_init_linux.go:175: exec user process caused &quot;no such file or directory”  静态编译的bin程序,这是我们scratch需要的：
+[root@dev-86-205 ci-sftp]# ldd p 不是动态可执行文件  golang中静态编译命令：
+go build --ldflags &#39;-linkmode external -extldflags &quot;-static”&#39;  如果不静态编译那可能得拷贝一堆动态库到镜像中，很多lowB就是那么做的">
+
+
+
+<meta itemprop="wordCount" content="60">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="如何让镜像尽可能小 很容器想到from scratch, 就是没任何基础镜像
+FROM scratch COPY p / ENTRYPOINT [&quot;/p&quot;]  有几点要注意：
+ ENTRYPOINT 或者CMD 必须要用[]这种模式，如果直接/p会用sh去启动，而scratch没有shell导致失败 二进制程序必须静态编译，也就是不能依赖libc什么的动态库  动态编译的bin程序：
+[root@dev-86-205 ci-sftp]# ldd p linux-vdso.so.1 =&gt; (0x00007ffd6ef7b000) libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x00007fa28f94e000) libc.so.6 =&gt; /lib64/libc.so.6 (0x00007fa28f58d000) /lib64/ld-linux-x86-64.so.2 (0x00007fa28fb72000)  这种情况下出来的bin程序可能会出现问题：
+standard_init_linux.go:175: exec user process caused &quot;no such file or directory”  静态编译的bin程序,这是我们scratch需要的：
+[root@dev-86-205 ci-sftp]# ldd p 不是动态可执行文件  golang中静态编译命令：
+go build --ldflags &#39;-linkmode external -extldflags &quot;-static”&#39;  如果不静态编译那可能得拷贝一堆动态库到镜像中，很多lowB就是那么做的"/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h1 id="如何让镜像尽可能小">如何让镜像尽可能小</h1>
+
+<p>很容器想到from scratch, 就是没任何基础镜像</p>
+
+<pre><code>FROM scratch
+COPY p /
+ENTRYPOINT [&quot;/p&quot;]
+</code></pre>
+
+<p>有几点要注意：</p>
+
+<ul>
+<li>ENTRYPOINT 或者CMD 必须要用[]这种模式，如果直接/p会用sh去启动，而scratch没有shell导致失败</li>
+<li>二进制程序必须静态编译，也就是不能依赖libc什么的动态库</li>
+</ul>
+
+<p>动态编译的bin程序：</p>
+
+<pre><code>[root@dev-86-205 ci-sftp]# ldd p
+    linux-vdso.so.1 =&gt;  (0x00007ffd6ef7b000)
+    libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x00007fa28f94e000)
+    libc.so.6 =&gt; /lib64/libc.so.6 (0x00007fa28f58d000)
+    /lib64/ld-linux-x86-64.so.2 (0x00007fa28fb72000)
+</code></pre>
+
+<p>这种情况下出来的bin程序可能会出现问题：</p>
+
+<pre><code>standard_init_linux.go:175: exec user process caused &quot;no such file or directory”
+</code></pre>
+
+<p>静态编译的bin程序,这是我们scratch需要的：</p>
+
+<pre><code>[root@dev-86-205 ci-sftp]# ldd p
+    不是动态可执行文件
+</code></pre>
+
+<p>golang中静态编译命令：</p>
+
+<pre><code>go build --ldflags '-linkmode external -extldflags &quot;-static”'
+</code></pre>
+
+<p>如果不静态编译那可能得拷贝一堆动态库到镜像中，很多lowB就是那么做的</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

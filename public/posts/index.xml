@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on My New Hugo Site</title>
+    <link>https://lameleg.com/posts/</link>
+    <description>Recent content in Posts on My New Hugo Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://lameleg.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/ci-cd/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/ci-cd/</guid>
+      <description>CI 概述 用一个可描述的配置定义整个工作流 程序员是很懒的动物，所以想各种办法解决重复劳动的问题，如果你的工作流中还在重复一些事，那么可能就得想想如何优化了
+持续集成就是可以帮助我们解决重复的代码构建，自动化测试，发布等重复劳动，通过简单一个提交代码的动作，解决接下来要做的很多事。
+容器技术使这一切变得更完美。
+典型的一个场景：
+我们写一个前端的工程，假设是基于vue.js的框架开发的，提交代码之后希望跑一跑测试用例，然后build压缩一个到dist目录里，再把这个目录的静态文件用nginx代理一下。 最后打成docker镜像放到镜像仓库。 甚至还可以增加一个在线上运行起来的流程。
+现在告诉你，只需要一个git push动作，接下来所有的事CI工具会帮你解决！这样的系统如果你还没用上的话，那请问还在等什么。接下来会系统的向大家介绍这一切。
+代码仓库管理 首先SVN这种渣渣软件就该尽早淘汰，没啥好说的，有git真的没有SVN存在的必要了我觉得。
+所以我们选一个git仓库，强烈推荐gogs，一个很优秀的开源软件，谁用谁知道。（广告：sealyun提供一整套打包部署工具，Email:fhtjob@hotmail.com）
+啥？如何安装？
+docker run -d --name gogs-time -v /etc/localtime:/etc/localtime -e TZ=Asia/Shanghai --publish 8022:22 \ --publish 3000:3000 --volume /data/gogs:/data gogs:latest  访问3000端口，然后就没有然后了
+CI 工具 至于jenkins这种老掉牙基于传统的方式去做CI的东西，即便功能再强大本尊也是不推崇的。 做一个功能强大的东西不难，难的是大道至简。
+当你用过drone之后。。。
+装：
+version: &#39;2&#39; services: drone-server: image: drone/drone:0.7 ports: - 80:8000 volumes: - /var/lib/drone:/var/lib/drone/ restart: always environment: - DRONE_OPEN=true - DOCKER_API_VERSION=1.24 - DRONE_HOST=10.1.86.206 - DRONE_GOGS=true - DRONE_GOGS_URL=http://10.1.86.207:3000/ - DRONE_SECRET=ok drone-agent: image: drone/drone:0.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/calico-architecture/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/calico-architecture/</guid>
+      <description>calico架构分析 组件  Felix calico每个节点上跑的代理 Orchestrator plugin网络编排插件 etcd 存储配置数据 BIRD BGP客户端，分发路由信息 BGP Route Reflector(BIRD) 另一个可选方案，适合更大规模  Felix 每个节点上的一个守护进程，负责编写路由和ACLs（访问控制列表）. 还有一些其它节点上需要设置的东西。 主要包含：
+ 网络接口管理
+ 把接口的一些信息告诉内核，让内核正确的处理这个接口的链路，特殊情况下，会去响应ARP请求，允许ip forwarding有等。 接口发现，注销的功能等
+ 路由管理
+ 在节点上把endpoints的路由配置到Linux kernel FIB(forwarding information base), 保障包正确的到达节点的endpoint上
+我的理解endpoints是节点上的虚拟网卡
+ ACL管理 准入控制列表
+ 设置内核的ACL,保证只有合法的包才可以在链路上发送,保障安全。
+ 状态报告
+ 把节点的网络状态信息写入etcd。
+编排插件 orchestrator Plugin 需要和别的编排调度平台结合时的插件，如Calico Neutron ML2 mechanism driver. 这样就可以把calico当成neutron的网络实现。
+ API 转化
+ 编排系统 kubernetes openstack等有自己的API，编排插件翻译成calico的数据模型存到calico的数据库中。
+ 反馈
+ 把网络状态的一些信息反馈给上层的编排调度系统
+etcd 两个主要功能，存储数据与各组建之间的通信。
+根据编排系统的不同，etcd可能是个主存储或者是个镜像存储，在openstack中就是一个镜像存储
+BGP Client(BIRD) 读取Felix设置的内核路由状态，在数据中心分发状态。</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/calico-network-policy/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/calico-network-policy/</guid>
+      <description>calico网络策略 使用kubernetes NetworkPolicy让用户定义pod之间的访问策略，精细的控制哪些pod之间有相互访问的权利，如此网络更安全.
+教程流程  创建nginx service 禁止所有入口流量 允许向内访问nginx 禁止所有出口流程 允许出口流量访问kube-dns  创建nginx service kubectl create ns advanced-policy-demo kubectl run --namespace=advanced-policy-demo nginx --replicas=2 --image=nginx kubectl expose --namespace=advanced-policy-demo deployment nginx --port=80  现在nginx是完全可以被访问到的：
+kubectl run --namespace=advanced-policy-demo access --rm -ti --image busybox \ wget -q --timeout=5 nginx -O -  禁止入口流量 kubectl create -f - &amp;lt;&amp;lt;EOF apiVersion: networking.k8s.io/v1 kind: NetworkPolicy metadata: name: default-deny-ingress namespace: advanced-policy-demo spec: podSelector: matchLabels: {} policyTypes: - Ingress EOF  再去访问：</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/calico/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/calico/</guid>
+      <description>calico 网络原理 node节点 装网络之前路由 [root@iZj6c3cqwumhn5jov661z7Z ~]# route -n Kernel IP routing table Destination Gateway Genmask Flags Metric Ref Use Iface 0.0.0.0 172.31.255.253 0.0.0.0 UG 0 0 0 eth0 169.254.0.0 0.0.0.0 255.255.0.0 U 1002 0 0 eth0 172.17.0.0 0.0.0.0 255.255.0.0 U 0 0 0 docker0 172.31.240.0 0.0.0.0 255.255.240.0 U 0 0 0 eth0  网卡：
+[root@iZj6c3cqwumhn5jov661z7Z ~]# ifconfig docker0: flags=4099&amp;lt;UP,BROADCAST,MULTICAST&amp;gt; mtu 1500 inet 172.17.0.1 netmask 255.255.0.0 broadcast 0.0.0.0 ether 02:42:cb:02:65:a3 txqueuelen 0 (Ethernet) RX packets 0 bytes 0 (0.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/container-stop-timeout/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/container-stop-timeout/</guid>
+      <description>容器信号使用 我们跑在容器中的程序通常想在容器退出之前做一些清理操作，比较常用的方式是监听一个信号，延迟关闭容器。
+docker提供了这样的功能：
+╰─➤ docker stop --help Usage: docker stop [OPTIONS] CONTAINER [CONTAINER...] Stop one or more running containers Options: --help Print usage -t, --time int Seconds to wait for stop before killing it (default 10)  docker 1.13以上版本在创建容器时可直接指定STOP_TIMEOUT 和STOP_SIGNAL参数:
+$ docker run --help ... --stop-signal string Signal to stop a container, SIGTERM by default (default &amp;quot;SIGTERM&amp;quot;) --stop-timeout int Timeout (in seconds) to stop a container ...  但是。。。</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/docker-architech/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/docker-architech/</guid>
+      <description>Docker架构分析 [root@docker-build-86-050 ~]# ls /usr/bin |grep docker docker docker-compose docker-containerd docker-containerd-ctr docker-containerd-shim dockerd docker-proxy docker-runc  大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥
+初窥得出的结论是：
+ docker是cli没啥可说的 dockerd是docker engine守护进程，dockerd启动时会启动containerd子进程。 dockerd与containerd通过rpc进行通信（待验证，可能是通过ctr） ctr是containerd的cli containerd通过shim操作runc，runc真正控制容器生命周期 启动一个容器就会启动一个shim进程 shim直接调用runc的包函数,shim与containerd之前通过rpc通信 真正用户想启动的进程由runc的init进程启动，即runc init [args ...]  进程关系模型：
+docker ctr | | V V dockerd -&amp;gt; containerd ---&amp;gt; shim -&amp;gt; runc -&amp;gt; runc init -&amp;gt; process |-- &amp;gt; shim -&amp;gt; runc -&amp;gt; runc init -&amp;gt; process +-- &amp;gt; shim -&amp;gt; runc -&amp;gt; runc init -&amp;gt; process  [root@docker-build-86-050 ~]# ps -aux|grep docker root 3925 0.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/docker-build/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/docker-build/</guid>
+      <description> docker build 原理解析 docker CLI对build上下文的处理 docker engine build过程 </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/docker-dev/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/docker-dev/</guid>
+      <description>docker开发流程 注意容器构建时的信息：
+Install runc version 992a5be178a62e026f4069f443c6164912adbf09 + git clone https://github.com/opencontainers/runc.git /tmp/tmp.NdftaLJucp/src/github.com/opencontainers/runc Cloning into &#39;/tmp/tmp.NdftaLJucp/src/github.com/opencontainers/runc&#39;... + cd /tmp/tmp.NdftaLJucp/src/github.com/opencontainers/runc + git checkout -q 992a5be178a62e026f4069f443c6164912adbf09 + make BUILDTAGS=seccomp apparmor selinux static CGO_ENABLED=1 go build -i -tags &amp;quot;seccomp apparmor selinux cgo static_build&amp;quot; -ldflags &amp;quot;-w -extldflags -static -X main.gitCommit=&amp;quot;992a5be178a62e026f4069f443c6164912adbf09&amp;quot; -X main.version=1.0.0-rc3&amp;quot; -o runc . CGO_ENABLED=1 go build -i -tags &amp;quot;seccomp apparmor selinux cgo static_build&amp;quot; -ldflags &amp;quot;-w -extldflags -static -X main.gitCommit=&amp;quot;992a5be178a62e026f4069f443c6164912adbf09&amp;quot; -X main.version=1.0.0-rc3&amp;quot; -o contrib/cmd/recvtty/recvtty .</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/docker-network/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/docker-network/</guid>
+      <description>网络概述  端口映射：
+$ docker run -p 8080:80 nginx:latest  如果没有这个-p，会发现启动了nginx但是无法通过宿主机访问到web服务，而使用了-p参数后就可以通过访问主机的8080断开去访问nginx了。 端口映射的原理是作了net转发
+ 共享主机网络:
+$ docker run --net=host nginx:latest  这种容器没有自己的网络，完全共享主机的网络，所以可以通过主机ip直接访问容器服务。 坏处是容器与其它容器端口冲突
+ link网络
+$ docker run --name mysql mysql:latest $ docker run --link=mysql nginx:latest  这样nginx可以通过容器名去访问mysql，其原理是在nginx容器中的/etc/hosts中加入了mysql主机名解析。这种共享不可跨主机
+  $ docker run --rm -it --name c1 centos:latest /bin/bash  $ docker run --rm -it --name c2 --link c1 centos:latest /bin/bash [root@178d290d873c /]# cat /etc/hosts 127.0.0.1 localhost ::1 localhost ip6-localhost ip6-loopback fe00::0 ip6-localnet ff00::0 ip6-mcastprefix ff02::1 ip6-allnodes ff02::2 ip6-allrouters 172.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/docker-ovs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/docker-ovs/</guid>
+      <description>初始化环境 升级内核： rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm yum --enablerepo=elrepo-kernel install kernel-ml-devel kernel-ml awk -F\&#39; &#39;$1==&amp;quot;menuentry &amp;quot; {print $2}&#39; /etc/grub2.cfg grub2-set-default 0 reboot uname -a 安装docker: yum install -y yum-utils yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo yum-config-manager --disable docker-ce-edge yum makecache fast yum install docker-ce service docker start 安装open vswitch: yum -y install wget openssl-devel gcc make python-devel openssl-devel kernel-devel graphviz kernel-debug-devel autoconf automake rpm-build redhat-rpm-config libtool python-twisted-core python-zope-interface PyQt4 desktop-file-utils libcap-ng-devel groff checkpolicy selinux-policy-devel adduser ovs su - ovs yum localinstall /home/ovs/rpmbuild/RPMS/x86_64/openvswitch-2.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/docker-storage/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/docker-storage/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/grafana-promethus/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/grafana-promethus/</guid>
+      <description> grafana配置教程 json文件在此 长期更新，直接复制粘贴进去即可 </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/install-k8s-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/install-k8s-cluster/</guid>
+      <description>使用kubeadm安装安全高可用kubernetes集群 系统架构图  kubectl dashboard | V +------------------------+ join | LB 10.1.245.94 | &amp;lt;--- Nodes +------------------------+ | |--master1 manager1 schedule1 10.1.245.93 |--master2 manager2 schedule2 10.1.245.95 =============&amp;gt; etcd cluster http://10.1.245.93:2379,http://10.1.245.94:2379,http://10.1.245.95:2379 |--master3 manager3 schedule3 10.1.245.94  起动etcd集群 cat etcd.yaml
+version: &#39;2&#39; services: etcd: container_name: etcd_infra0 image: quay.io/coreos/etcd:v3.1.10 command: | etcd --name infra0 --initial-advertise-peer-urls http://10.1.245.94:2380 --listen-peer-urls http://10.1.245.94:2380 --listen-client-urls http://10.1.245.94:2379,http://127.0.0.1:2379 --advertise-client-urls http://10.1.245.94:2379 --data-dir /etcd-data.etcd --initial-cluster-token etcd-cluster-1 -initial-cluster infra0=http://10.1.245.93:2380,infra1=http://10.1.245.94:2379,infra2=http://10.1.245.95:2379 --initial-cluster-state new volumes: - /data/etcd-data.etcd:/etcd-data.etcd network_mode: &amp;quot;host&amp;quot;  其它两个节点照抄，修改ip即可</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/install-k8s/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/install-k8s/</guid>
+      <description>alico node &amp;lsquo;iZ2ze3nu0s9j3v57be4xuuZ&amp;rsquo; is already using the IPv4 address 192.168.152.65
+基础环境  关闭防火墙 selinux
+ $ systemctl stop firewalld &amp;amp;&amp;amp; systemctl disable firewalld $ setenforce 0   打开forward sysctl -w net.ipv4.ip_forward=1
+关闭swap
+ swapoff -a 再把/etc/fstab文件中带有swap的行删了,没有就无视
+ 装这两工具如果没装的话
+ yum install -y ebtables socat
+ IPv4 iptables 链设置 CNI插件需要
+ sysctl net.bridge.bridge-nf-call-iptables=1
+墙外安装 在国内是很难使用这种方式安装了，推荐查看离线安装的方案
+ 装docker
+ yum install -y docker systemctl enable docker &amp;amp;&amp;amp; systemctl start docker</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/iptables/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/iptables/</guid>
+      <description>iptables教程 内核空间中的五个包处理位置，和五个函数钩子（规则链）  PREROUTING 数据包刚进入网络层 , 路由之前 INPUT 路由判断，流入用户空间 OUTPUT 用户空间发出，后接路由判断出口的网络接口 FORWARD 路由判断不进入用户空间，只进行转发 POSTROUTING 数据包通过网络接口出去   应用层 ------------- ^ | | v INPUT OUTPUT | | --&amp;gt;PREROUTING--------&amp;gt;FORWARD---&amp;gt;POSTROUTING---&amp;gt;  这就是五个内置链，可以在链里面添加规则
+四个表来定义区分各种不同功能和处理方式 表可以作用在多个链上，同样一个链也可以配置多个表
+ Filter表 一般的数据包过滤 Nat表 网络地址转换 Mangle表 修改数据包的原数据，一般用于防火墙标记 raw表 用于配置免除     chain/table Filter Nat Mangle Raw     PREROUTING false true true true   INPUT true false true false   FORWARD true false true false   OUTPUT true true true true   POSTROUTING false true true false    创建一个自定义链 iptables -t filter -N newchain # 创建链 iptables -t filter -A newchain -s 192.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/k8s-authenticating/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/k8s-authenticating/</guid>
+      <description>kubernetes对接第三方认证 广告： 安装包地址
+原文地址
+概述 本文介绍如何使用github账户去关联自己kubernetes账户。达到如下效果： 1. 使用github用户email作为kubernetes用户，如fhtjob@hotmail.com 2. 创建对应的clusterrole绑定给fhtjob@hotmail.com这个用户 3. 给fhtjob@hotmail这个用户创建一个kubeconfig文件，让改用户可以使用kubectl命令操作集群，且只有部分权限
+dex介绍 dex 是一个统一认证的服务，支持各种认证协议如Ouath2 ldap等，自己可以作为一个identity provider,也可以连到别的id provider(如github)上,dex作为一个中间代理.
+流程  http://47.52.197.163:5555 http://47.52.197.163:32000 人(浏览器） dex client dex server github kubectl kubernetes server | login(scope) | | | | | |------1--------&amp;gt;| | | | | | |----------2-------------&amp;gt;| | | | | | |----------3-----------&amp;gt;| | | | | | id_token | | | | | |&amp;lt;---------4------------| callback | | | id_token |&amp;lt;----------5-------------|callback | | | |&amp;lt;-------6-------| | | | | | | | | id_token | | |------------------------------------------------7--------------------------------------------&amp;gt;| id_token | | | | | |----------8------------&amp;gt;| | | | | | | valid?</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/k8s-ha-conf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/k8s-ha-conf/</guid>
+      <description>机器    IP 用途 备注     10.100.81.11 master、etcd 主节点   10.100.81.12 master、etcd、keepalived、haproxy 主节点，同时部署keepalived、haproxy，保证master高可用   10.100.81.13 master、etcd、keepalived、haproxy 主节点，同时部署keepalived、haproxy，保证master高可用   10.100.81.14 node、etcd 非业务节点   10.100.81.15 node、etcd 非业务节点   10.100.81.16 node 业务节点   10.100.81.17 node 业务节点   10.100.81.18 node 业务节点   10.100.81.19 node 业务节点   10.100.81.20 node 业务节点   10.100.81.21 node 业务节点   10.100.81.22 node 业务节点   10.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/k8s-offline-install-ha/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/k8s-offline-install-ha/</guid>
+      <description>使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。
+ 单个master流程：
+  解压后在master 上 cd shell &amp;amp;&amp;amp; sh init.sh ,然后sh master.sh（注意因为脚本用的相对路径所以不再当前目录会找不到文件） 在node上 cd shell &amp;amp;&amp;amp; sh init.sh 。然后在node上执行master输出的join命令即可   高可用如下
+ 提前准备 假设构建一个3master+2node的k8s集群，需要5台节点共同的条件如下：
+ （yum install -y docker是1.12.6版本需要改cg） 17.06安装教程： ```bash #0.删除老旧的 $ yum remove -y docker* #如果默认之前yum安装的1.12版本,可以这样删没装可以跳过此步 #1.安装需要的包 $ yum install -y yum-utils device-mapper-persistent-data lvm2   #2.添加源,不然默认的找不到 $ yum-config-manager &amp;ndash;add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#3.根据实际查找当前版本 (可选) $ yum list docker-ce &amp;ndash;showduplicates | sort -r #4.如果确定了版本,直接安装,如果要装17。03直接修改下面数字即可 $ yum install docker-ce-17.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/k8s-rbac/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/k8s-rbac/</guid>
+      <description>kubernetes RBAC实战 环境准备 先用kubeadm安装好kubernetes集群，包地址在此 好用又方便，服务周到，童叟无欺
+本文目的，让名为devuser的用户只能有权限访问特定namespace下的pod
+命令行kubectl访问 安装cfssl 此工具生成证书非常方便, pem证书与crt证书,编码一致可直接使用
+wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 chmod +x cfssl_linux-amd64 mv cfssl_linux-amd64 /bin/cfssl wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 chmod +x cfssljson_linux-amd64 mv cfssljson_linux-amd64 /bin/cfssljson wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 chmod +x cfssl-certinfo_linux-amd64 mv cfssl-certinfo_linux-amd64 /bin/cfssl-certinfo  签发客户端证书 根据ca证书与么钥签发用户证书 根证书已经在/etc/kubernetes/pki目录下了
+[root@master1 ~]# ls /etc/kubernetes/pki/ apiserver.crt ca-config.json devuser-csr.json front-proxy-ca.key sa.pub apiserver.key ca.crt devuser-key.pem front-proxy-client.crt apiserver-kubelet-client.crt ca.key devuser.pem front-proxy-client.key apiserver-kubelet-client.key devuser.csr front-proxy-ca.crt sa.key  注意以下几个文件： ca.crt ca.key ca-config.json devuser-csr.json
+创建ca-config.json文件
+cat &amp;gt; ca-config.json &amp;lt;&amp;lt;EOF { &amp;quot;signing&amp;quot;: { &amp;quot;default&amp;quot;: { &amp;quot;expiry&amp;quot;: &amp;quot;87600h&amp;quot; }, &amp;quot;profiles&amp;quot;: { &amp;quot;kubernetes&amp;quot;: { &amp;quot;usages&amp;quot;: [ &amp;quot;signing&amp;quot;, &amp;quot;key encipherment&amp;quot;, &amp;quot;server auth&amp;quot;, &amp;quot;client auth&amp;quot; ], &amp;quot;expiry&amp;quot;: &amp;quot;87600h&amp;quot; } } } } EOF  创建devuser-csr.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/keep_containers_alive_deamon_downtme/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/keep_containers_alive_deamon_downtme/</guid>
+      <description> 配置docker engine使engine挂掉时容器继续运行 两种方式： * 修改/etc/docker/daemon.json 如果不想engine重启，给engine发送SIGHUP信号使engine重新加载配置文件 * 直接加启动参数：&amp;ndash;live-restore, 如用systemd管理修改这个配置文件：/usr/lib/systemd/system/docker.service, 然后执行systemctl daemon-reload &amp;amp;&amp;amp; service docker restart
+加了这个参数之后，重启engine就不会使容器退出了
+实践 此功能在做engine升级时非常有用，现在就以docker1.12升级到1.13为例详细介绍。
+我们有一个容器正在运行，已经运行了两个星期了(ps:我们已经配置了 &amp;ndash;live-restore启动参数)
+[root@dev-86-201 ~]# docker ps CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 4c73d9658275 dev.reg.iflytek.com/devops/whoami:latest &amp;quot;/whoamI&amp;quot; 2 weeks ago Up 10 minutes 80/tcp 0Fack  </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/kubeadm-source/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/kubeadm-source/</guid>
+      <description>k8s离线安装包 三步安装，简单到难以置信
+kubeadm源码分析 说句实在话，kubeadm的代码写的真心一般，质量不是很高。
+几个关键点来先说一下kubeadm干的几个核心的事：
+ kubeadm 生成证书在/etc/kubernetes/pki目录下 kubeadm 生成static pod yaml配置，全部在/etc/kubernetes/manifasts下 kubeadm 生成kubelet配置，kubectl配置等 在/etc/kubernetes下 kubeadm 通过client go去启动dns  kubeadm init 代码入口 cmd/kubeadm/app/cmd/init.go 建议大家去看看cobra
+找到Run函数来分析下主要流程：
+ 如果证书不存在，就创建证书，所以如果我们有自己的证书可以把它放在/etc/kubernetes/pki下即可, 下文细看如果生成证书
+	if res, _ := certsphase.UsingExternalCA(i.cfg); !res { if err := certsphase.CreatePKIAssets(i.cfg); err != nil { return err }  创建kubeconfig文件
+	if err := kubeconfigphase.CreateInitKubeConfigFiles(kubeConfigDir, i.cfg); err != nil { return err }  创建manifest文件，etcd apiserver manager scheduler都在这里创建, 可以看到如果你的配置文件里已经写了etcd的地址了，就不创建了，这我们就可以自己装etcd集群，而不用默认单点的etcd，很有用
+controlplanephase.CreateInitStaticPodManifestFiles(manifestDir, i.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/kubernetes-dns/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/kubernetes-dns/</guid>
+      <description> dns之锅 kubectl run --namespace=kube-system access -it --image busybox -- /bin/sh [root@fortest1513671663-master-00 ~]# kubectl exec access-79f4758b79-qwl8s nslookup kubernetes-dashboard.kube-system.svc -n kube-system Server: 10.96.0.10 Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local Name: kubernetes-dashboard.kube-system.svc Address 1: 10.110.146.248 kubernetes-dashboard.kube-system.svc.cluster.local [root@fortest1513671663-master-00 ~]# kubectl get svc kubernetes-dashboard -n kube-system NAME TYPE CLUSTER-IP EXTERNAL-IP PORT(S) AGE kubernetes-dashboard NodePort 10.110.146.248 &amp;lt;none&amp;gt; 443:30089/TCP 27m  </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/micro-architecture/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/micro-architecture/</guid>
+      <description> 论微架构 </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/moby_discussion/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/moby_discussion/</guid>
+      <description>社区再无docker, 只有moby 
+看到github上面docker项目更名为moby，不禁小吃一惊，喜忧参半，docker在商业化的道路上走的这么彻底。。。
+moby简介 官方解释：一个开放的组装特定容器系统的框架，不再重复造轮子！
+提供一套标准的组件和框架去定制平台。</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/offline-install/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/offline-install/</guid>
+      <description> 安装包列表 [kubernetes1.10.3离线安装包 审核中]()  全部使用当前最新版本组建 Cgroup driver自动检测，99%以上一键安装成功，遇到任何问题远程协助解决 优化dashboard grafana等yaml配置 DNS双副本高可用  kubernetes1.9.2离线安装包 kubernetes1.8.1离线安装包 推荐使用1.9.2以上版本 </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/revolution/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/revolution/</guid>
+      <description> 程序员解放革命 成为专业领域的人才 技术特点  复用必 专业性  工作模式对比  一般：在自己公司做不同的事 外派：到不同的公司，做不同的事 外包：在自己公司做不同公司的事 我们：在不同的公司做专业的事  路线 - 充分实现人才价值  短期 : 容器领域实现自己专业技术复用 中期 ：计算机领域很多专业通用技术人才复用, 公司雇用 长期 ：所有领域专业人才复用, 平台化，去公司化, 实现“人才调度”  </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/rpc-protobuf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/rpc-protobuf/</guid>
+      <description>golang基于protobuf的rpc使用 基本安装什么的在此不再赘述，不知道的看这里
+proto文件 cat helloworld.proto
+syntax = &amp;quot;proto3&amp;quot;; option java_multiple_files = true; option java_package = &amp;quot;io.grpc.examples.helloworld&amp;quot;; option java_outer_classname = &amp;quot;HelloWorldProto&amp;quot;; package helloworld; // The greeting service definition. service Greeter { // Sends a greeting rpc SayHello (HelloRequest) returns (HelloReply) {} } // The request message containing the user&#39;s name. message HelloRequest { string name = 1; } // The response message containing the greetings message HelloReply { string message = 1; }  那几个生成java代码的定义就无视了，关键看service 定义了一个接口，然后定义了两条消息，分别是请求和回复的消息格式。</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/runc/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/runc/</guid>
+      <description>runc 架构破析 这里的spec.Process就是我们真正要运行的容器中的进程。
+return r.run(&amp;amp;spec.Process)  把这个塞到libcontainer.Process里去了：
+ lp := &amp;amp;libcontainer.Process{ Args: p.Args, Env: p.Env, // TODO: fix libcontainer&#39;s API to better support uid/gid in a typesafe way. User: fmt.Sprintf(&amp;quot;%d:%d&amp;quot;, p.User.UID, p.User.GID), Cwd: p.Cwd, Label: p.SelinuxLabel, NoNewPrivileges: &amp;amp;p.NoNewPrivileges, AppArmorProfile: p.ApparmorProfile, }  我试了个busybox的容器，把p.Args和p.Env打印出来看一下,正是config.json中的内容：
+fmt.Println(&amp;quot;Args: &amp;quot;, p.Args, &amp;quot;env&amp;quot;, p.Env) //Args: [sh] env [PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin TERM=xterm]  这里真正调用的是container的Start 或者Run方法
+ var ( startFn = r.container.Start ) if !r.create { startFn = r.container.Run } if err = startFn(process); err !</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/scratch/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/scratch/</guid>
+      <description>如何让镜像尽可能小 很容器想到from scratch, 就是没任何基础镜像
+FROM scratch COPY p / ENTRYPOINT [&amp;quot;/p&amp;quot;]  有几点要注意：
+ ENTRYPOINT 或者CMD 必须要用[]这种模式，如果直接/p会用sh去启动，而scratch没有shell导致失败 二进制程序必须静态编译，也就是不能依赖libc什么的动态库  动态编译的bin程序：
+[root@dev-86-205 ci-sftp]# ldd p linux-vdso.so.1 =&amp;gt; (0x00007ffd6ef7b000) libpthread.so.0 =&amp;gt; /lib64/libpthread.so.0 (0x00007fa28f94e000) libc.so.6 =&amp;gt; /lib64/libc.so.6 (0x00007fa28f58d000) /lib64/ld-linux-x86-64.so.2 (0x00007fa28fb72000)  这种情况下出来的bin程序可能会出现问题：
+standard_init_linux.go:175: exec user process caused &amp;quot;no such file or directory”  静态编译的bin程序,这是我们scratch需要的：
+[root@dev-86-205 ci-sftp]# ldd p 不是动态可执行文件  golang中静态编译命令：
+go build --ldflags &#39;-linkmode external -extldflags &amp;quot;-static”&#39;  如果不静态编译那可能得拷贝一堆动态库到镜像中，很多lowB就是那么做的</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/sealyun-strengths/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/sealyun-strengths/</guid>
+      <description> 关于Docker engine  sealyun容器引擎基于moby构建，青出于蓝,兼容Docker所有操作，新增一些非常有用的功能 原生支持更牛逼的网络模式  docker的bridge网络模式是不能跨主机通信的，而我们通过定制实现了linux bridge的跨主机通信 增加了网络的ovs实现，容器可以划分vlan, 或者使用vxlan GRE等实现跨主机通信，且能做到网络租户隔离，避免产生ARP风暴  更好的支持runc，如hook的功能，在容器异常结束时执行回调脚本，这在有些场景下非常有用，如针对业务异常退出作些清理，而不用监听docker event 支持挂在磁盘时的反向覆盖，即容器里面的文件覆盖宿主机的，这也非常有用，比如mysql里已经有配置文件了，但是宿主机上没有，可能想把配置挂载出来，但是一般启动加 -v参数时外面空目录会覆盖里面的，这不是我们希望的，所以sealyun容器引擎支持这样的挂载： -v /etc/mysql.cnf&amp;lt;-/etc/mysql.cnf 里面覆盖外面 -v /etc/mysql.cnf-&amp;gt;/etc/mysql.cnf 外面覆盖里面，当然也支持正常的docker 挂载 稳定性更高，docker devicemapper在磁盘占满时 engine会defunt，甚至会导致重装docker engine也无法解决的问题，这是loop-lvm造成的，但是derict-lvm配置又麻烦，所以大家想用overlay存储驱动，不过在内核3.10或者更低版本是的问题的，比如在centos7.2上跑FROM ubuntu的镜像就会出错，所以我们对存储驱动进行了优化, sealyun container会跑的更稳定，如果大规模部署时会发现经常产生僵尸容器，我们的容器僵尸率比开源容器低的多   关于Swarm 管理UI对比  开源管理容器的UI都有bug，以shipyard为例，首先在scale up时没加锁，会导致节点重复分配，与swarm的兼容性就会出问题，然后容器数量一多大概300个时会很慢，然后界面上会出无故的错误。 开源工具分页支持差，不支持compose文件, 我们完全支持 我们的UI使用vue.js完全重写,单页面渲染上千个容器毫无压力 我们UI更简洁，功能更细致，如删除容器时其实是有三个参数是可以指定的，是否删除link,volume是否强制删除, 停止容器时支持stop timeout参数，这些在真正生产环境中都是非常必要的。 此外我们还在UI上支持了多集群管理与快速创建集群等功能  CI CD系统对比 </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://lameleg.com/posts/sell/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://lameleg.com/posts/sell/</guid>
+      <description> sealyun阿里云市场分销规则  成为合作伙伴条件
+  任何购买过该商品的客户可成为该商品的分销伙伴   分成
+  由合作伙伴销售出的产品，合作伙伴提成50%, 向上取整， 计算规则如下：  如商品15元 阿里提成10% 15 * 90% * 50% ＝ 6.75 取整 = 7元 15元商品合作伙伴提成7元
+ 结算
+  新用户购买完商品，使用后好评，在评价中填写 合作伙伴的阿里账号 则将该用户的购买记为合作伙伴销售单。 阿里云市场结算完毕后，直接转账给分销伙伴。   其它
+  合作伙伴应该负责客户在实践中遇到的一些问题，服务好客户，如客户未好评不记入分销单  </description>
+    </item>
+    
+  </channel>
+</rss>

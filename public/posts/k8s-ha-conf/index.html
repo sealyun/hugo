@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="机器    IP 用途 备注     10.100.81.11 master、etcd 主节点   10.100.81.12 master、etcd、keepalived、haproxy 主节点，同时部署keepalived、haproxy，保证master高可用   10.100.81.13 master、etcd、keepalived、haproxy 主节点，同时部署keepalived、haproxy，保证master高可用   10.100.81.14 node、etcd 非业务节点   10.100.81.15 node、etcd 非业务节点   10.100.81.16 node 业务节点   10.100.81.17 node 业务节点   10.100.81.18 node 业务节点   10.100.81.19 node 业务节点   10.100.81.20 node 业务节点   10.100.81.21 node 业务节点   10.100.81.22 node 业务节点   10." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/k8s-ha-conf/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="机器    IP 用途 备注     10.100.81.11 master、etcd 主节点   10.100.81.12 master、etcd、keepalived、haproxy 主节点，同时部署keepalived、haproxy，保证master高可用   10.100.81.13 master、etcd、keepalived、haproxy 主节点，同时部署keepalived、haproxy，保证master高可用   10.100.81.14 node、etcd 非业务节点   10.100.81.15 node、etcd 非业务节点   10.100.81.16 node 业务节点   10.100.81.17 node 业务节点   10.100.81.18 node 业务节点   10.100.81.19 node 业务节点   10.100.81.20 node 业务节点   10.100.81.21 node 业务节点   10.100.81.22 node 业务节点   10.">
+
+
+
+<meta itemprop="wordCount" content="688">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="机器    IP 用途 备注     10.100.81.11 master、etcd 主节点   10.100.81.12 master、etcd、keepalived、haproxy 主节点，同时部署keepalived、haproxy，保证master高可用   10.100.81.13 master、etcd、keepalived、haproxy 主节点，同时部署keepalived、haproxy，保证master高可用   10.100.81.14 node、etcd 非业务节点   10.100.81.15 node、etcd 非业务节点   10.100.81.16 node 业务节点   10.100.81.17 node 业务节点   10.100.81.18 node 业务节点   10.100.81.19 node 业务节点   10.100.81.20 node 业务节点   10.100.81.21 node 业务节点   10.100.81.22 node 业务节点   10."/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h2 id="机器">机器</h2>
+
+<table>
+<thead>
+<tr>
+<th>IP</th>
+<th>用途</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>10.100.81.11</td>
+<td>master、etcd</td>
+<td>主节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.12</td>
+<td>master、etcd、keepalived、haproxy</td>
+<td>主节点，同时部署keepalived、haproxy，保证master高可用</td>
+</tr>
+
+<tr>
+<td>10.100.81.13</td>
+<td>master、etcd、keepalived、haproxy</td>
+<td>主节点，同时部署keepalived、haproxy，保证master高可用</td>
+</tr>
+
+<tr>
+<td>10.100.81.14</td>
+<td>node、etcd</td>
+<td>非业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.15</td>
+<td>node、etcd</td>
+<td>非业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.16</td>
+<td>node</td>
+<td>业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.17</td>
+<td>node</td>
+<td>业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.18</td>
+<td>node</td>
+<td>业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.19</td>
+<td>node</td>
+<td>业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.20</td>
+<td>node</td>
+<td>业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.21</td>
+<td>node</td>
+<td>业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.22</td>
+<td>node</td>
+<td>业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.23</td>
+<td>node</td>
+<td>业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.24</td>
+<td>node、harbor</td>
+<td>业务节点</td>
+</tr>
+
+<tr>
+<td>10.100.81.25</td>
+<td>node</td>
+<td>业务节点</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="组件版本">组件版本</h2>
+
+<table>
+<thead>
+<tr>
+<th>组件名</th>
+<th>版本</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>docker</td>
+<td>Docker version 1.12.6, build 78d1802</td>
+</tr>
+
+<tr>
+<td>kubernetes</td>
+<td>v1.10.0</td>
+</tr>
+
+<tr>
+<td>harbor</td>
+<td>v1.2.0</td>
+</tr>
+
+<tr>
+<td>keepalived</td>
+<td>v1.3.5</td>
+</tr>
+
+<tr>
+<td>haproxy</td>
+<td>1.7</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="配置">配置</h2>
+
+<p>组件配置</p>
+
+<h3 id="docker">docker</h3>
+
+<p>配置文件：/usr/lib/systemd/system/docker.service</p>
+
+<pre><code>[Unit]
+Description=Docker Application Container Engine
+Documentation=https://docs.docker.com
+After=network.target
+
+[Service]
+Type=notify
+# the default is not to use systemd for cgroups because the delegate issues still
+# exists and systemd currently does not support the cgroup feature set required
+# for containers run by docker
+ExecStart=/usr/bin/dockerd -H 0.0.0.0:2375 -H unix:///var/run/docker.sock --registry-mirror https://registry.docker-cn.com --insecure-registry 172.16.59.153 --insecure-registry hub.xfyun.cn --insecure-registry k8s.gcr.io --insecure-registry quay.io --default-ulimit core=0:0 --live-restore
+ExecReload=/bin/kill -s HUP $MAINPID
+# Having non-zero Limit*s causes performance problems due to accounting overhead
+# in the kernel. We recommend using cgroups to do container-local accounting.
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+# Uncomment TasksMax if your systemd version supports it.
+# Only systemd 226 and above support this version.
+#TasksMax=infinity
+TimeoutStartSec=0
+# set delegate yes so that systemd does not reset the cgroups of docker containers
+Delegate=yes
+# kill only the docker process, not all processes in the cgroup
+KillMode=process
+
+MountFlags=slave
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+
+<pre><code>--registry-mirror：指定 docker pull 时使用的注册服务器镜像地址,指定为https://registry.docker-cn.com可以加快docker hub中的镜像拉取速度
+--insecure-registry：配置非安全的docker镜像注册服务器
+--default-ulimit：配置容器默认的ulimit选项
+--live-restore：开启此选项，当dockerd服务出现问题时，容器照样运行，服务恢复后，容器也可以再被服务抓到并可管理
+MountFlags=slave：解决移除容器时出现的&quot;Unable to remove filesystem for $id: remove /var/lib/docker/containers/$id/shm: device or resource busy&quot;问题
+</code></pre>
+
+<h3 id="kubernetes">kubernetes</h3>
+
+<h4 id="etcd">etcd</h4>
+
+<p>以10.100.81.11节点为例，其它节点类似：</p>
+
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: etcd
+    tier: control-plane
+  name: etcd-10.100.81.11
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - etcd
+    - --name=infra0
+    - --initial-advertise-peer-urls=http://10.100.81.11:2380
+    - --listen-peer-urls=http://10.100.81.11:2380
+    - --listen-client-urls=http://10.100.81.11:2379,http://127.0.0.1:2379
+    - --advertise-client-urls=http://10.100.81.11:2379
+    - --data-dir=/var/lib/etcd
+    - --initial-cluster-token=etcd-cluster-1
+    - --initial-cluster=infra0=http://10.100.81.11:2380,infra1=http://10.100.81.12:2380,infra2=http://10.100.81.13:2380,infra3=http://10.100.81.14:2380,infra4=http://10.100.81.15:2380
+    - --initial-cluster-state=new
+    image: k8s.gcr.io/etcd-amd64:3.1.12
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /health
+        port: 2379
+        scheme: HTTP
+      failureThreshold: 8
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: etcd
+    volumeMounts:
+    - name: etcd-data
+      mountPath: /var/lib/etcd
+  hostNetwork: true
+  volumes:
+  - hostPath:
+      path: /var/lib/etcd
+      type: DirectoryOrCreate
+    name: etcd-data
+</code></pre>
+
+<h3 id="kubernetes系统组件">kubernetes系统组件</h3>
+
+<h4 id="kubeadm-init-启动k8s集群config-yaml配置">kubeadm init 启动k8s集群config.yaml配置</h4>
+
+<pre><code>apiVersion: kubeadm.k8s.io/v1alpha1
+kind: MasterConfiguration
+networking:
+  podSubnet: 192.168.0.0/16
+api:
+  advertiseAddress: 10.100.81.11
+etcd:
+  endpoints:
+  - http://10.100.81.11:2379 
+  - http://10.100.81.12:2379
+  - http://10.100.81.13:2379
+  - http://10.100.81.14:2379
+  - http://10.100.81.15:2379
+
+apiServerCertSANs:
+  - 10.100.81.11
+  - master01.bja.paas
+  - 10.100.81.12
+  - master02.bja.paas
+  - 10.100.81.13
+  - master03.bja.paas
+  - 10.100.81.10
+  
+  - 127.0.0.1
+token:
+kubernetesVersion: v1.10.0
+apiServerExtraArgs:
+  endpoint-reconciler-type: lease
+  bind-address: 10.100.81.11
+  runtime-config: storage.k8s.io/v1alpha1=true
+  admission-control: NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota
+featureGates:
+  CoreDNS: true
+</code></pre>
+
+<h4 id="kubelet配置">kubelet配置</h4>
+
+<p>/etc/systemd/system/kubelet.service.d/10-kubeadm.conf</p>
+
+<pre><code>[Service]
+Environment=&quot;KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf&quot;
+Environment=&quot;KUBELET_SYSTEM_PODS_ARGS=--pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=true&quot;
+Environment=&quot;KUBELET_NETWORK_ARGS=--network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin&quot;
+Environment=&quot;KUBELET_DNS_ARGS=--cluster-dns=10.96.0.10 --cluster-domain=cluster.local&quot;
+Environment=&quot;KUBELET_AUTHZ_ARGS=--authorization-mode=Webhook --client-ca-file=/etc/kubernetes/pki/ca.crt&quot;
+Environment=&quot;KUBELET_CADVISOR_ARGS=--cadvisor-port=0&quot;
+Environment=&quot;KUBELET_CGROUP_ARGS=--cgroup-driver=cgroupfs&quot;
+Environment=&quot;KUBELET_CERTIFICATE_ARGS=--rotate-certificates=true --cert-dir=/var/lib/kubelet/pki --eviction-hard=memory.available&lt;5%,nodefs.available&lt;5%,imagefs.available&lt;5%&quot;
+ExecStart=
+ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_SYSTEM_PODS_ARGS $KUBELET_NETWORK_ARGS $KUBELET_DNS_ARGS $KUBELET_AUTHZ_ARGS $KUBELET_CADVISOR_ARGS $KUBELET_CGROUP_ARGS $KUBELET_CERTIFICATE_ARGS $KUBELET_EXTRA_ARGS
+
+</code></pre>
+
+<h3 id="keepalived">keepalived</h3>
+
+<p>keepalived采取直接在物理机部署，使用<code>yum install keepalived</code>安装。</p>
+
+<p>启动配置文件：/etc/keepalived/keepalived.conf。keepalived的MASTER和BACKUP配置有部分差异</p>
+
+<p>MASTER</p>
+
+<pre><code>! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     root@localhost
+   }
+   router_id master02
+}
+
+vrrp_script chk_haproxy {
+       script &quot;/etc/keepalived/haproxy_check.sh&quot;
+       interval 3
+       weight -20
+}
+
+vrrp_instance VI_1 {
+    state MASTER    # BACKUP节点改成BACKUP
+    interface bond1
+    virtual_router_id 151
+    priority 110    # BACKUP节点改成100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+       10.100.81.10 # k8s使用的VIP
+       10.100.81.9  # 数据库组件使用的VIP
+    }
+    track_script {
+       chk_haproxy
+    }
+}
+
+</code></pre>
+
+<p>haproxy检查脚本：/etc/keepalived/haproxy_check.sh</p>
+
+<pre><code>#!/bin/bash
+
+if [ `ps -C haproxy --no-header |wc -l` -eq 0 ] ; then
+    docker restart k8s-haproxy
+    sleep 2
+    if [ `ps -C haproxy --no-header |wc -l` -eq 0 ] ; then
+        service keepalived stop
+    fi
+fi
+</code></pre>
+
+<h3 id="haproxy">haproxy</h3>
+
+<p>haproxy以容器的形式启动，启动命令如下：</p>
+
+<pre><code>docker run -d --net host --name k8s-haproxy -v /etc/haproxy:/usr/local/etc/haproxy:ro haproxy:1.7
+</code></pre>
+
+<p>haproxy配置文件：/etc/haproxy/haproxy.conf</p>
+
+<pre><code>global
+  daemon
+  log 127.0.0.1 local0
+  log 127.0.0.1 local1 notice
+  maxconn 4096
+
+defaults
+  log               global
+  retries           3
+  maxconn           2000
+  timeout connect   5s
+  timeout client    50s
+  timeout server    50s
+
+frontend k8s
+  bind *:6444
+  mode tcp
+  default_backend k8s-backend
+
+backend k8s-backend
+  balance roundrobin
+  mode tcp
+  server k8s-1 10.100.81.11:6443 check
+  server k8s-2 10.100.81.12:6443 check
+  server k8s-3 10.100.81.13:6443 check
+</code></pre>
+
+<h2 id="部署完成后操作">部署完成后操作</h2>
+
+<h3 id="修改kube-proxy-configmap">修改kube-proxy configmap</h3>
+
+<pre><code>kubectl edit configmap kube-proxy -n kube-system
+</code></pre>
+
+<pre><code>.....
+kubeconfig.conf: |-
+  apiVersion: v1
+  kind: Config
+  clusters:
+  - cluster:
+      certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      server: https://10.100.81.10:6444  # 更改此行ip为vip,改成10.100.81.10
+    name: default
+  contexts:
+  - context:
+      cluster: default
+      namespace: default
+      user: default
+    name: default
+  current-context: default
+  users:
+  - name: default
+    user:
+      tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+......
+</code></pre>
+
+<p>执行如下命令让kube-proxy组件重新启动</p>
+
+<pre><code>kubectl get pod -n kube-system | grep kube-proxy | awk '{print $1}' | xargs kubectl delete pod -n kube-system
+</code></pre>
+
+<h3 id="修改所有node节点kubelet-conf">修改所有node节点kubelet.conf</h3>
+
+<pre><code>/etc/kubernetes/kubelet.conf
+</code></pre>
+
+<pre><code>apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJDZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRFNE1EVXhPREF4TXpNME1Gb1hEVEk0TURVeE5UQXhNek0wTUZvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTGJoCmw1TDRaNHFiWTJ3MmY5TFlEb0ZqVlhhcHRhYklkQmZmTS9zMTJaWFd1NU5LYWlPR09ub3RxK1gwM0VJb3Z4VEkKUGh5NzBqY294VGlLUTk5ZkFsUS82a2Vhc0x5MDNGZXJvYkhmaldUenBkZE5mWVNEZStMazlMV0hIZ0phOXVUQQpDU3kyay9sZGo3VWQ0Sk9pMi9lcGhVTUNNMUNlbmdPeWZDNUl0SUpFZzJmMk95cTE5U0JBeW1zYzFTalg5Q0F6CnNyMlhiTm9hK1lVS2Flek1QSldvYlNxdEg0czQ1TkluYytMREJFTkk4VGVITktybENsamdIeUorUjU1V2pCTW8KeSs3Y1BxL2cwTkxmSU4xRjJVbkFFa3RTSmVYUFBSaGlQUUhJcGRBU0xySXhVcE9HNlN3Yk51bmRGdGsxaUJiUgpUSW9md2UyT0VhZkhySmV5OHJrQ0F3RUFBYU1qTUNFd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFLME1mOFM5VjUyaG9VZ3JYcGQyK09rOHF2Ny8KR3hpWnRFelFISW9RdWRLLzJ2ZGJHbXdnem10V3hFNHRYRWQyUnlXTTZZR1VQSmNpMmszY1Z6QkpSaGcvWFB2UQppRVBpUDk5ZkdiM0kxd0QyanlURWVaZVd1ekdSRDk5ait3bStmcE9wQzB2ZU1LN3hzM1VURjRFOFlhWGcwNmdDCjBXTkFNdTRxQmZaSUlKSEVDVDhLUlB5TEN5Zlgvbm84Q25WTndaM3pCbGZaQmFONGZaOWw0UUdGMVd4dlc0OHkKYmpvRDhqUVJnL1kwYUVUMWMrSEhpWTNmNDF0dG9kMWJoSWR3c1NDNUhhRjJQSVAvZ2dCSnZ2Uzh2V1cwcVRDegpDV2EzcVJ0bVB0MHdtcEZic2RPWmdsWkl6aWduYTdaaDFWMDJVM0VFZ2kwYjNGZWR5OW5MRUZaMGJZbz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    server: https://10.100.81.10:6444   # 此处改为VIP加haproxy监听端口6444
+  name: default-cluster
+contexts:
+- context:
+    cluster: default-cluster
+    namespace: default
+    user: default-auth
+  name: default-context
+current-context: default-context
+kind: Config
+preferences: {}
+users:
+- name: default-auth
+  user:
+    client-certificate: /var/lib/kubelet/pki/kubelet-client.crt
+    client-key: /var/lib/kubelet/pki/kubelet-client.key
+</code></pre>
+
+<h2 id="部署前注意事项">部署前注意事项</h2>
+
+<h3 id="1-确保所有节点时间同步">1. 确保所有节点时间同步</h3>
+
+<h3 id="2-确保所有节点ip转发功能打开">2. 确保所有节点ip转发功能打开</h3>
+
+<pre><code>net.ipv4.ip_forward = 1
+</code></pre>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

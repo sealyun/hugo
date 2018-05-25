@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="calico架构分析 组件  Felix calico每个节点上跑的代理 Orchestrator plugin网络编排插件 etcd 存储配置数据 BIRD BGP客户端，分发路由信息 BGP Route Reflector(BIRD) 另一个可选方案，适合更大规模  Felix 每个节点上的一个守护进程，负责编写路由和ACLs（访问控制列表）. 还有一些其它节点上需要设置的东西。 主要包含：
+ 网络接口管理
+ 把接口的一些信息告诉内核，让内核正确的处理这个接口的链路，特殊情况下，会去响应ARP请求，允许ip forwarding有等。 接口发现，注销的功能等
+ 路由管理
+ 在节点上把endpoints的路由配置到Linux kernel FIB(forwarding information base), 保障包正确的到达节点的endpoint上
+我的理解endpoints是节点上的虚拟网卡
+ ACL管理 准入控制列表
+ 设置内核的ACL,保证只有合法的包才可以在链路上发送,保障安全。
+ 状态报告
+ 把节点的网络状态信息写入etcd。
+编排插件 orchestrator Plugin 需要和别的编排调度平台结合时的插件，如Calico Neutron ML2 mechanism driver. 这样就可以把calico当成neutron的网络实现。
+ API 转化
+ 编排系统 kubernetes openstack等有自己的API，编排插件翻译成calico的数据模型存到calico的数据库中。
+ 反馈
+ 把网络状态的一些信息反馈给上层的编排调度系统
+etcd 两个主要功能，存储数据与各组建之间的通信。
+根据编排系统的不同，etcd可能是个主存储或者是个镜像存储，在openstack中就是一个镜像存储
+BGP Client(BIRD) 读取Felix设置的内核路由状态，在数据中心分发状态。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/calico-architecture/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="calico架构分析 组件  Felix calico每个节点上跑的代理 Orchestrator plugin网络编排插件 etcd 存储配置数据 BIRD BGP客户端，分发路由信息 BGP Route Reflector(BIRD) 另一个可选方案，适合更大规模  Felix 每个节点上的一个守护进程，负责编写路由和ACLs（访问控制列表）. 还有一些其它节点上需要设置的东西。 主要包含：
+ 网络接口管理
+ 把接口的一些信息告诉内核，让内核正确的处理这个接口的链路，特殊情况下，会去响应ARP请求，允许ip forwarding有等。 接口发现，注销的功能等
+ 路由管理
+ 在节点上把endpoints的路由配置到Linux kernel FIB(forwarding information base), 保障包正确的到达节点的endpoint上
+我的理解endpoints是节点上的虚拟网卡
+ ACL管理 准入控制列表
+ 设置内核的ACL,保证只有合法的包才可以在链路上发送,保障安全。
+ 状态报告
+ 把节点的网络状态信息写入etcd。
+编排插件 orchestrator Plugin 需要和别的编排调度平台结合时的插件，如Calico Neutron ML2 mechanism driver. 这样就可以把calico当成neutron的网络实现。
+ API 转化
+ 编排系统 kubernetes openstack等有自己的API，编排插件翻译成calico的数据模型存到calico的数据库中。
+ 反馈
+ 把网络状态的一些信息反馈给上层的编排调度系统
+etcd 两个主要功能，存储数据与各组建之间的通信。
+根据编排系统的不同，etcd可能是个主存储或者是个镜像存储，在openstack中就是一个镜像存储
+BGP Client(BIRD) 读取Felix设置的内核路由状态，在数据中心分发状态。">
+
+
+
+<meta itemprop="wordCount" content="239">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="calico架构分析 组件  Felix calico每个节点上跑的代理 Orchestrator plugin网络编排插件 etcd 存储配置数据 BIRD BGP客户端，分发路由信息 BGP Route Reflector(BIRD) 另一个可选方案，适合更大规模  Felix 每个节点上的一个守护进程，负责编写路由和ACLs（访问控制列表）. 还有一些其它节点上需要设置的东西。 主要包含：
+ 网络接口管理
+ 把接口的一些信息告诉内核，让内核正确的处理这个接口的链路，特殊情况下，会去响应ARP请求，允许ip forwarding有等。 接口发现，注销的功能等
+ 路由管理
+ 在节点上把endpoints的路由配置到Linux kernel FIB(forwarding information base), 保障包正确的到达节点的endpoint上
+我的理解endpoints是节点上的虚拟网卡
+ ACL管理 准入控制列表
+ 设置内核的ACL,保证只有合法的包才可以在链路上发送,保障安全。
+ 状态报告
+ 把节点的网络状态信息写入etcd。
+编排插件 orchestrator Plugin 需要和别的编排调度平台结合时的插件，如Calico Neutron ML2 mechanism driver. 这样就可以把calico当成neutron的网络实现。
+ API 转化
+ 编排系统 kubernetes openstack等有自己的API，编排插件翻译成calico的数据模型存到calico的数据库中。
+ 反馈
+ 把网络状态的一些信息反馈给上层的编排调度系统
+etcd 两个主要功能，存储数据与各组建之间的通信。
+根据编排系统的不同，etcd可能是个主存储或者是个镜像存储，在openstack中就是一个镜像存储
+BGP Client(BIRD) 读取Felix设置的内核路由状态，在数据中心分发状态。"/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h2 id="calico架构分析">calico架构分析</h2>
+
+<h3 id="组件">组件</h3>
+
+<ul>
+<li>Felix calico每个节点上跑的代理</li>
+<li>Orchestrator plugin网络编排插件</li>
+<li>etcd 存储配置数据</li>
+<li>BIRD BGP客户端，分发路由信息</li>
+<li>BGP Route Reflector(BIRD) 另一个可选方案，适合更大规模</li>
+</ul>
+
+<h3 id="felix">Felix</h3>
+
+<p>每个节点上的一个守护进程，负责编写路由和ACLs（访问控制列表）. 还有一些其它节点上需要设置的东西。
+主要包含：</p>
+
+<blockquote>
+<p>网络接口管理</p>
+</blockquote>
+
+<p>把接口的一些信息告诉内核，让内核正确的处理这个接口的链路，特殊情况下，会去响应ARP请求，允许ip forwarding有等。
+接口发现，注销的功能等</p>
+
+<blockquote>
+<p>路由管理</p>
+</blockquote>
+
+<p>在节点上把endpoints的路由配置到Linux kernel FIB(forwarding information base), 保障包正确的到达节点的endpoint上</p>
+
+<p>我的理解endpoints是节点上的虚拟网卡</p>
+
+<blockquote>
+<p>ACL管理 准入控制列表</p>
+</blockquote>
+
+<p>设置内核的ACL,保证只有合法的包才可以在链路上发送,保障安全。</p>
+
+<blockquote>
+<p>状态报告</p>
+</blockquote>
+
+<p>把节点的网络状态信息写入etcd。</p>
+
+<h3 id="编排插件-orchestrator-plugin">编排插件 orchestrator Plugin</h3>
+
+<p>需要和别的编排调度平台结合时的插件，如Calico Neutron ML2 mechanism driver. 这样就可以把calico当成neutron的网络实现。</p>
+
+<blockquote>
+<p>API 转化</p>
+</blockquote>
+
+<p>编排系统 kubernetes openstack等有自己的API，编排插件翻译成calico的数据模型存到calico的数据库中。</p>
+
+<blockquote>
+<p>反馈</p>
+</blockquote>
+
+<p>把网络状态的一些信息反馈给上层的编排调度系统</p>
+
+<h3 id="etcd">etcd</h3>
+
+<p>两个主要功能，存储数据与各组建之间的通信。</p>
+
+<p>根据编排系统的不同，etcd可能是个主存储或者是个镜像存储，在openstack中就是一个镜像存储</p>
+
+<h3 id="bgp-client-bird">BGP Client(BIRD)</h3>
+
+<p>读取Felix设置的内核路由状态，在数据中心分发状态。</p>
+
+<h3 id="bgp-route-reflector-bird">BGP Route Reflector (BIRD)</h3>
+
+<p>大型部署，简单的BGP会有限制，每个BGP客户端之间都会相互连接，会以 N^2次方
+增长。拓扑也会变的复杂</p>
+
+<p>reflector负责client之间的连接，防止它们需要两两相连。</p>
+
+<p>为了冗余，可以部署多个reflectors, 它仅仅包含控制面，endpoint之间的数据不经过它们</p>
+
+<p>路由广播</p>
+
+<h3 id="calico-node容器剖析">calico-node容器剖析</h3>
+
+<ul>
+<li>Felix TODO</li>
+<li>BIRD TODO</li>
+<li>confd 通过监听etcd修改BGP配置 AS number, logging levels, IPAM信息等</li>
+</ul>
+
+<h3 id="数据流">数据流</h3>
+
+<p>主要靠三个东西：
+让内核响应ARP请求
+用route让endpoint(workload)互通
+用iptables进行安全隔离</p>
+
+<h3 id="calico-kube-controllers-容器">calico/kube-controllers 容器</h3>
+
+<p>此容器里包含以下控制器：
+* policy controller: 监控网络策略 配置calico策略
+* profile controller: 监控namespaces和配置calico profiles
+* workloadendpoint controller: 监控pod标签的变化和更新calico workload endpoints
+* node controller: 监听k8s移除节点，和移除calico相关联的数据</p>
+
+<h3 id="配置calico-cni插件">配置calico CNI插件</h3>
+
+<p>calico CNI最小化配置：</p>
+
+<pre><code>{
+    &quot;name&quot;: &quot;any_name&quot;,
+    &quot;cniVersion&quot;: &quot;0.1.0&quot;,
+    &quot;type&quot;: &quot;calico&quot;,
+    &quot;ipam&quot;: {
+        &quot;type&quot;: &quot;calico-ipam&quot;
+    }
+}
+</code></pre>
+
+<p>如果calico-node容器自定义了一个NODENAME而不是 node的hostname CNI插件必须配置相同的node name</p>
+
+<pre><code>{
+    &quot;name&quot;: &quot;any_name&quot;,
+    &quot;nodename&quot;: &quot;&lt;NODENAME&gt;&quot;,
+    &quot;type&quot;: &quot;calico&quot;,
+    &quot;ipam&quot;: {
+        &quot;type&quot;: &quot;calico-ipam&quot;
+    }
+}
+</code></pre>
+
+<p>其它相关配置： datastore type, Etcd location</p>
+
+<blockquote>
+<p>logging:</p>
+</blockquote>
+
+<pre><code>{
+    &quot;name&quot;: &quot;any_name&quot;,
+    &quot;cniVersion&quot;: &quot;0.1.0&quot;,
+    &quot;type&quot;: &quot;calico&quot;,
+    &quot;log_level&quot;: &quot;DEBUG&quot;,
+    &quot;ipam&quot;: {
+        &quot;type&quot;: &quot;calico-ipam&quot;
+    }
+}
+</code></pre>
+
+<blockquote>
+<p>IPAM</p>
+</blockquote>
+
+<p>使用calico IPAM分配ip地址池</p>
+
+<pre><code>{
+    &quot;name&quot;: &quot;any_name&quot;,
+    &quot;cniVersion&quot;: &quot;0.1.0&quot;,
+    &quot;type&quot;: &quot;calico&quot;,
+    &quot;ipam&quot;: {
+        &quot;type&quot;: &quot;calico-ipam&quot;,
+        &quot;assign_ipv4&quot;: &quot;true&quot;,
+        &quot;assign_ipv6&quot;: &quot;true&quot;,
+        &quot;ipv4_pools&quot;: [&quot;10.0.0.0/24&quot;, &quot;20.0.0.0/16&quot;],
+        &quot;ipv6_pools&quot;: [&quot;2001:db8::1/120&quot;]
+    }
+}
+</code></pre>
+
+<blockquote>
+<p>kubernetes 配置</p>
+</blockquote>
+
+<p>calico需要访问kubernets api server,找到pod的标签，所以需要配置apiserver相关信息</p>
+
+<pre><code>{
+    &quot;name&quot;: &quot;any_name&quot;,
+    &quot;cniVersion&quot;: &quot;0.1.0&quot;,
+    &quot;type&quot;: &quot;calico&quot;,
+    &quot;kubernetes&quot;: {
+        &quot;kubeconfig&quot;: &quot;/path/to/kubeconfig&quot;
+    },
+    &quot;ipam&quot;: {
+        &quot;type&quot;: &quot;calico-ipam&quot;
+    }
+}
+</code></pre>
+
+<blockquote>
+<p>允许kubernetes networkpolicy</p>
+</blockquote>
+
+<p>设置了这个就必须运行calico/kube-controllers 把 policy,profile,workloadendpoint都设置成允许</p>
+
+<pre><code>{
+    &quot;name&quot;: &quot;any_name&quot;,
+    &quot;cniVersion&quot;: &quot;0.1.0&quot;,
+    &quot;type&quot;: &quot;calico&quot;,
+    &quot;policy&quot;: {
+      &quot;type&quot;: &quot;k8s&quot;
+    },
+    &quot;kubernetes&quot;: {
+        &quot;kubeconfig&quot;: &quot;/path/to/kubeconfig&quot;
+    },
+    &quot;ipam&quot;: {
+        &quot;type&quot;: &quot;calico-ipam&quot;
+    }
+}
+</code></pre>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

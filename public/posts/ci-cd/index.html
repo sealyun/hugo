@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="CI 概述 用一个可描述的配置定义整个工作流 程序员是很懒的动物，所以想各种办法解决重复劳动的问题，如果你的工作流中还在重复一些事，那么可能就得想想如何优化了
+持续集成就是可以帮助我们解决重复的代码构建，自动化测试，发布等重复劳动，通过简单一个提交代码的动作，解决接下来要做的很多事。
+容器技术使这一切变得更完美。
+典型的一个场景：
+我们写一个前端的工程，假设是基于vue.js的框架开发的，提交代码之后希望跑一跑测试用例，然后build压缩一个到dist目录里，再把这个目录的静态文件用nginx代理一下。 最后打成docker镜像放到镜像仓库。 甚至还可以增加一个在线上运行起来的流程。
+现在告诉你，只需要一个git push动作，接下来所有的事CI工具会帮你解决！这样的系统如果你还没用上的话，那请问还在等什么。接下来会系统的向大家介绍这一切。
+代码仓库管理 首先SVN这种渣渣软件就该尽早淘汰，没啥好说的，有git真的没有SVN存在的必要了我觉得。
+所以我们选一个git仓库，强烈推荐gogs，一个很优秀的开源软件，谁用谁知道。（广告：sealyun提供一整套打包部署工具，Email:fhtjob@hotmail.com）
+啥？如何安装？
+docker run -d --name gogs-time -v /etc/localtime:/etc/localtime -e TZ=Asia/Shanghai --publish 8022:22 \ --publish 3000:3000 --volume /data/gogs:/data gogs:latest  访问3000端口，然后就没有然后了
+CI 工具 至于jenkins这种老掉牙基于传统的方式去做CI的东西，即便功能再强大本尊也是不推崇的。 做一个功能强大的东西不难，难的是大道至简。
+当你用过drone之后。。。
+装：
+version: &#39;2&#39; services: drone-server: image: drone/drone:0.7 ports: - 80:8000 volumes: - /var/lib/drone:/var/lib/drone/ restart: always environment: - DRONE_OPEN=true - DOCKER_API_VERSION=1.24 - DRONE_HOST=10.1.86.206 - DRONE_GOGS=true - DRONE_GOGS_URL=http://10.1.86.207:3000/ - DRONE_SECRET=ok drone-agent: image: drone/drone:0." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/ci-cd/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="CI 概述 用一个可描述的配置定义整个工作流 程序员是很懒的动物，所以想各种办法解决重复劳动的问题，如果你的工作流中还在重复一些事，那么可能就得想想如何优化了
+持续集成就是可以帮助我们解决重复的代码构建，自动化测试，发布等重复劳动，通过简单一个提交代码的动作，解决接下来要做的很多事。
+容器技术使这一切变得更完美。
+典型的一个场景：
+我们写一个前端的工程，假设是基于vue.js的框架开发的，提交代码之后希望跑一跑测试用例，然后build压缩一个到dist目录里，再把这个目录的静态文件用nginx代理一下。 最后打成docker镜像放到镜像仓库。 甚至还可以增加一个在线上运行起来的流程。
+现在告诉你，只需要一个git push动作，接下来所有的事CI工具会帮你解决！这样的系统如果你还没用上的话，那请问还在等什么。接下来会系统的向大家介绍这一切。
+代码仓库管理 首先SVN这种渣渣软件就该尽早淘汰，没啥好说的，有git真的没有SVN存在的必要了我觉得。
+所以我们选一个git仓库，强烈推荐gogs，一个很优秀的开源软件，谁用谁知道。（广告：sealyun提供一整套打包部署工具，Email:fhtjob@hotmail.com）
+啥？如何安装？
+docker run -d --name gogs-time -v /etc/localtime:/etc/localtime -e TZ=Asia/Shanghai --publish 8022:22 \ --publish 3000:3000 --volume /data/gogs:/data gogs:latest  访问3000端口，然后就没有然后了
+CI 工具 至于jenkins这种老掉牙基于传统的方式去做CI的东西，即便功能再强大本尊也是不推崇的。 做一个功能强大的东西不难，难的是大道至简。
+当你用过drone之后。。。
+装：
+version: &#39;2&#39; services: drone-server: image: drone/drone:0.7 ports: - 80:8000 volumes: - /var/lib/drone:/var/lib/drone/ restart: always environment: - DRONE_OPEN=true - DOCKER_API_VERSION=1.24 - DRONE_HOST=10.1.86.206 - DRONE_GOGS=true - DRONE_GOGS_URL=http://10.1.86.207:3000/ - DRONE_SECRET=ok drone-agent: image: drone/drone:0.">
+
+
+
+<meta itemprop="wordCount" content="109">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="CI 概述 用一个可描述的配置定义整个工作流 程序员是很懒的动物，所以想各种办法解决重复劳动的问题，如果你的工作流中还在重复一些事，那么可能就得想想如何优化了
+持续集成就是可以帮助我们解决重复的代码构建，自动化测试，发布等重复劳动，通过简单一个提交代码的动作，解决接下来要做的很多事。
+容器技术使这一切变得更完美。
+典型的一个场景：
+我们写一个前端的工程，假设是基于vue.js的框架开发的，提交代码之后希望跑一跑测试用例，然后build压缩一个到dist目录里，再把这个目录的静态文件用nginx代理一下。 最后打成docker镜像放到镜像仓库。 甚至还可以增加一个在线上运行起来的流程。
+现在告诉你，只需要一个git push动作，接下来所有的事CI工具会帮你解决！这样的系统如果你还没用上的话，那请问还在等什么。接下来会系统的向大家介绍这一切。
+代码仓库管理 首先SVN这种渣渣软件就该尽早淘汰，没啥好说的，有git真的没有SVN存在的必要了我觉得。
+所以我们选一个git仓库，强烈推荐gogs，一个很优秀的开源软件，谁用谁知道。（广告：sealyun提供一整套打包部署工具，Email:fhtjob@hotmail.com）
+啥？如何安装？
+docker run -d --name gogs-time -v /etc/localtime:/etc/localtime -e TZ=Asia/Shanghai --publish 8022:22 \ --publish 3000:3000 --volume /data/gogs:/data gogs:latest  访问3000端口，然后就没有然后了
+CI 工具 至于jenkins这种老掉牙基于传统的方式去做CI的东西，即便功能再强大本尊也是不推崇的。 做一个功能强大的东西不难，难的是大道至简。
+当你用过drone之后。。。
+装：
+version: &#39;2&#39; services: drone-server: image: drone/drone:0.7 ports: - 80:8000 volumes: - /var/lib/drone:/var/lib/drone/ restart: always environment: - DRONE_OPEN=true - DOCKER_API_VERSION=1.24 - DRONE_HOST=10.1.86.206 - DRONE_GOGS=true - DRONE_GOGS_URL=http://10.1.86.207:3000/ - DRONE_SECRET=ok drone-agent: image: drone/drone:0."/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<p><img src="/ci.png" alt="" /></p>
+
+<h1 id="ci-概述">CI 概述</h1>
+
+<h3 id="用一个可描述的配置定义整个工作流">用一个可描述的配置定义整个工作流</h3>
+
+<p>程序员是很懒的动物，所以想各种办法解决重复劳动的问题，如果你的工作流中还在重复一些事，那么可能就得想想如何优化了</p>
+
+<p>持续集成就是可以帮助我们解决重复的代码构建，自动化测试，发布等重复劳动，通过简单一个提交代码的动作，解决接下来要做的很多事。</p>
+
+<p>容器技术使这一切变得更完美。</p>
+
+<p>典型的一个场景：</p>
+
+<p>我们写一个前端的工程，假设是基于vue.js的框架开发的，提交代码之后希望跑一跑测试用例，然后build压缩一个到dist目录里，再把这个目录的静态文件用nginx代理一下。
+最后打成docker镜像放到镜像仓库。 甚至还可以增加一个在线上运行起来的流程。</p>
+
+<p>现在告诉你，只需要一个git push动作，接下来所有的事CI工具会帮你解决！这样的系统如果你还没用上的话，那请问还在等什么。接下来会系统的向大家介绍这一切。</p>
+
+<h1 id="代码仓库管理">代码仓库管理</h1>
+
+<p>首先SVN这种渣渣软件就该尽早淘汰，没啥好说的，有git真的没有SVN存在的必要了我觉得。</p>
+
+<p>所以我们选一个git仓库，强烈推荐gogs，一个很优秀的开源软件，谁用谁知道。（广告：sealyun提供一整套打包部署工具，Email:fhtjob@hotmail.com）</p>
+
+<p>啥？如何安装？</p>
+
+<pre><code>docker run -d --name gogs-time -v /etc/localtime:/etc/localtime -e TZ=Asia/Shanghai --publish 8022:22 \
+           --publish 3000:3000 --volume /data/gogs:/data gogs:latest
+</code></pre>
+
+<p>访问3000端口，然后就没有然后了</p>
+
+<h1 id="ci-工具">CI 工具</h1>
+
+<p>至于jenkins这种老掉牙基于传统的方式去做CI的东西，即便功能再强大本尊也是不推崇的。  做一个功能强大的东西不难，难的是大道至简。</p>
+
+<p>当你用过drone之后。。。</p>
+
+<p>装：</p>
+
+<pre><code>version: '2'
+
+services:
+  drone-server:
+    image: drone/drone:0.7
+    ports:
+      - 80:8000
+    volumes:
+      - /var/lib/drone:/var/lib/drone/
+    restart: always
+    environment:
+      - DRONE_OPEN=true
+      - DOCKER_API_VERSION=1.24
+      - DRONE_HOST=10.1.86.206
+      - DRONE_GOGS=true
+      - DRONE_GOGS_URL=http://10.1.86.207:3000/
+      - DRONE_SECRET=ok
+
+  drone-agent:
+    image: drone/drone:0.7
+    command: agent
+    restart: always
+    depends_on:
+      - drone-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_API_VERSION=1.24
+      - DRONE_SERVER=ws://drone-server:8000/ws/broker
+      - DRONE_SECRET=ok
+</code></pre>
+
+<p><code>docker-compose up -d</code> 然后你懂的，也没有然后了</p>
+
+<p>用gogs账户登录drone即可</p>
+
+<p>每个步骤就是个容器，每个插件也是个容器，各种组合，简直就是活字印刷术</p>
+
+<p>怎么使用这种初级肤浅的内容我就不赘述了，但是有很多坑的地方：</p>
+
+<ul>
+<li>装drone的机器能用aufs尽量用，device mapper有些插件是跑不了的，如一些docker in docker的插件，这不算是drone的毛病，只能说docker对 docker in docker支持不够好</li>
+<li>centos对aufs支持不够好，如果想用centos支持aufs，那你可得折腾折腾了，社区方案在此：<a href="https://github.com/sealyun/kernel-ml-aufs">https://github.com/sealyun/kernel-ml-aufs</a></li>
+</ul>
+
+<h1 id="镜像仓库">镜像仓库</h1>
+
+<p>用harbor吧，反正也没遇到更好的了,官方离线包也是一键安装的，没啥好说的了。</p>
+
+<h1 id="关于cd">关于CD</h1>
+
+<p>CI是以git触发的，可能我们还想用别的方式触发，典型的场景就是运维不懂git，只想在界面上点击一下执行一个工作流。 现有的drone还不支持这个。</p>
+
+<p>我们是自己开发的。</p>
+
+<p>其实我个人推崇git方式触发部署。传说中的gitops。</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="calico网络策略 使用kubernetes NetworkPolicy让用户定义pod之间的访问策略，精细的控制哪些pod之间有相互访问的权利，如此网络更安全.
+教程流程  创建nginx service 禁止所有入口流量 允许向内访问nginx 禁止所有出口流程 允许出口流量访问kube-dns  创建nginx service kubectl create ns advanced-policy-demo kubectl run --namespace=advanced-policy-demo nginx --replicas=2 --image=nginx kubectl expose --namespace=advanced-policy-demo deployment nginx --port=80  现在nginx是完全可以被访问到的：
+kubectl run --namespace=advanced-policy-demo access --rm -ti --image busybox \ wget -q --timeout=5 nginx -O -  禁止入口流量 kubectl create -f - &lt;&lt;EOF apiVersion: networking.k8s.io/v1 kind: NetworkPolicy metadata: name: default-deny-ingress namespace: advanced-policy-demo spec: podSelector: matchLabels: {} policyTypes: - Ingress EOF  再去访问：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/calico-network-policy/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="calico网络策略 使用kubernetes NetworkPolicy让用户定义pod之间的访问策略，精细的控制哪些pod之间有相互访问的权利，如此网络更安全.
+教程流程  创建nginx service 禁止所有入口流量 允许向内访问nginx 禁止所有出口流程 允许出口流量访问kube-dns  创建nginx service kubectl create ns advanced-policy-demo kubectl run --namespace=advanced-policy-demo nginx --replicas=2 --image=nginx kubectl expose --namespace=advanced-policy-demo deployment nginx --port=80  现在nginx是完全可以被访问到的：
+kubectl run --namespace=advanced-policy-demo access --rm -ti --image busybox \ wget -q --timeout=5 nginx -O -  禁止入口流量 kubectl create -f - &lt;&lt;EOF apiVersion: networking.k8s.io/v1 kind: NetworkPolicy metadata: name: default-deny-ingress namespace: advanced-policy-demo spec: podSelector: matchLabels: {} policyTypes: - Ingress EOF  再去访问：">
+
+
+
+<meta itemprop="wordCount" content="278">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="calico网络策略 使用kubernetes NetworkPolicy让用户定义pod之间的访问策略，精细的控制哪些pod之间有相互访问的权利，如此网络更安全.
+教程流程  创建nginx service 禁止所有入口流量 允许向内访问nginx 禁止所有出口流程 允许出口流量访问kube-dns  创建nginx service kubectl create ns advanced-policy-demo kubectl run --namespace=advanced-policy-demo nginx --replicas=2 --image=nginx kubectl expose --namespace=advanced-policy-demo deployment nginx --port=80  现在nginx是完全可以被访问到的：
+kubectl run --namespace=advanced-policy-demo access --rm -ti --image busybox \ wget -q --timeout=5 nginx -O -  禁止入口流量 kubectl create -f - &lt;&lt;EOF apiVersion: networking.k8s.io/v1 kind: NetworkPolicy metadata: name: default-deny-ingress namespace: advanced-policy-demo spec: podSelector: matchLabels: {} policyTypes: - Ingress EOF  再去访问："/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h2 id="calico网络策略">calico网络策略</h2>
+
+<p>使用kubernetes NetworkPolicy让用户定义pod之间的访问策略，精细的控制哪些pod之间有相互访问的权利，如此网络更安全.</p>
+
+<h2 id="教程流程">教程流程</h2>
+
+<ul>
+<li>创建nginx service</li>
+<li>禁止所有入口流量</li>
+<li>允许向内访问nginx</li>
+<li>禁止所有出口流程</li>
+<li>允许出口流量访问kube-dns</li>
+</ul>
+
+<h2 id="创建nginx-service">创建nginx service</h2>
+
+<pre><code>kubectl create ns advanced-policy-demo
+kubectl run --namespace=advanced-policy-demo nginx --replicas=2 --image=nginx
+kubectl expose --namespace=advanced-policy-demo deployment nginx --port=80
+</code></pre>
+
+<p>现在nginx是完全可以被访问到的：</p>
+
+<pre><code>kubectl run --namespace=advanced-policy-demo access --rm -ti --image busybox \
+wget -q --timeout=5 nginx -O -
+</code></pre>
+
+<h2 id="禁止入口流量">禁止入口流量</h2>
+
+<pre><code>kubectl create -f - &lt;&lt;EOF
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: advanced-policy-demo
+spec:
+  podSelector:
+    matchLabels: {}
+  policyTypes:
+  - Ingress
+EOF
+</code></pre>
+
+<p>再去访问：</p>
+
+<pre><code>kubectl run --namespace=advanced-policy-demo access --rm -ti --image busybox \
+wget -q --timeout=5 nginx -O -
+wget: download timed out
+</code></pre>
+
+<h2 id="允许所有pod访问nginx">允许所有pod访问nginx</h2>
+
+<pre><code>kubectl create -f - &lt;&lt;EOF
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: access-nginx
+  namespace: advanced-policy-demo
+spec:
+  podSelector:
+    matchLabels:
+      run: nginx  # 目标pods，给这些pods配置策略
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels: {} # 允许所有pod访问nginx
+EOF
+</code></pre>
+
+<pre><code>kubectl run --namespace=advanced-policy-demo access --rm -ti --image busybox \
+wget -q --timeout=5 nginx -O -
+</code></pre>
+
+<h2 id="禁止所有出口流量">禁止所有出口流量</h2>
+
+<pre><code>kubectl create -f - &lt;&lt;EOF
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-egress
+  namespace: advanced-policy-demo
+spec:
+  podSelector:
+    matchLabels: {}
+  policyTypes:
+  - Egress
+EOF
+</code></pre>
+
+<p>这时就无法访问sina什么的了，也无法访问别的pod</p>
+
+<p>在 busybox里面：</p>
+
+<pre><code>/ # nslookup nginx
+Server:    10.96.0.10
+Address 1: 10.96.0.10
+
+
+nslookup: can't resolve 'nginx'
+/ # wget -q --timeout=5 sina.com -O -
+wget: bad address 'google.com'
+</code></pre>
+
+<h2 id="允许访问dns">允许访问DNS</h2>
+
+<p>因为DNS跑在kube-system这个namespace下，所以先给这个namespace贴个标签，
+然后通过namespaceSelector选到这个namespace,允许本namespace下的pod访问kube-system下面的pod</p>
+
+<pre><code>kubectl label namespace kube-system name=kube-system
+kubectl create -f - &lt;&lt;EOF
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-access
+  namespace: advanced-policy-demo
+spec:
+  podSelector:
+    matchLabels: {}
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+
+EOF
+</code></pre>
+
+<p>如此busybox里面就能发现nginx了</p>
+
+<pre><code>/ # nslookup nginx
+Server:    10.0.0.10
+Address 1: 10.0.0.10 kube-dns.kube-system.svc.cluster.local
+</code></pre>
+
+<h2 id="允许外部流量访问nginx">允许外部流量访问nginx</h2>
+
+<pre><code>kubectl create -f - &lt;&lt;EOF
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-to-advance-policy-ns
+  namespace: advanced-policy-demo
+spec:
+  podSelector:
+    matchLabels: {}
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          run: nginx
+EOF
+</code></pre>
+
+<p>这时我们的测试pods只能联通带有 run:nginx标签的pod，外部的DNS就无法访问了</p>
+
+<h2 id="删除所有的namespace">删除所有的namespace</h2>
+
+<pre><code>kubectl delete ns advanced-policy-demo
+</code></pre>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

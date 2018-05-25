@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://lameleg.com/posts/ci-cd/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/calico-architecture/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/calico-network-policy/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/calico/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/container-stop-timeout/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/docker-architech/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/docker-build/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/docker-dev/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/docker-network/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/docker-ovs/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/docker-storage/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/grafana-promethus/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/install-k8s-cluster/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/install-k8s/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/iptables/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/k8s-authenticating/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/k8s-ha-conf/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/k8s-offline-install-ha/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/k8s-rbac/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/keep_containers_alive_deamon_downtme/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/kubeadm-source/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/kubernetes-dns/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/micro-architecture/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/moby_discussion/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/offline-install/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/revolution/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/rpc-protobuf/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/runc/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/scratch/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/sealyun-strengths/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/sell/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/posts/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://lameleg.com/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

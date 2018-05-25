@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+      <link href="https://lameleg.com/posts/index.xml" rel="alternate" type="application/rss+xml" title="My New Hugo Site" />
+      <link href="https://lameleg.com/posts/index.xml" rel="feed" type="application/rss+xml" title="My New Hugo Site" />
+    
+
+    <meta property="og:title" content="Posts" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lameleg.com/posts/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="Posts">
+<meta itemprop="description" content="">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Posts"/>
+<meta name="twitter:description" content=""/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+
+  
+  
+  <header class="cover bg-top" style="background-image: url('https://lameleg.com/images/gohugo-default-sample-hero-image.jpg');">
+    <div class="bg-black-60">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+      <div class="tc-l pv4 pv6-l ph3 ph4-ns">
+        <h1 class="f2 f-subheadline-l fw2 white-90 mb0 lh-title">
+          Posts
+        </h1>
+        
+      </div>
+    </div>
+  </header>
+
+
+    <main class="pb7" role="main">
+      
+  <article class="pa3 pa4-ns nested-copy-line-height nested-img">
+  <main class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></main>
+    <section class="flex-ns flex-wrap justify-around mt5">
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/docker-storage/" class="link black dim">
+        
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/grafana-promethus/" class="link black dim">
+        
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+       grafana配置教程 json文件在此 长期更新，直接复制粘贴进去即可 
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/install-k8s-cluster/" class="link black dim">
+        
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      使用kubeadm安装安全高可用kubernetes集群 系统架构图  kubectl dashboard | V +------------------------+ join | LB 10.1.245.94 | &lt;--- Nodes +------------------------+ | |--master1 manager1 schedule1 10.1.245.93 |--master2 manager2 schedule2 10.1.245.95 =============&gt; etcd cluster http://10.1.245.93:2379,http://10.1.245.94:2379,http://10.1.245.95:2379 |--master3 manager3 schedule3 10.1.245.94  起动etcd集群 cat etcd.yaml
+version: '2' services: etcd: container_name: etcd_infra0 image: quay.io/coreos/etcd:v3.1.10 command: | etcd --name infra0 --initial-advertise-peer-urls http://10.1.245.94:2380 --listen-peer-urls http://10.1.245.94:2380 --listen-client-urls http://10.1.245.94:2379,http://127.0.0.1:2379 --advertise-client-urls http://10.1.245.94:2379 --data-dir /etcd-data.etcd --initial-cluster-token etcd-cluster-1 -initial-cluster infra0=http://10.1.245.93:2380,infra1=http://10.1.245.94:2379,infra2=http://10.1.245.95:2379 --initial-cluster-state new volumes: - /data/etcd-data.etcd:/etcd-data.etcd network_mode: &quot;host&quot;  其它两个节点照抄，修改ip即可
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/install-k8s/" class="link black dim">
+        
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      alico node &lsquo;iZ2ze3nu0s9j3v57be4xuuZ&rsquo; is already using the IPv4 address 192.168.152.65
+基础环境  关闭防火墙 selinux
+ $ systemctl stop firewalld &amp;&amp; systemctl disable firewalld $ setenforce 0   打开forward sysctl -w net.ipv4.ip_forward=1
+关闭swap
+ swapoff -a 再把/etc/fstab文件中带有swap的行删了,没有就无视
+ 装这两工具如果没装的话
+ yum install -y ebtables socat
+ IPv4 iptables 链设置 CNI插件需要
+ sysctl net.bridge.bridge-nf-call-iptables=1
+墙外安装 在国内是很难使用这种方式安装了，推荐查看离线安装的方案
+ 装docker
+ yum install -y docker systemctl enable docker &amp;&amp; systemctl start docker
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/iptables/" class="link black dim">
+        
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      iptables教程 内核空间中的五个包处理位置，和五个函数钩子（规则链）  PREROUTING 数据包刚进入网络层 , 路由之前 INPUT 路由判断，流入用户空间 OUTPUT 用户空间发出，后接路由判断出口的网络接口 FORWARD 路由判断不进入用户空间，只进行转发 POSTROUTING 数据包通过网络接口出去   应用层 ------------- ^ | | v INPUT OUTPUT | | --&gt;PREROUTING--------&gt;FORWARD---&gt;POSTROUTING---&gt;  这就是五个内置链，可以在链里面添加规则
+四个表来定义区分各种不同功能和处理方式 表可以作用在多个链上，同样一个链也可以配置多个表
+ Filter表 一般的数据包过滤 Nat表 网络地址转换 Mangle表 修改数据包的原数据，一般用于防火墙标记 raw表 用于配置免除     chain/table Filter Nat Mangle Raw     PREROUTING false true true true   INPUT true false true false   FORWARD true false true false   OUTPUT true true true true   POSTROUTING false true true false    创建一个自定义链 iptables -t filter -N newchain # 创建链 iptables -t filter -A newchain -s 192.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/k8s-authenticating/" class="link black dim">
+        
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      kubernetes对接第三方认证 广告： 安装包地址
+原文地址
+概述 本文介绍如何使用github账户去关联自己kubernetes账户。达到如下效果： 1. 使用github用户email作为kubernetes用户，如fhtjob@hotmail.com 2. 创建对应的clusterrole绑定给fhtjob@hotmail.com这个用户 3. 给fhtjob@hotmail这个用户创建一个kubeconfig文件，让改用户可以使用kubectl命令操作集群，且只有部分权限
+dex介绍 dex 是一个统一认证的服务，支持各种认证协议如Ouath2 ldap等，自己可以作为一个identity provider,也可以连到别的id provider(如github)上,dex作为一个中间代理.
+流程  http://47.52.197.163:5555 http://47.52.197.163:32000 人(浏览器） dex client dex server github kubectl kubernetes server | login(scope) | | | | | |------1--------&gt;| | | | | | |----------2-------------&gt;| | | | | | |----------3-----------&gt;| | | | | | id_token | | | | | |&lt;---------4------------| callback | | | id_token |&lt;----------5-------------|callback | | | |&lt;-------6-------| | | | | | | | | id_token | | |------------------------------------------------7--------------------------------------------&gt;| id_token | | | | | |----------8------------&gt;| | | | | | | valid?
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/k8s-ha-conf/" class="link black dim">
+        
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      机器    IP 用途 备注     10.100.81.11 master、etcd 主节点   10.100.81.12 master、etcd、keepalived、haproxy 主节点，同时部署keepalived、haproxy，保证master高可用   10.100.81.13 master、etcd、keepalived、haproxy 主节点，同时部署keepalived、haproxy，保证master高可用   10.100.81.14 node、etcd 非业务节点   10.100.81.15 node、etcd 非业务节点   10.100.81.16 node 业务节点   10.100.81.17 node 业务节点   10.100.81.18 node 业务节点   10.100.81.19 node 业务节点   10.100.81.20 node 业务节点   10.100.81.21 node 业务节点   10.100.81.22 node 业务节点   10.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/k8s-offline-install-ha/" class="link black dim">
+        
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。
+ 单个master流程：
+  解压后在master 上 cd shell &amp;&amp; sh init.sh ,然后sh master.sh（注意因为脚本用的相对路径所以不再当前目录会找不到文件） 在node上 cd shell &amp;&amp; sh init.sh 。然后在node上执行master输出的join命令即可   高可用如下
+ 提前准备 假设构建一个3master+2node的k8s集群，需要5台节点共同的条件如下：
+ （yum install -y docker是1.12.6版本需要改cg） 17.06安装教程： ```bash #0.删除老旧的 $ yum remove -y docker* #如果默认之前yum安装的1.12版本,可以这样删没装可以跳过此步 #1.安装需要的包 $ yum install -y yum-utils device-mapper-persistent-data lvm2   #2.添加源,不然默认的找不到 $ yum-config-manager &ndash;add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#3.根据实际查找当前版本 (可选) $ yum list docker-ce &ndash;showduplicates | sort -r #4.如果确定了版本,直接安装,如果要装17。03直接修改下面数字即可 $ yum install docker-ce-17.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/k8s-rbac/" class="link black dim">
+        
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      kubernetes RBAC实战 环境准备 先用kubeadm安装好kubernetes集群，包地址在此 好用又方便，服务周到，童叟无欺
+本文目的，让名为devuser的用户只能有权限访问特定namespace下的pod
+命令行kubectl访问 安装cfssl 此工具生成证书非常方便, pem证书与crt证书,编码一致可直接使用
+wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 chmod +x cfssl_linux-amd64 mv cfssl_linux-amd64 /bin/cfssl wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 chmod +x cfssljson_linux-amd64 mv cfssljson_linux-amd64 /bin/cfssljson wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 chmod +x cfssl-certinfo_linux-amd64 mv cfssl-certinfo_linux-amd64 /bin/cfssl-certinfo  签发客户端证书 根据ca证书与么钥签发用户证书 根证书已经在/etc/kubernetes/pki目录下了
+[root@master1 ~]# ls /etc/kubernetes/pki/ apiserver.crt ca-config.json devuser-csr.json front-proxy-ca.key sa.pub apiserver.key ca.crt devuser-key.pem front-proxy-client.crt apiserver-kubelet-client.crt ca.key devuser.pem front-proxy-client.key apiserver-kubelet-client.key devuser.csr front-proxy-ca.crt sa.key  注意以下几个文件： ca.crt ca.key ca-config.json devuser-csr.json
+创建ca-config.json文件
+cat &gt; ca-config.json &lt;&lt;EOF { &quot;signing&quot;: { &quot;default&quot;: { &quot;expiry&quot;: &quot;87600h&quot; }, &quot;profiles&quot;: { &quot;kubernetes&quot;: { &quot;usages&quot;: [ &quot;signing&quot;, &quot;key encipherment&quot;, &quot;server auth&quot;, &quot;client auth&quot; ], &quot;expiry&quot;: &quot;87600h&quot; } } } } EOF  创建devuser-csr.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/keep_containers_alive_deamon_downtme/" class="link black dim">
+        
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+       配置docker engine使engine挂掉时容器继续运行 两种方式： * 修改/etc/docker/daemon.json 如果不想engine重启，给engine发送SIGHUP信号使engine重新加载配置文件 * 直接加启动参数：&ndash;live-restore, 如用systemd管理修改这个配置文件：/usr/lib/systemd/system/docker.service, 然后执行systemctl daemon-reload &amp;&amp; service docker restart
+加了这个参数之后，重启engine就不会使容器退出了
+实践 此功能在做engine升级时非常有用，现在就以docker1.12升级到1.13为例详细介绍。
+我们有一个容器正在运行，已经运行了两个星期了(ps:我们已经配置了 &ndash;live-restore启动参数)
+[root@dev-86-201 ~]# docker ps CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 4c73d9658275 dev.reg.iflytek.com/devops/whoami:latest &quot;/whoamI&quot; 2 weeks ago Up 10 minutes 80/tcp 0Fack  
+    </div>
+  </div>
+</div>
+</div>
+      
+    </section>
+
+<ul class="pagination">
+    
+    <li>
+        <a href="/posts/" aria-label="First"><span aria-hidden="true">&laquo;&laquo;</span></a>
+    </li>
+    
+    <li
+    >
+    <a href="/posts/" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+    </li>
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li
+    ><a href="/posts/">1</a></li>
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li
+    class="active"><a href="/posts/page/2/">2</a></li>
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li
+    ><a href="/posts/page/3/">3</a></li>
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li
+    ><a href="/posts/page/4/">4</a></li>
+    
+    
+    <li
+    >
+    <a href="/posts/page/3/" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+    </li>
+    
+    <li>
+        <a href="/posts/page/4/" aria-label="Last"><span aria-hidden="true">&raquo;&raquo;</span></a>
+    </li>
+    
+</ul>
+</article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

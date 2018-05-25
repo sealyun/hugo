@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+      <link href="https://lameleg.com/index.xml" rel="alternate" type="application/rss+xml" title="My New Hugo Site" />
+      <link href="https://lameleg.com/index.xml" rel="feed" type="application/rss+xml" title="My New Hugo Site" />
+    
+
+    <meta property="og:title" content="My New Hugo Site" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lameleg.com/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="My New Hugo Site">
+<meta itemprop="description" content="">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="My New Hugo Site"/>
+<meta name="twitter:description" content=""/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+
+  
+  
+  <header class="cover bg-top" style="background-image: url('https://lameleg.com/images/gohugo-default-sample-hero-image.jpg');">
+    <div class="bg-black-60">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+      <div class="tc-l pv4 pv6-l ph3 ph4-ns">
+        <h1 class="f2 f-subheadline-l fw2 white-90 mb0 lh-title">
+          My New Hugo Site
+        </h1>
+        
+      </div>
+    </div>
+  </header>
+
+
+    <main class="pb7" role="main">
+      
+  <article class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray">
+    
+  </article>
+  
+  
+  
+  
+  
+  
+  
+    
+    
+
+    <div class="pa3 pa4-ns w-100 w-70-ns center">
+      
+       
+          <h1 class="flex-none">
+            Recent Posts
+          </h1>
+        
+
+      
+
+      <section class="w-100 mw8">
+        
+        
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="/posts/ci-cd/" class="color-inherit dim link">
+            
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          CI 概述 用一个可描述的配置定义整个工作流 程序员是很懒的动物，所以想各种办法解决重复劳动的问题，如果你的工作流中还在重复一些事，那么可能就得想想如何优化了
+持续集成就是可以帮助我们解决重复的代码构建，自动化测试，发布等重复劳动，通过简单一个提交代码的动作，解决接下来要做的很多事。
+容器技术使这一切变得更完美。
+典型的一个场景：
+我们写一个前端的工程，假设是基于vue.js的框架开发的，提交代码之后希望跑一跑测试用例，然后build压缩一个到dist目录里，再把这个目录的静态文件用nginx代理一下。 最后打成docker镜像放到镜像仓库。 甚至还可以增加一个在线上运行起来的流程。
+现在告诉你，只需要一个git push动作，接下来所有的事CI工具会帮你解决！这样的系统如果你还没用上的话，那请问还在等什么。接下来会系统的向大家介绍这一切。
+代码仓库管理 首先SVN这种渣渣软件就该尽早淘汰，没啥好说的，有git真的没有SVN存在的必要了我觉得。
+所以我们选一个git仓库，强烈推荐gogs，一个很优秀的开源软件，谁用谁知道。（广告：sealyun提供一整套打包部署工具，Email:fhtjob@hotmail.com）
+啥？如何安装？
+docker run -d --name gogs-time -v /etc/localtime:/etc/localtime -e TZ=Asia/Shanghai --publish 8022:22 \ --publish 3000:3000 --volume /data/gogs:/data gogs:latest  访问3000端口，然后就没有然后了
+CI 工具 至于jenkins这种老掉牙基于传统的方式去做CI的东西，即便功能再强大本尊也是不推崇的。 做一个功能强大的东西不难，难的是大道至简。
+当你用过drone之后。。。
+装：
+version: '2' services: drone-server: image: drone/drone:0.7 ports: - 80:8000 volumes: - /var/lib/drone:/var/lib/drone/ restart: always environment: - DRONE_OPEN=true - DOCKER_API_VERSION=1.24 - DRONE_HOST=10.1.86.206 - DRONE_GOGS=true - DRONE_GOGS_URL=http://10.1.86.207:3000/ - DRONE_SECRET=ok drone-agent: image: drone/drone:0.
+        </div>
+          <a href="/posts/ci-cd/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="/posts/calico-architecture/" class="color-inherit dim link">
+            
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          calico架构分析 组件  Felix calico每个节点上跑的代理 Orchestrator plugin网络编排插件 etcd 存储配置数据 BIRD BGP客户端，分发路由信息 BGP Route Reflector(BIRD) 另一个可选方案，适合更大规模  Felix 每个节点上的一个守护进程，负责编写路由和ACLs（访问控制列表）. 还有一些其它节点上需要设置的东西。 主要包含：
+ 网络接口管理
+ 把接口的一些信息告诉内核，让内核正确的处理这个接口的链路，特殊情况下，会去响应ARP请求，允许ip forwarding有等。 接口发现，注销的功能等
+ 路由管理
+ 在节点上把endpoints的路由配置到Linux kernel FIB(forwarding information base), 保障包正确的到达节点的endpoint上
+我的理解endpoints是节点上的虚拟网卡
+ ACL管理 准入控制列表
+ 设置内核的ACL,保证只有合法的包才可以在链路上发送,保障安全。
+ 状态报告
+ 把节点的网络状态信息写入etcd。
+编排插件 orchestrator Plugin 需要和别的编排调度平台结合时的插件，如Calico Neutron ML2 mechanism driver. 这样就可以把calico当成neutron的网络实现。
+ API 转化
+ 编排系统 kubernetes openstack等有自己的API，编排插件翻译成calico的数据模型存到calico的数据库中。
+ 反馈
+ 把网络状态的一些信息反馈给上层的编排调度系统
+etcd 两个主要功能，存储数据与各组建之间的通信。
+根据编排系统的不同，etcd可能是个主存储或者是个镜像存储，在openstack中就是一个镜像存储
+BGP Client(BIRD) 读取Felix设置的内核路由状态，在数据中心分发状态。
+        </div>
+          <a href="/posts/calico-architecture/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="/posts/calico-network-policy/" class="color-inherit dim link">
+            
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          calico网络策略 使用kubernetes NetworkPolicy让用户定义pod之间的访问策略，精细的控制哪些pod之间有相互访问的权利，如此网络更安全.
+教程流程  创建nginx service 禁止所有入口流量 允许向内访问nginx 禁止所有出口流程 允许出口流量访问kube-dns  创建nginx service kubectl create ns advanced-policy-demo kubectl run --namespace=advanced-policy-demo nginx --replicas=2 --image=nginx kubectl expose --namespace=advanced-policy-demo deployment nginx --port=80  现在nginx是完全可以被访问到的：
+kubectl run --namespace=advanced-policy-demo access --rm -ti --image busybox \ wget -q --timeout=5 nginx -O -  禁止入口流量 kubectl create -f - &lt;&lt;EOF apiVersion: networking.k8s.io/v1 kind: NetworkPolicy metadata: name: default-deny-ingress namespace: advanced-policy-demo spec: podSelector: matchLabels: {} policyTypes: - Ingress EOF  再去访问：
+        </div>
+          <a href="/posts/calico-network-policy/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+      </section>
+
+      
+      <section class="w-100">
+        <h1 class="f3">More</h1>
+        
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="/posts/calico/" class="link black dim">
+              
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="/posts/container-stop-timeout/" class="link black dim">
+              
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="/posts/docker-architech/" class="link black dim">
+              
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="/posts/docker-build/" class="link black dim">
+              
+            </a>
+          </h2>
+        
+
+        
+        
+          <a href="/posts/" class="link db f6 pa2 br3 bg-mid-gray white dim w4 tc">All Posts</a>
+        
+        </section>
+      
+
+      </div>
+  
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

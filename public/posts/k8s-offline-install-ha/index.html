@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。
+ 单个master流程：
+  解压后在master 上 cd shell &amp;&amp; sh init.sh ,然后sh master.sh（注意因为脚本用的相对路径所以不再当前目录会找不到文件） 在node上 cd shell &amp;&amp; sh init.sh 。然后在node上执行master输出的join命令即可   高可用如下
+ 提前准备 假设构建一个3master&#43;2node的k8s集群，需要5台节点共同的条件如下：
+ （yum install -y docker是1.12.6版本需要改cg） 17.06安装教程： ```bash #0.删除老旧的 $ yum remove -y docker* #如果默认之前yum安装的1.12版本,可以这样删没装可以跳过此步 #1.安装需要的包 $ yum install -y yum-utils device-mapper-persistent-data lvm2   #2.添加源,不然默认的找不到 $ yum-config-manager &ndash;add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#3.根据实际查找当前版本 (可选) $ yum list docker-ce &ndash;showduplicates | sort -r #4.如果确定了版本,直接安装,如果要装17。03直接修改下面数字即可 $ yum install docker-ce-17." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/k8s-offline-install-ha/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。
+ 单个master流程：
+  解压后在master 上 cd shell &amp;&amp; sh init.sh ,然后sh master.sh（注意因为脚本用的相对路径所以不再当前目录会找不到文件） 在node上 cd shell &amp;&amp; sh init.sh 。然后在node上执行master输出的join命令即可   高可用如下
+ 提前准备 假设构建一个3master&#43;2node的k8s集群，需要5台节点共同的条件如下：
+ （yum install -y docker是1.12.6版本需要改cg） 17.06安装教程： ```bash #0.删除老旧的 $ yum remove -y docker* #如果默认之前yum安装的1.12版本,可以这样删没装可以跳过此步 #1.安装需要的包 $ yum install -y yum-utils device-mapper-persistent-data lvm2   #2.添加源,不然默认的找不到 $ yum-config-manager &ndash;add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#3.根据实际查找当前版本 (可选) $ yum list docker-ce &ndash;showduplicates | sort -r #4.如果确定了版本,直接安装,如果要装17。03直接修改下面数字即可 $ yum install docker-ce-17.">
+
+
+
+<meta itemprop="wordCount" content="825">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。
+ 单个master流程：
+  解压后在master 上 cd shell &amp;&amp; sh init.sh ,然后sh master.sh（注意因为脚本用的相对路径所以不再当前目录会找不到文件） 在node上 cd shell &amp;&amp; sh init.sh 。然后在node上执行master输出的join命令即可   高可用如下
+ 提前准备 假设构建一个3master&#43;2node的k8s集群，需要5台节点共同的条件如下：
+ （yum install -y docker是1.12.6版本需要改cg） 17.06安装教程： ```bash #0.删除老旧的 $ yum remove -y docker* #如果默认之前yum安装的1.12版本,可以这样删没装可以跳过此步 #1.安装需要的包 $ yum install -y yum-utils device-mapper-persistent-data lvm2   #2.添加源,不然默认的找不到 $ yum-config-manager &ndash;add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#3.根据实际查找当前版本 (可选) $ yum list docker-ce &ndash;showduplicates | sort -r #4.如果确定了版本,直接安装,如果要装17。03直接修改下面数字即可 $ yum install docker-ce-17."/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h1 id="使用kubeadm安装安全高可用kubernetes集群">使用kubeadm安装安全高可用kubernetes集群</h1>
+
+<p><a href="https://market.aliyun.com/products/57742013/cmxz025618.html?spm=5176.730005.0.0.TFKV5K#sku=yuncode1961800000">安装包地址</a> 如非高可用安装请忽略此教程，直接看产品页的三步安装。</p>
+
+<blockquote>
+<p><strong>单个master流程：</strong></p>
+</blockquote>
+
+<ol>
+<li>解压后在master 上 cd shell  &amp;&amp; sh init.sh ,然后sh master.sh（注意因为脚本用的相对路径所以不再当前目录会找不到文件）</li>
+<li>在node上 cd shell &amp;&amp; sh init.sh  。然后在node上执行master输出的join命令即可</li>
+</ol>
+
+<blockquote>
+<p><strong>高可用如下</strong></p>
+</blockquote>
+
+<h2 id="提前准备">提前准备</h2>
+
+<p>假设构建一个3master+2node的k8s集群，需要5台节点共同的条件如下：</p>
+
+<ol>
+<li>（<code>yum install -y docker是1.12.6版本需要改cg</code>）
+17.06安装教程：
+```bash
+#0.删除老旧的
+$ yum remove -y docker*  #如果默认之前yum安装的1.12版本,可以这样删没装可以跳过此步
+#1.安装需要的包
+$ yum install -y yum-utils <br />
+ device-mapper-persistent-data <br />
+ lvm2
+<br /></li>
+</ol>
+
+<p>#2.添加源,不然默认的找不到
+   $ yum-config-manager <br />
+       &ndash;add-repo <br />
+       <a href="https://download.docker.com/linux/centos/docker-ce.repo">https://download.docker.com/linux/centos/docker-ce.repo</a></p>
+
+<p>#3.根据实际查找当前版本 (可选)
+   $ yum list docker-ce &ndash;showduplicates | sort -r
+   #4.如果确定了版本,直接安装,如果要装17。03直接修改下面数字即可
+   $ yum install  docker-ce-17.06.1.ce  # 主意版本填写包名的格式.
+   #5.开启docker服务,和开机启动
+   $ systemctl start docker &amp;&amp; systemctl enable docker</p>
+
+<pre><code>
+2. 建议二进制方法提前部署好docker-compose，步骤参考后文
+
+3. 建议永久关闭selinux和swap以免后续问题
+
+4. 建议停止并关闭firewalld/iptables等防火墙
+
+5. 新的节点启动后记得改网络名 `hostnamectl set-hostname masterX` 
+
+6. 节点之间要能互通内网环境稳定
+
+7. 安装中出了问题要看日志journalctl -n 10 ,运行中的日志查看`tail -f 10 /var/log/messages` 
+
+## 系统架构图
+
+```bash
+          kubectl dashboard
+                 |
+                 V 
+     +------------------------+ join
+     | LB  10.1.245.94        | &lt;--- Nodes
+     +------------------------+
+     |                                                   
+     |--master1 manager1 schedule1   10.1.245.93                                                
+     |--master2 manager2 schedule2   10.1.245.95    =============&gt;  etcd cluster  http://10.1.245.93:2379,http://10.1.245.94:2379,http://10.1.245.95:2379
+     |--master3 manager3 schedule3   10.1.245.94                                              
+
+</code></pre>
+
+<h2 id="安装包介绍">安装包介绍</h2>
+
+<p>解压完之后看到如下目录：</p>
+
+<pre><code>├── bin          所需要的k8s相关的bin文件
+│   ├── kubeadm
+│   ├── kubectl
+│   └── kubelet
+├── image        依赖的所有镜像包
+│   └── images.tar
+├── out          所有的配置文件
+│   ├── dashboard  dashboard相关配置
+│   │   ├── dashboard-admin.yaml
+│   │   └── kubernetes-dashboard.yaml
+│   ├── etcd  etcd相关配置
+│   │   ├── etcd-docker-compose-0.yml
+│   │   ├── etcd-docker-compose-1.yml
+│   │   └── etcd-docker-compose-2.yml
+│   ├── haproxy  haproxy相关配置
+│   │   └── haproxy.cfg
+│   ├── heapster   heapster相关yaml配置
+│   │   ├── influxdb
+│   │   │   ├── grafana.yaml
+│   │   │   ├── heapster.yaml
+│   │   │   └── influxdb.yaml
+│   │   └── rbac
+│   │       └── heapster-rbac.yaml
+│   ├── kube    k8s自身配置
+│   │   ├── 10-kubeadm.conf
+│   │   ├── config    kubeadm配置
+│   │   └── kubelet.service
+│   ├── kubeinit.json  忽略
+│   └── net  网络相关配置
+│       ├── calico.yaml
+│       └── calicoctl.yaml
+└── shell    初始化脚本
+    ├── init.sh   初始化节点,安装bin文件，systemd配置等
+    └── master.sh  执行kubeadm init和其它组件
+
+</code></pre>
+
+<h2 id="初始化节点">初始化节点</h2>
+
+<p>因为解压后包,然后<code>scp -r xxx root@ip:/root</code> 的方式分发解压后的包到其他节点</p>
+
+<p><strong>集群中所有节点都需要执行<code>cd shell &amp;&amp; sh init.sh</code> （如果只跑单个master那么还需要执行 <code>sh master.sh</code></strong> ，多master勿跑 ）</p>
+
+<blockquote>
+<p>有以下需要注意的事项：<br />
+1. 修改init.sh脚本在后面添加,如果二进制程序没可执行权限<code>chmod +x  /usr/bin/kube*</code>
+2. cgroups驱动需要选择docker17.0x版本，就不需要去调整了，如果是1.1x版本的docker需要<strong>手动修改</strong>kubelet的启动文件里面的cgroups配置为<code>systemd</code>   （修改位置<code>/etc/systemd/system/kubelet.service.d</code>）   与 docker info|grep Cg一致
+3. 提前修改默认的init 或者手动执行<code>sysctl  -w net.ipv4.ip_forward=1</code> 不然第七行报错</p>
+</blockquote>
+
+<p><strong>执行完成后通过命令查看<code>kubectl get pod -n kube-system</code> ,状态全为Running正常</strong></p>
+
+<h2 id="起动etcd集群">起动etcd集群</h2>
+
+<p>etcd集群安装使用docker-compose方式部署</p>
+
+<p>A.使用docker-compose启动，如果没装：</p>
+
+<pre><code class="language-bash">$ pip install docker-compose
+</code></pre>
+
+<p>B.使用二进制包启动docker-compose（离线可选）</p>
+
+<pre><code class="language-bash">$ wget https://github.com/docker/compose/releases/download/1.18.0/docker-compose-Linux-x86_64  #官方推荐是用curl,不建议
+$ mv docker-compose-Linux-x86_64 /usr/local/bin/docker-compose &amp;&amp; chmod a+x /usr/local/bin/docker-compose  #也有写+x的.
+#这样就完成了,测试
+$ docker-compose version  #下面是正常输出
+docker-compose version 1.18.0, build 8dd22a9
+docker-py version: 2.6.1
+CPython version: 2.7.13
+OpenSSL version: OpenSSL 1.0.1t  3 May 2016
+</code></pre>
+
+<p>在out/etcd目录下有相关模板<code>etcd-docker-compose-x.yam</code>，启动多个节点时修改成自己的ip地址 其它两个节点照抄，修改ip即可, image那行 应改为  <code>gcr.io/google_containers/etcd-amd64:3.1.11</code> ，实际就是版本号改一下即可。</p>
+
+<pre><code class="language-yaml">#需要修改所有含有ip的地方，下面的9，10，11，12行改为当前节点ip，15行三个ip顺序改为etcd集群部署的三台节点ip
+version: '2.1'
+services:
+    etcd0:
+        container_name: etcd_infra0
+        image: gcr.io/google_containers/etcd-amd64:3.0.17  #这里最后改为3.1.11
+        command: |
+                etcd --name infra0
+                --initial-advertisie-peer-urls http://10.230.204.160:2380
+                --listen-peer-urls http://10.230.204.160:2380
+                --listen-client-urls http://10.230.204.160:2379,http://127.0.0.1:2379
+                --advertise-client-urls http://10.230.204.160:2379
+                --data-dir /etcd-data.etcd
+                --initial-cluster-token etcd-cluster-1
+                --initial-cluster infra0=http://10.230.204.160:2380,infra1=http://10.230.204.165:2380,infra2=http://10.230.204.151:2380
+                --initial-cluster-state new
+        restart: always
+        volumes:
+           - /data/etcd-data.etcd:/etcd-data.etcd
+        network_mode: &quot;host&quot;
+</code></pre>
+
+<p>三个节点分别启动：</p>
+
+<pre><code class="language-bash">$ docker-compose -f out/etcd/etcd-docker-compose-x.yml up -d  
+#正常输出Creating etcd_infrax ... done  x为每个etcd编号
+</code></pre>
+
+<p>检查是不是安装成功:</p>
+
+<pre><code class="language-bash">$ docker exec etcd_infra0 etcdctl member list  #master1上可能运行报错容易提示容器正在重启。。原因暂时未知，其他master上可以
+#成功应该是类似显示
+5ded6dd284b89d31: name=infra1 peerURLs=http://10.230.204.153:2380 clientURLs=http://10.230.204.153:2379 isLeader=true
+6d4b5eee32c1497a: name=infra0 peerURLs=http://10.230.204.150:2380 clientURLs=http://10.230.204.150:2379 isLeader=false
+729d9cd56debb1a1: name=infra2 peerURLs=http://10.230.204.154:2380 clientURLs=http://10.230.204.154:2379 isLeader=false
+
+#如果出现有peerURL不显示说明没有成功，尝试remove重新创建
+$ docker-compose -f  out/etcd/etcd-docker-compose-x.yml down -v
+</code></pre>
+
+<h2 id="kubeadm配置">kubeadm配置</h2>
+
+<p>修改配置 <code>out/kube/config</code>文件</p>
+
+<pre><code class="language-yaml">apiVersion: kubeadm.k8s.io/v1alpha1
+kind: MasterConfiguration
+apiServerCertSANs:    #此处填所有的masterip和lbip和其它你可能需要通过它访问apiserver的地址和域名或者主机名等，如阿里fip，证书中会允许这些ip
+- 172.31.244.231
+- 172.31.244.232
+- 172.31.244.233
+- 172.31.244.234
+- master1
+- master2
+- master3
+- node1
+- 47.75.1.72
+
+etcd:
+  endpoints:   #这里填之前安装的etcd集群地址列表，修改IP地址
+  - http://172.31.244.232:2379
+  - http://172.31.244.233:2379
+  - http://172.31.244.234:2379
+
+apiServerExtraArgs:
+  endpoint-reconciler-type: lease
+
+networking:
+  podSubnet: 192.168.0.0/16  #不用改
+kubernetesVersion: v1.9.2  #不用改
+featureGates:  #不用改
+   CoreDNS: true
+</code></pre>
+
+<p>然后执行：</p>
+
+<pre><code class="language-bash">$ kubeadm init --config out/kube/config
+</code></pre>
+
+<p>把成功后的kubeadm join命令存在文件里，那东西不能丢了</p>
+
+<h2 id="启动calico等">启动calico等</h2>
+
+<p><code>mkdir ~/.kube &amp;&amp; cp /etc/kubernetes/admin.conf ~/.kube/config</code> （如果已经存在请校验一下是否相同,不确定建议删掉重新cp过去）</p>
+
+<p>修改calico配置，把etcd地址换成你安装好的集群地址：
+out/net/calico.yaml:</p>
+
+<pre><code>kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: calico-config
+  namespace: kube-system
+data:
+  # The location of your etcd cluster.  This uses the Service clusterIP
+  # defined below.
+  etcd_endpoints: &quot;http://10.96.232.136:6666&quot; # 这里改成etcd集群地址如 &quot;http://172.31.244.232:2379,http://172.31.244.233:2379,http://172.31.244.234:2379&quot;
+</code></pre>
+
+<pre><code class="language-bash">$ kubectl apply -f out/net/calico.yaml
+$ kubectl apply -f out/heapster/influxdb
+$ kubectl apply -f out/heapster/rbac
+$ kubectl apply -f out/dashboard
+#上面命令可整合为
+$ kubectl apply -f out/net/calico.yaml -f out/heapster/influxdb -f out/heapster/rbac -f out/dashboard
+</code></pre>
+
+<ol>
+<li>然后访问<a href="https://master1IP:32000端口即可，在chrome下无法进入提示证书有误，更换firefox可以，提示说证书日期不对（待修复）">https://master1IP:32000端口即可，在chrome下无法进入提示证书有误，更换firefox可以，提示说证书日期不对（待修复）</a></li>
+</ol>
+
+<h2 id="启动多个master">启动多个master</h2>
+
+<p>第一个master我们称之为master0 (假设其他master已经init.sh过)，现在把第一个master的/etc/kubernetes/pki目录拷贝到别的master节点上</p>
+
+<pre><code class="language-bash">$ mkdir -p /etc/kubernetes
+$ scp -r /etc/kubernetes/pki root@10.1.245.93:/etc/kubernetes/pki
+</code></pre>
+
+<p>删除pki目录下的apiserver.crt 和 apiserver.key文件<code>rm -rf apiserver.crt apiserver.key</code>，注意如果<strong>不删除会只能看到一个master，是不正常的。</strong></p>
+
+<p>同样使用master0上的out/kube/config文件，复制内容，拷贝到master1上，<code>scp out/kube/config  root@10.230.204.151:/root/</code> 执行<code>kubeadm init --config ~/config</code></p>
+
+<p>master2节点同master1</p>
+
+<h2 id="启动loadbalance">启动loadbalance</h2>
+
+<p>我比较推荐使用四层代理 HAproxy配置out/haproxy目录:</p>
+
+<p><code>vi out/haproxy/haproxy.cfg</code></p>
+
+<pre><code class="language-bash">global
+  daemon
+  log 127.0.0.1 local0
+  log 127.0.0.1 local1 notice
+  maxconn 4096
+
+defaults
+  log               global
+  retries           3
+  maxconn           2000
+  timeout connect   5s
+  timeout client    50s
+  timeout server    50s
+
+frontend k8s
+  bind *:6444
+  mode tcp
+  default_backend k8s-backend
+
+backend k8s-backend
+  balance roundrobin
+  mode tcp
+  #下面三个ip替换成三个你自己master的地址
+  server k8s-1 10.1.245.93:6443 check 
+  server k8s-1 10.1.245.94:6443 check
+  server k8s-2 10.1.245.95:6443 check
+</code></pre>
+
+<p>先<code>mkdir /etc/haproxy</code> 然后把这个文件拷贝在<code>cp out/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg</code></p>
+
+<pre><code class="language-bash">$ docker run --net=host -v /etc/haproxy:/usr/local/etc/haproxy --name ha -d haproxy:1.7
+</code></pre>
+
+<h2 id="修改kubeproxy配置">修改kubeproxy配置</h2>
+
+<pre><code class="language-bash">$ kubectl -n kube-system edit configmap kube-proxy
+</code></pre>
+
+<p>找到master地址，修改成LB地址，6444端口  （这里关键在于怎么知道LB的地址到底是哪一个呀？上面配置之后三个masterIP 轮询并不知道哪个是LB地址）</p>
+
+<pre><code class="language-yaml">#找到文件的这一块，第七行server 有个ip地址
+apiVersion: v1
+    kind: Config
+    clusters:
+    - cluster:
+        certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        server: https://10.230.204.151:6443 #修改为 LoadBalanceIP:6444
+      name: default
+    contexts:
+    - context:
+        cluster: default
+        namespace: default
+        user: default
+      name: default
+    current-context: default
+    users:
+    - name: default
+      user:
+        tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+</code></pre>
+
+<h2 id="join-node节点">join node节点</h2>
+
+<p>还是在node节点执行第一个master输出的命令</p>
+
+<pre><code class="language-bash">$ kubeadm join --token &lt;token&gt; 10.1.245.94:6443 --discovery-token-ca-cert-hash sha256:&lt;hash&gt;
+</code></pre>
+
+<h2 id="修改node节点kubelet配置">修改node节点kubelet配置</h2>
+
+<p><code>vi /etc/kubernetes/kubelet.conf</code> 同样把地址修改成LB地址,如：<code>10.1.245.94:6444</code> ，修改如下第五行（展示的例子已经修改过）</p>
+
+<pre><code class="language-yaml">apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: xxxxxx #此处省略几百字符
+    server: https://10.230.204.160:6444 #修改这里为LB:6444，原本是另外的ip:6443
+  name: default-cluster
+contexts:
+- context:
+    cluster: default-cluster
+    namespace: default
+    user: default-auth
+  name: default-context
+current-context: default-context
+</code></pre>
+
+<h2 id="kubectl配置">kubectl配置</h2>
+
+<p>修改<code>~/.kube/config</code>文件,server的ip改成LB的ip <code>10.1.245.94:6444</code></p>
+
+<p>或者通过命令修改：</p>
+
+<pre><code class="language-bash">$ kubectl config set-cluster kubernetes --server=https://47.52.227.242:6444 --kubeconfig=$HOME/.kube/config
+</code></pre>
+
+<h3 id="启动多dns副本">启动多DNS副本</h3>
+
+<pre><code class="language-bash">$ kubectl edit deploy coredns -n kube-system
+</code></pre>
+
+<p>replicas: 3</p>
+
+<pre><code class="language-bash">[root@master1 ~]$ kubectl get pod -n kube-system -o wide|grep core
+coredns-65dcdb4cf-4j5s8                  1/1       Running   0          39m       192.168.137.65    master1
+coredns-65dcdb4cf-ngx4h                  1/1       Running   0          38s       192.168.180.1     master2
+coredns-65dcdb4cf-qbsr6                  1/1       Running   0          38s       192.168.166.132   node1
+</code></pre>
+
+<p>这样，启动了三个dns</p>
+
+<h3 id="验证与测试">验证与测试</h3>
+
+<pre><code class="language-bash">$ kubectl run test --image busybox sleep 10000
+$ kubectl exec your-busybox-pod-name nslookup kubernetes
+</code></pre>
+
+<p>杀非LB的master，多次测试看创建pod与dns是否正常，还可以telnet 10.96.0.1 443 去验证clusterip是否正常</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

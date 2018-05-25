@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My New Hugo Site </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.40.3" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.ab4b67a3ea25990fa8279f3b7ef08b61.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="容器信号使用 我们跑在容器中的程序通常想在容器退出之前做一些清理操作，比较常用的方式是监听一个信号，延迟关闭容器。
+docker提供了这样的功能：
+╰─➤ docker stop --help Usage: docker stop [OPTIONS] CONTAINER [CONTAINER...] Stop one or more running containers Options: --help Print usage -t, --time int Seconds to wait for stop before killing it (default 10)  docker 1.13以上版本在创建容器时可直接指定STOP_TIMEOUT 和STOP_SIGNAL参数:
+$ docker run --help ... --stop-signal string Signal to stop a container, SIGTERM by default (default &quot;SIGTERM&quot;) --stop-timeout int Timeout (in seconds) to stop a container ...  但是。。。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lameleg.com/posts/container-stop-timeout/" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="容器信号使用 我们跑在容器中的程序通常想在容器退出之前做一些清理操作，比较常用的方式是监听一个信号，延迟关闭容器。
+docker提供了这样的功能：
+╰─➤ docker stop --help Usage: docker stop [OPTIONS] CONTAINER [CONTAINER...] Stop one or more running containers Options: --help Print usage -t, --time int Seconds to wait for stop before killing it (default 10)  docker 1.13以上版本在创建容器时可直接指定STOP_TIMEOUT 和STOP_SIGNAL参数:
+$ docker run --help ... --stop-signal string Signal to stop a container, SIGTERM by default (default &quot;SIGTERM&quot;) --stop-timeout int Timeout (in seconds) to stop a container ...  但是。。。">
+
+
+
+<meta itemprop="wordCount" content="184">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="容器信号使用 我们跑在容器中的程序通常想在容器退出之前做一些清理操作，比较常用的方式是监听一个信号，延迟关闭容器。
+docker提供了这样的功能：
+╰─➤ docker stop --help Usage: docker stop [OPTIONS] CONTAINER [CONTAINER...] Stop one or more running containers Options: --help Print usage -t, --time int Seconds to wait for stop before killing it (default 10)  docker 1.13以上版本在创建容器时可直接指定STOP_TIMEOUT 和STOP_SIGNAL参数:
+$ docker run --help ... --stop-signal string Signal to stop a container, SIGTERM by default (default &quot;SIGTERM&quot;) --stop-timeout int Timeout (in seconds) to stop a container ...  但是。。。"/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://lameleg.com/" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+      
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  <article class="flex-l flex-wrap justify-between mw8 center">
+
+    <header class="mt4 w-100">
+      <p class="f6 b helvetica tracked">
+          
+        POSTS
+      </p>
+      <h1 class="f1 athelas mb1"></h1>
+      
+      <time class="f6 mv4 dib tracked" datetime="0001-01-01T00:00:00Z">January 1, 0001</time>
+    </header>
+
+    <main class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l">
+
+<h2 id="容器信号使用">容器信号使用</h2>
+
+<p>我们跑在容器中的程序通常想在容器退出之前做一些清理操作，比较常用的方式是监听一个信号，延迟关闭容器。</p>
+
+<p>docker提供了这样的功能：</p>
+
+<pre><code>╰─➤  docker stop --help
+
+Usage:  docker stop [OPTIONS] CONTAINER [CONTAINER...]
+
+Stop one or more running containers
+
+Options:
+      --help       Print usage
+  -t, --time int   Seconds to wait for stop before killing it (default 10)
+</code></pre>
+
+<p>docker 1.13以上版本在创建容器时可直接指定STOP_TIMEOUT 和STOP_SIGNAL参数:</p>
+
+<pre><code>$ docker run --help
+...
+--stop-signal string                    Signal to stop a container, SIGTERM by default (default &quot;SIGTERM&quot;)
+--stop-timeout int                      Timeout (in seconds) to stop a container
+...
+</code></pre>
+
+<p>但是。。。</p>
+
+<p>我们测试一个：</p>
+
+<pre><code>package main
+
+import (
+    &quot;fmt&quot;
+    &quot;os&quot;
+    &quot;os/signal&quot;
+    &quot;syscall&quot;
+    &quot;time&quot;
+)
+
+func main() {
+    fmt.Println(&quot;signal test&quot;)
+    go func() {
+        for {
+            c := make(chan os.Signal, 1)
+            signal.Notify(c, syscall.SIGTERM)
+            s := &lt;-c
+            fmt.Println(&quot;Got signal:&quot;, s)
+        }
+    }()
+    time.Sleep(time.Second * 100)
+}
+</code></pre>
+
+<p>Dockerfile:</p>
+
+<pre><code>FROM dev.reg.iflytek.com/base/golang:1.8.0
+COPY main.go .
+RUN go build -o signal &amp;&amp; cp signal $GOPATH/bin
+CMD signal  
+</code></pre>
+
+<p>构建：</p>
+
+<pre><code>docker build -t dev.reg.iflytek.com/test/signal:latest .
+</code></pre>
+
+<p>运行：</p>
+
+<pre><code>docker run --name signal dev.reg.iflytek.com/test/signal:latest
+</code></pre>
+
+<p>再开一终端，运行：</p>
+
+<pre><code>docker stop -t 10 signal
+</code></pre>
+
+<p>发现并没有打印出Got signal:&hellip; 监听信号失败。</p>
+
+<p>问题再于：我们docker inspect signal看一下
+可以看到</p>
+
+<pre><code>Path:/bin/sh
+Args:[
+  -c,
+  signal
+]
+</code></pre>
+
+<p>或者docker exec signal ps 看一下可以看到pid为1的进程并不是signal, 而是shell.</p>
+
+<p>所以原因找到了，是因为docker engine只给pid为1的进程发送信号，sh收到了信号而我们想要的signal进程没有收到信号</p>
+
+<p>解决办法：</p>
+
+<pre><code>FROM dev.reg.iflytek.com/base/golang:1.8.0
+COPY main.go .
+RUN go build -o signal &amp;&amp; cp signal $GOPATH/bin
+CMD [&quot;signal&quot;]  # 不能写成 CMD signal, 这会直接exec，否则会以shell的方式派生子进程。
+</code></pre>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6">
+        
+      </div>
+    </main>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://lameleg.com/" >
+    &copy; 2018 My New Hugo Site
+  </a>
+  
+
+
+
+
+
+
+
+
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>
