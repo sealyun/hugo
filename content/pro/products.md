@@ -11,6 +11,8 @@ menu = ""           # set "main" to add this content to the main menu
 +++
 
 # 安装包列表
+[安装视频教程地址](http://www.iqiyi.com/w_19rvosvzmp.html?spm=5176.730006-53366009-57742013-cmxz025618/A.content.7.PnwJrG)
+
 ## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000)
 
 * 全部使用当前最新版本组建
