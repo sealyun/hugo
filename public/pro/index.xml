@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pros on sealyun</title>
+    <link>https://sealyun.com/pro/</link>
+    <description>Recent content in Pros on sealyun</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 11 Jul 2014 10:54:24 +0200</lastBuildDate>
+    
+	<atom:link href="https://sealyun.com/pro/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>离线安装包</title>
+      <link>https://sealyun.com/pro/products/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/pro/products/</guid>
+      <description>安装包列表 kubernetes1.10.3离线安装包 全部使用当前最新版本组建 Cgroup driver自动检测，99%以上一键安装成功，遇到任何问题远程</description>
+    </item>
+    
+  </channel>
+</rss>
