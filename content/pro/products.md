@@ -16,7 +16,7 @@ menu = ""           # set "main" to add this content to the main menu
 2. node上：cd shell && sh init.sh
 3. 在node上执行master输出的join命令即可
 ```
-## master 节点
+## master 节点 (录屏加载较慢，别焦躁。。。)
 <script data-speed="3" src="https://asciinema.org/a/RZ3a74x8qE6DZy7jSjaDrLvYM.js" id="asciicast-RZ3a74x8qE6DZy7jSjaDrLvYM" async></script>
 
 ## node 节点
