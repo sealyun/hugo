@@ -2,7 +2,7 @@
 author = "fanux"
 date = "2014-07-11T10:54:24+02:00"
 draft = false
-title = "离线安装包"
+title = "kubernetes离线包安装教程"
 tags = ["event","dotScale","sketchnote"]
 image = "images/2014/Jul/titledotscale.png"
 comments = true     # set false to hide Disqus comments
