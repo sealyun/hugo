@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2014-07-11T10:54:24+02:00"
+date = "2018-05-11T10:54:24+02:00"
 draft = false
 title = "kubernetes高可用相关配置"
 #slug = "dotscale-2014-as-a-sketch"

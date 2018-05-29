@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2018-05-24T10:54:24+02:00"
+date = "2018-04-24T10:54:24+02:00"
 draft = false
 title = "k8s离线包解析"
 #slug = "dotscale-2014-as-a-sketch"

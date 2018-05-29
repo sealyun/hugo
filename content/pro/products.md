@@ -10,16 +10,19 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
-# 安装包列表
-[安装视频教程地址](http://www.iqiyi.com/w_19rvosvzmp.html?spm=5176.730006-53366009-57742013-cmxz025618/A.content.7.PnwJrG)
-
-教程：
+# kubernetes离线包安装教程：
 ```
 1. master上： cd shell && sh init.sh && sh master.sh
 2. node上：cd shell && sh init.sh
 3. 在node上执行master输出的join命令即可
 ```
+## master 节点
+<script data-speed="3" src="https://asciinema.org/a/RZ3a74x8qE6DZy7jSjaDrLvYM.js" id="asciicast-RZ3a74x8qE6DZy7jSjaDrLvYM" async></script>
 
+## node 节点
+<script data-speed="3" src="https://asciinema.org/a/HwrKtAEJpguMfYMNEU7LDeFbQ.js?speed=40" id="asciicast-HwrKtAEJpguMfYMNEU7LDeFbQ" async></script>
+
+# 安装包列表
 ## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000)
 
 * 全部使用当前最新版本组建

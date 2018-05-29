@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2014-07-11T10:54:24+02:00"
+date = "2017-07-11T10:54:24+02:00"
 draft = false
 title = "基于gogs drone构建CI/CD系统"
 #slug = "dotscale-2014-as-a-sketch" #链接地址

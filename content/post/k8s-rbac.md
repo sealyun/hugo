@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2014-07-11T10:54:24+02:00"
+date = "2018-05-11T10:54:24+02:00"
 draft = false
 title = "kubernetes RBAC实战"
 tags = ["event","dotScale","sketchnote"]
@@ -12,7 +12,7 @@ menu = ""           # set "main" to add this content to the main menu
 
 ## kubernetes RBAC实战
 ## 环境准备
-先用kubeadm安装好kubernetes集群，[包地址在此](https://market.aliyun.com/products/56014009/cmxz022571.html#sku=yuncode1657100000) 好用又方便，服务周到，童叟无欺
+先用kubeadm安装好kubernetes集群，[包地址在此](http://sealyun.com/pro/products/) 好用又方便，服务周到，童叟无欺
 
 本文目的，让名为devuser的用户只能有权限访问特定namespace下的pod
 
@@ -106,7 +106,7 @@ devuser.csr  devuser-key.pem  devuser.pem
 > 校验证书
 
 ```
-# cfssl-certinfo -cert kubernetes.pem
+# cfssl-certinfo -cert devuser.pem
 ```
 
 ### 生成config文件

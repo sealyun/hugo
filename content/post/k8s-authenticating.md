@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2014-07-11T10:54:24+02:00"
+date = "2018-05-11T10:54:24+02:00"
 draft = false
 title = "kubernetes对接第三方认证"
 #slug = "dotscale-2014-as-a-sketch"
@@ -12,9 +12,7 @@ menu = ""           # set "main" to add this content to the main menu
 +++
 
 # kubernetes对接第三方认证
-广告： [安装包地址](https://market.aliyun.com/products/57742013/cmxz025618.html?spm=5176.730005.0.0.TFKV5K#sku=yuncode1961800000) 
-
-[原文地址](http://lameleg.com/tech/k8s-authenticating.html)
+广告： [安装包地址](http://sealyun.com/pro/products/)
 
 ## 概述
 本文介绍如何使用github账户去关联自己kubernetes账户。达到如下效果：
