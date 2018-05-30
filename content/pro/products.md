@@ -10,18 +10,6 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
-# kubernetes离线包安装教程：
-```
-1. master上： cd shell && sh init.sh && sh master.sh
-2. node上：cd shell && sh init.sh
-3. 在node上执行master输出的join命令即可
-```
-## master 节点 (录屏加载较慢，别焦躁。。。)
-<script data-speed="3" src="https://asciinema.org/a/RZ3a74x8qE6DZy7jSjaDrLvYM.js" id="asciicast-RZ3a74x8qE6DZy7jSjaDrLvYM" async></script>
-
-## node 节点
-<script data-speed="3" src="https://asciinema.org/a/HwrKtAEJpguMfYMNEU7LDeFbQ.js?speed=40" id="asciicast-HwrKtAEJpguMfYMNEU7LDeFbQ" async></script>
-
 # 安装包列表
 ## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000)
 
@@ -37,3 +25,17 @@ menu = ""           # set "main" to add this content to the main menu
 ## [kubernetes1.8.1离线安装包](https://market.aliyun.com/products/56014009/cmxz022571.html?spm=5176.730005.productlist.dcmxz022571.r9c1J1#sku=yuncode1657100000) 推荐使用1.9.2以上版本
 
 # QQ群：98488045
+
+# kubernetes离线包安装教程：
+```
+1. master上： cd shell && sh init.sh && sh master.sh
+2. node上：cd shell && sh init.sh
+3. 在node上执行master输出的join命令即可
+```
+## master 节点 (录屏加载较慢，别焦躁。。。)
+<script data-speed="3" src="https://asciinema.org/a/RZ3a74x8qE6DZy7jSjaDrLvYM.js" id="asciicast-RZ3a74x8qE6DZy7jSjaDrLvYM" async></script>
+
+## node 节点
+<script data-speed="3" src="https://asciinema.org/a/HwrKtAEJpguMfYMNEU7LDeFbQ.js?speed=40" id="asciicast-HwrKtAEJpguMfYMNEU7LDeFbQ" async></script>
+
+
