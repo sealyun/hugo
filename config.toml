@@ -1,6 +1,6 @@
 baseURL = "https://sealyun.com/"
 languageCode = "en-us"
-title = "sealyun"
+title = "sealyun | kubernetes安装"
 defaultContentLanguage = "en"                             # en / zh-cn / ... (This field determines which i18n file to use)
 enableRobotsTXT = true
 enableEmoji = true
