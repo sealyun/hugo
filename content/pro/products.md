@@ -22,6 +22,15 @@ menu = ""           # set "main" to add this content to the main menu
 
 
 ## [kubernetes1.9.2离线安装包](https://market.aliyun.com/products/57742013/cmxz025618.html?spm=5176.730005.productlist.dcmxz025618.r9c1J1#sku=yuncode1961800000)
+```
+1.9.2以及以下版本，kubelet服务启动不了？ 1.10.3 加了检测没此问题
+cgroup driver配置要相同
+查看docker cgroup driver:
+docker info|grep Cgroup
+有systemd和cgroupfs两种，把kubelet service配置改成与docker一致
+vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+KUBELET_CGROUP_ARGS=–cgroup-driver=cgroupfs #这个配置与docker改成一致
+```
 
 ## [kubernetes1.8.1离线安装包](https://market.aliyun.com/products/56014009/cmxz022571.html?spm=5176.730005.productlist.dcmxz022571.r9c1J1#sku=yuncode1657100000) 推荐使用1.9.2以上版本
 
