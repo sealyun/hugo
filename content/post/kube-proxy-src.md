@@ -39,7 +39,7 @@ type ProxyServer struct {
 
     // 代理模式，ipvs iptables userspace kernelspace(windows)四种
 	ProxyMode              string
-	NodeRef                *v1.ObjectReference
+    // 配置同步周期
 	ConfigSyncPeriod       time.Duration
 
     // service 与 endpoint 事件处理器
@@ -152,9 +152,59 @@ ProxyServer---------> Proxier --------> service 事件回调
      |                  |                                                
      |                  +-------------> endpoint事件回调          
      |                                             |  触发
-     +-----> ipvs interface ipvs相关操作     <-----+
+     +-----> ipvs interface ipvs handler     <-----+
 ```
 
-## 监听apiserver service事件
-## ipvs实现
-## 用户态给内核
+## 启动proxyServer
+
+1. 检查是不是带了clean up参数，如果带了那么清除所有规则退出
+2. OOM adjuster貌似没实现，忽略
+3. resouceContainer也没实现，忽略
+4. 启动metrics服务器，这个挺重要，比如我们想监控时可以传入这个参数, 包含promethus的 metrics. metrics-bind-address参数
+5. 启动informer, 开始监听事件，分别启动协程处理。
+
+1 2 3 4我们都不用太关注，细看5即可：
+```
+	informerFactory := informers.NewSharedInformerFactory(s.Client, s.ConfigSyncPeriod)
+
+	serviceConfig := config.NewServiceConfig(informerFactory.Core().InternalVersion().Services(), s.ConfigSyncPeriod)
+    // 注册 service handler并启动
+	serviceConfig.RegisterEventHandler(s.ServiceEventHandler)
+    // 开始循环调用 eventHandlers的OnServiceSynced接口
+	go serviceConfig.Run(wait.NeverStop)
+
+	endpointsConfig := config.NewEndpointsConfig(informerFactory.Core().InternalVersion().Endpoints(), s.ConfigSyncPeriod)
+    // 注册endpoint hander并启动
+	endpointsConfig.RegisterEventHandler(s.EndpointsEventHandler)
+	go endpointsConfig.Run(wait.NeverStop)
+
+	go informerFactory.Start(wait.NeverStop)
+```
+那么问题来了，注册进去的这个handler是啥？ 回顾一下上文的
+```
+		serviceEventHandler = proxierIPVS
+		endpointsEventHandler = proxierIPVS
+```
+所以都是这个proxierIPVS
+
+handler的回调函数, informer会回调这几个函数，所以我们在自己开发时实现这个interface注册进去即可：
+```
+type ServiceHandler interface {
+	// OnServiceAdd is called whenever creation of new service object
+	// is observed.
+	OnServiceAdd(service *api.Service)
+	// OnServiceUpdate is called whenever modification of an existing
+	// service object is observed.
+	OnServiceUpdate(oldService, service *api.Service)
+	// OnServiceDelete is called whenever deletion of an existing service
+	// object is observed.
+	OnServiceDelete(service *api.Service)
+	// OnServiceSynced is called once all the initial even handlers were
+	// called and the state is fully propagated to local cache.
+	OnServiceSynced()
+}
+```
+
+## 开始监听
+```
+```
