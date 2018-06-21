@@ -37,7 +37,7 @@ type ProxyServer struct {
     // 处理同步时的处理器
 	Proxier                proxy.ProxyProvider
 
-    // 代理模式，ipvs iptables 
+    // 代理模式，ipvs iptables userspace kernelspace(windows)四种
 	ProxyMode              string
 	NodeRef                *v1.ObjectReference
 	ConfigSyncPeriod       time.Duration
@@ -47,6 +47,16 @@ type ProxyServer struct {
 	EndpointsEventHandler  config.EndpointsHandler
 }
 ```
+Proxier是主要入口，抽象了两个函数：
+```
+type ProxyProvider interface {
+	// Sync immediately synchronizes the ProxyProvider's current state to iptables.
+	Sync()
+	// 定期执行
+	SyncLoop()
+}
+```
+
 ipvs 的interface 这个很重要：
 ```
 type Interface interface {
@@ -84,6 +94,65 @@ type RealServer struct {
 	Port    uint16
 	Weight  int
 }
+```
+
+> 创建apiserver client
+
+```
+client, eventClient, err := createClients(config.ClientConnection, master)
+```
+
+> 创建Proxier 这是仅仅关注ipvs模式的proxier
+
+```
+else if proxyMode == proxyModeIPVS {
+		glog.V(0).Info("Using ipvs Proxier.")
+		proxierIPVS, err := ipvs.NewProxier(
+			iptInterface,
+			ipvsInterface,
+			ipsetInterface,
+			utilsysctl.New(),
+			execer,
+			config.IPVS.SyncPeriod.Duration,
+			config.IPVS.MinSyncPeriod.Duration,
+			config.IPTables.MasqueradeAll,
+			int(*config.IPTables.MasqueradeBit),
+			config.ClusterCIDR,
+			hostname,
+			getNodeIP(client, hostname),
+			recorder,
+			healthzServer,
+			config.IPVS.Scheduler,
+		)
+...
+		proxier = proxierIPVS
+		serviceEventHandler = proxierIPVS
+		endpointsEventHandler = proxierIPVS
+```
+这个Proxier具备以下方法：
+```
+   +OnEndpointsAdd(endpoints *api.Endpoints)
+   +OnEndpointsDelete(endpoints *api.Endpoints)
+   +OnEndpointsSynced()
+   +OnEndpointsUpdate(oldEndpoints, endpoints *api.Endpoints)
+   +OnServiceAdd(service *api.Service)
+   +OnServiceDelete(service *api.Service)
+   +OnServiceSynced()
+   +OnServiceUpdate(oldService, service *api.Service)
+   +Sync()
+   +SyncLoop()
+```
+所以ipvs的这个Proxier实现了我们需要的绝大部分接口
+
+小结一下：
+```
+                        +-------------> sync 定期同步等
+                        |
+ProxyServer---------> Proxier --------> service 事件回调           
+     |                  |                                                
+     |                  +-------------> endpoint事件回调          
+     |                                             |  触发
+     +-----> ipvs interface ipvs相关操作     <-----+
 ```
 
 ## 监听apiserver service事件
