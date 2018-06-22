@@ -146,8 +146,12 @@ else if proxyMode == proxyModeIPVS {
 
 小结一下：
 ```
-                        +-------------> sync 定期同步等
-                        |
+     +-----------> endpointHandler
+     |
+     +-----------> serviceHandler
+     |                ^
+     |                | +-------------> sync 定期同步等
+     |                | |
 ProxyServer---------> Proxier --------> service 事件回调           
      |                  |                                                
      |                  +-------------> endpoint事件回调          
@@ -165,21 +169,29 @@ ProxyServer---------> Proxier --------> service 事件回调
 
 1 2 3 4我们都不用太关注，细看5即可：
 ```
-	informerFactory := informers.NewSharedInformerFactory(s.Client, s.ConfigSyncPeriod)
+informerFactory := informers.NewSharedInformerFactory(s.Client, s.ConfigSyncPeriod)
 
-	serviceConfig := config.NewServiceConfig(informerFactory.Core().InternalVersion().Services(), s.ConfigSyncPeriod)
-    // 注册 service handler并启动
-	serviceConfig.RegisterEventHandler(s.ServiceEventHandler)
-    // 开始循环调用 eventHandlers的OnServiceSynced接口
-	go serviceConfig.Run(wait.NeverStop)
+serviceConfig := config.NewServiceConfig(informerFactory.Core().InternalVersion().Services(), s.ConfigSyncPeriod)
+// 注册 service handler并启动
+serviceConfig.RegisterEventHandler(s.ServiceEventHandler)
+// 这里面仅仅是把ServiceEventHandler赋值给informer回调 
+go serviceConfig.Run(wait.NeverStop)
 
-	endpointsConfig := config.NewEndpointsConfig(informerFactory.Core().InternalVersion().Endpoints(), s.ConfigSyncPeriod)
-    // 注册endpoint hander并启动
-	endpointsConfig.RegisterEventHandler(s.EndpointsEventHandler)
-	go endpointsConfig.Run(wait.NeverStop)
+endpointsConfig := config.NewEndpointsConfig(informerFactory.Core().InternalVersion().Endpoints(), s.ConfigSyncPeriod)
+// 注册endpoint 
+endpointsConfig.RegisterEventHandler(s.EndpointsEventHandler)
+go endpointsConfig.Run(wait.NeverStop)
 
-	go informerFactory.Start(wait.NeverStop)
+go informerFactory.Start(wait.NeverStop)
 ```
+serviceConfig.Run与endpointConfig.Run仅仅是给回调函数赋值, 所以注册的handler就给了informer, informer监听到事件时就会回调：
+```
+for i := range c.eventHandlers {
+	glog.V(3).Infof("Calling handler.OnServiceSynced()")
+	c.eventHandlers[i].OnServiceSynced()
+}
+```
+
 那么问题来了，注册进去的这个handler是啥？ 回顾一下上文的
 ```
 		serviceEventHandler = proxierIPVS
@@ -207,4 +219,48 @@ type ServiceHandler interface {
 
 ## 开始监听
 ```
+go informerFactory.Start(wait.NeverStop)
+```
+这里执行后，我们创建删除service endpoint等动作都会被监听到，然后回调,回顾一下上面的图，最终都是由Proxier去实现，所以后面我们重点关注Proxier即可
+
+```
+s.Proxier.SyncLoop()
+```
+然后开始SyncLoop,下文开讲
+
+## Proxier 实现
+我们创建一个service时OnServiceAdd方法会被调用, 这里记录一下之前的状态与当前状态两个东西，然后发个信号给syncRunner让它去处理：
+```
+func (proxier *Proxier) OnServiceAdd(service *api.Service) {
+	namespacedName := types.NamespacedName{Namespace: service.Namespace, Name: service.Name}
+	if proxier.serviceChanges.update(&namespacedName, nil, service) && proxier.isInitialized() {
+		proxier.syncRunner.Run()
+	}
+}
+```
+
+记录service 信息,可以看到没做什么事，就是把service存在map里, 如果没变直接删掉map信息不做任何处理：
+```
+change, exists := scm.items[*namespacedName]
+if !exists {
+	change = &serviceChange{}
+    // 老的service信息
+	change.previous = serviceToServiceMap(previous)
+	scm.items[*namespacedName] = change
+}
+// 当前监听到的service信息
+change.current = serviceToServiceMap(current)
+
+如果一样，直接删除
+if reflect.DeepEqual(change.previous, change.current) {
+	delete(scm.items, *namespacedName)
+}
+```
+
+proxier.syncRunner.Run() 里面就发送了一个信号
+```
+select {
+case bfr.run <- struct{}{}:
+default:
+}
 ```
