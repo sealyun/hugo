@@ -97,10 +97,8 @@ kind: bbb
 name: aaa`)
 
 /* Out put
-```
 {"kind":"Namespace","metadata":{"name":"test"}}
 {"kind":"bbb","name":"aaa"}
-```
 */
 func example() {
 	reader := bytes.NewReader(bs)
