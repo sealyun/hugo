@@ -264,3 +264,105 @@ case bfr.run <- struct{}{}:
 default:
 }
 ```
+
+这里面处理了这个信号
+```
+s.Proxier.SyncLoop()
+
+func (proxier *Proxier) SyncLoop() {
+	// Update healthz timestamp at beginning in case Sync() never succeeds.
+	if proxier.healthzServer != nil {
+		proxier.healthzServer.UpdateTimestamp()
+	}
+	proxier.syncRunner.Loop(wait.NeverStop)
+}
+```
+
+runner里收到信号执行，没收到信号会定期执行：
+```
+func (bfr *BoundedFrequencyRunner) Loop(stop <-chan struct{}) {
+	glog.V(3).Infof("%s Loop running", bfr.name)
+	bfr.timer.Reset(bfr.maxInterval)
+	for {
+		select {
+		case <-stop:
+			bfr.stop()
+			glog.V(3).Infof("%s Loop stopping", bfr.name)
+			return
+		case <-bfr.timer.C():  // 定期执行
+			bfr.tryRun()
+		case <-bfr.run:
+			bfr.tryRun()       // 收到事件信号执行
+		}
+	}
+}
+```
+这个bfr runner里我们最需要主意的是一个回调函数，tryRun里检查这个回调是否满足被调度的条件：
+```
+type BoundedFrequencyRunner struct {
+	name        string        // the name of this instance
+	minInterval time.Duration // the min time between runs, modulo bursts
+	maxInterval time.Duration // the max time between runs
+
+	run chan struct{} // try an async run
+
+	mu      sync.Mutex  // guards runs of fn and all mutations
+	fn      func()      // function to run, 这个回调
+	lastRun time.Time   // time of last run
+	timer   timer       // timer for deferred runs
+	limiter rateLimiter // rate limiter for on-demand runs
+}
+
+// 传入的proxier.syncProxyRules这个函数
+proxier.syncRunner = async.NewBoundedFrequencyRunner("sync-runner", proxier.syncProxyRules, minSyncPeriod, syncPeriod, burstSyncs)
+```
+这是个600行左右的搓逼函数，也是处理主要逻辑的地方。
+
+## syncProxyRules
+1. 设置一些iptables规则，如mark与comment
+2. 确定机器上有网卡，ipvs需要绑定地址到上面
+3. 确定有ipset，ipset是iptables的扩展，可以给一批地址设置iptables规则
+...(又臭又长，重复代码多，看不下去了，细节问题自己去看吧)
+4. 我们最关注的，如何去处理VirtualServer的
+
+```
+serv := &utilipvs.VirtualServer{
+	Address:   net.ParseIP(ingress.IP),
+	Port:      uint16(svcInfo.port),
+	Protocol:  string(svcInfo.protocol),
+	Scheduler: proxier.ipvsScheduler,
+}
+if err := proxier.syncService(svcNameString, serv, false); err == nil {
+	if err := proxier.syncEndpoint(svcName, svcInfo.onlyNodeLocalEndpoints, serv); err != nil {
+	}
+}
+```
+看下实现, 如果没有就创建，如果已存在就更新, 给网卡绑定service的cluster ip：
+```
+func (proxier *Proxier) syncService(svcName string, vs *utilipvs.VirtualServer, bindAddr bool) error {
+	appliedVirtualServer, _ := proxier.ipvs.GetVirtualServer(vs)
+	if appliedVirtualServer == nil || !appliedVirtualServer.Equal(vs) {
+		if appliedVirtualServer == nil {
+			if err := proxier.ipvs.AddVirtualServer(vs); err != nil {
+				return err
+			}
+		} else {
+			if err := proxier.ipvs.UpdateVirtualServer(appliedVirtualServer); err != nil {
+				return err
+			}
+		}
+	}
+
+	// bind service address to dummy interface even if service not changed,
+	// in case that service IP was removed by other processes
+	if bindAddr {
+		_, err := proxier.netlinkHandle.EnsureAddressBind(vs.Address.String(), DefaultDummyDevice)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+```
+
+## 创建一个service实现
