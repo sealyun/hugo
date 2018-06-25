@@ -13,6 +13,11 @@ menu = ""           # set "main" to add this content to the main menu
 
 > 广告 | [kubernetes离线安装包，仅需三步](http://sealyun.com/pro/products/)
 
+## 官方例子
+大部分使用方式调用clientgo即可，我增加一些clientgo事例里没有的一些技巧
+
+[clientgo 事例地址](https://github.com/kubernetes/client-go/tree/master/examples)
+
 ## 初始化客户端
 这里给了两种初始化kubernetes客户端的方式，一种根据kubeconfig文件的路径，官方有，比较简单
 
