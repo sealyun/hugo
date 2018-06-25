@@ -11,6 +11,8 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
+# 广告 | [kubernetes离线安装包，仅需三步](http://sealyun.com/pro/products/)
+
 # kube-proxy源码解析
 ipvs相对于iptables模式具备较高的性能与稳定性, 本文讲以此模式的源码解析为主，如果想去了解iptables模式的原理，可以去参考其实现，架构上无差别。
 
