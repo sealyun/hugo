@@ -365,4 +365,228 @@ func (proxier *Proxier) syncService(svcName string, vs *utilipvs.VirtualServer, 
 }
 ```
 
-## 创建一个service实现
+## 创建service实现
+现在可以去看ipvs的AddVirtualServer的实现了，主要是利用socket与内核进程通信做到的。
+`pkg/util/ipvs/ipvs_linux.go` 里 runner结构体实现了这些方法, 这里用到了 docker/libnetwork/ipvs库：
+
+```
+// runner implements Interface.
+type runner struct {
+	exec       utilexec.Interface
+	ipvsHandle *ipvs.Handle
+}
+
+// New returns a new Interface which will call ipvs APIs.
+func New(exec utilexec.Interface) Interface {
+	ihandle, err := ipvs.New("") // github.com/docker/libnetwork/ipvs
+	if err != nil {
+		glog.Errorf("IPVS interface can't be initialized, error: %v", err)
+		return nil
+	}
+	return &runner{
+		exec:       exec,
+		ipvsHandle: ihandle,
+	}
+}
+```
+
+New的时候创建了一个特殊的socket, 这里与我们普通的socket编程无差别，关键是syscall.AF_NETLINK这个参数，代表与内核进程通信：
+```
+sock, err := nl.GetNetlinkSocketAt(n, netns.None(), syscall.NETLINK_GENERIC)
+
+func getNetlinkSocket(protocol int) (*NetlinkSocket, error) {
+	fd, err := syscall.Socket(syscall.AF_NETLINK, syscall.SOCK_RAW|syscall.SOCK_CLOEXEC, protocol)
+	if err != nil {
+		return nil, err
+	}
+	s := &NetlinkSocket{
+		fd: int32(fd),
+	}
+	s.lsa.Family = syscall.AF_NETLINK
+	if err := syscall.Bind(fd, &s.lsa); err != nil {
+		syscall.Close(fd)
+		return nil, err
+	}
+
+	return s, nil
+}
+```
+
+创建一个service, 转换成docker service格式，直接调用:
+```
+// AddVirtualServer is part of Interface.
+func (runner *runner) AddVirtualServer(vs *VirtualServer) error {
+	eSvc, err := toBackendService(vs)
+	if err != nil {
+		return err
+	}
+	return runner.ipvsHandle.NewService(eSvc)
+}
+```
+
+然后就是把service信息打包，往socket里面写即可：
+```
+
+func (i *Handle) doCmdwithResponse(s *Service, d *Destination, cmd uint8) ([][]byte, error) {
+	req := newIPVSRequest(cmd)
+	req.Seq = atomic.AddUint32(&i.seq, 1)
+
+	if s == nil {
+		req.Flags |= syscall.NLM_F_DUMP                    //Flag to dump all messages
+		req.AddData(nl.NewRtAttr(ipvsCmdAttrService, nil)) //Add a dummy attribute
+	} else {
+		req.AddData(fillService(s))
+	} // 把service塞到请求中
+
+	if d == nil {
+		if cmd == ipvsCmdGetDest {
+			req.Flags |= syscall.NLM_F_DUMP
+		}
+
+	} else {
+		req.AddData(fillDestinaton(d))
+	}
+
+    // 给内核进程发送service信息
+	res, err := execute(i.sock, req, 0)
+	if err != nil {
+		return [][]byte{}, err
+	}
+
+	return res, nil
+}
+```
+> 构造请求
+
+```
+func newIPVSRequest(cmd uint8) *nl.NetlinkRequest {
+	return newGenlRequest(ipvsFamily, cmd)
+}
+```
+在构造请求时传入的是ipvs协议簇
+
+然后构造一个与内核通信的消息头
+```
+func NewNetlinkRequest(proto, flags int) *NetlinkRequest {
+	return &NetlinkRequest{
+		NlMsghdr: syscall.NlMsghdr{
+			Len:   uint32(syscall.SizeofNlMsghdr),
+			Type:  uint16(proto),
+			Flags: syscall.NLM_F_REQUEST | uint16(flags),
+			Seq:   atomic.AddUint32(&nextSeqNr, 1),
+		},
+	}
+}
+```
+> 给消息加Data,这个Data是个数组，需要实现两个方法：
+
+```
+type NetlinkRequestData interface {
+	Len() int  // 长度
+	Serialize() []byte // 序列化, 内核通信也需要一定的数据格式，service信息也需要实现
+}
+```
+比如 header是这样序列化的, 一看愣住了，思考好久才看懂：
+拆下看：
+(*[unsafe.Sizeof(*hdr)]byte) 一个*[]byte类型，长度就是结构体大小
+(unsafe.Pointer(hdr))把结构体转成byte指针类型
+加个*取它的值
+用[:]转成byte返回
+```
+func (hdr *genlMsgHdr) Serialize() []byte {
+	return (*(*[unsafe.Sizeof(*hdr)]byte)(unsafe.Pointer(hdr)))[:]
+}
+```
+
+> 发送service信息给内核
+
+一个很普通的socket发送接收数据
+```
+func execute(s *nl.NetlinkSocket, req *nl.NetlinkRequest, resType uint16) ([][]byte, error) {
+	var (
+		err error
+	)
+
+	if err := s.Send(req); err != nil {
+		return nil, err
+	}
+
+	pid, err := s.GetPid()
+	if err != nil {
+		return nil, err
+	}
+
+	var res [][]byte
+
+done:
+	for {
+		msgs, err := s.Receive()
+		if err != nil {
+			return nil, err
+		}
+		for _, m := range msgs {
+			if m.Header.Seq != req.Seq {
+				continue
+			}
+			if m.Header.Pid != pid {
+				return nil, fmt.Errorf("Wrong pid %d, expected %d", m.Header.Pid, pid)
+			}
+			if m.Header.Type == syscall.NLMSG_DONE {
+				break done
+			}
+			if m.Header.Type == syscall.NLMSG_ERROR {
+				error := int32(native.Uint32(m.Data[0:4]))
+				if error == 0 {
+					break done
+				}
+				return nil, syscall.Errno(-error)
+			}
+			if resType != 0 && m.Header.Type != resType {
+				continue
+			}
+			res = append(res, m.Data)
+			if m.Header.Flags&syscall.NLM_F_MULTI == 0 {
+				break done
+			}
+		}
+	}
+	return res, nil
+}
+```
+
+> Service 数据打包
+这里比较细，核心思想就是内核只认一定格式的标准数据，我们把service信息按其标准打包发送给内核即可。
+至于怎么打包的就不详细讲了。
+```
+func fillService(s *Service) nl.NetlinkRequestData {
+	cmdAttr := nl.NewRtAttr(ipvsCmdAttrService, nil)
+	nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrAddressFamily, nl.Uint16Attr(s.AddressFamily))
+	if s.FWMark != 0 {
+		nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrFWMark, nl.Uint32Attr(s.FWMark))
+	} else {
+		nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrProtocol, nl.Uint16Attr(s.Protocol))
+		nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrAddress, rawIPData(s.Address))
+
+		// Port needs to be in network byte order.
+		portBuf := new(bytes.Buffer)
+		binary.Write(portBuf, binary.BigEndian, s.Port)
+		nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrPort, portBuf.Bytes())
+	}
+
+	nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrSchedName, nl.ZeroTerminated(s.SchedName))
+	if s.PEName != "" {
+		nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrPEName, nl.ZeroTerminated(s.PEName))
+	}
+	f := &ipvsFlags{
+		flags: s.Flags,
+		mask:  0xFFFFFFFF,
+	}
+	nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrFlags, f.Serialize())
+	nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrTimeout, nl.Uint32Attr(s.Timeout))
+	nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrNetmask, nl.Uint32Attr(s.Netmask))
+	return cmdAttr
+}
+```
+
+## 总结
+Service总体来讲代码比较简单，但是觉得有些地方实现的有点绕，不够简单直接。 总体来说就是监听apiserver事件，然后比对 处理，定期也会去执行同步策略.
