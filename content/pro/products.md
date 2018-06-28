@@ -11,6 +11,8 @@ menu = ""           # set "main" to add this content to the main menu
 +++
 
 # 安装包列表
+## [kubernetes1.11.0离线安装包]() | 阿里云审核中，一周内发布
+
 ## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000)
 
 * 强力推荐，1.10.3版本k8s优化了很多东西，如存储，大内存页等，比如你要对接ceph等，那一定不要用1.10以下版本的
