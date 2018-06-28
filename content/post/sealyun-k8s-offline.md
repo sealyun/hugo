@@ -136,6 +136,6 @@ kubectl apply -f ../conf/dashboard
 这里可能有的镜像下载不下来，你就得导入了
 
 ### 一切正常后保存所有镜像
-docker save -o images.tar $(docker images| grep ago|awk '{print $1":"$2}')
+docker save -o images.tar $(docker images|grep ago|awk '{print $1":"$2}')
 这里最好搞干净的服务器，不然别的镜像也会被save下来
 

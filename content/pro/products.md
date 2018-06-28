@@ -11,7 +11,11 @@ menu = ""           # set "main" to add this content to the main menu
 +++
 
 # 安装包列表
-## [kubernetes1.11.0离线安装包]() | 阿里云审核中，一周内发布
+## [kubernetes1.11.0离线安装包](https://market.aliyun.com/products/57742013/cmxz029129.html) 
+
+* 全网最快发布的离线包
+* coreDNS ipvs走起，ipvs性能甩iptables好多条街，赶快行动吧
+* 增加crictl cri命令行工具
 
 ## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000)
 
