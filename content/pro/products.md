@@ -11,13 +11,13 @@ menu = ""           # set "main" to add this content to the main menu
 +++
 
 # 安装包列表
-## [kubernetes1.11.0离线安装包](https://market.aliyun.com/products/57742013/cmxz029129.html) 
+## [kubernetes1.11.0离线安装包](https://market.aliyun.com/products/57742013/cmxz029129.html)  |  售价 50元
 
 * 全网最快发布的kubernetes1.11.0离线包
 * coreDNS ipvs走起，ipvs性能甩iptables好多条街，赶快行动吧
 * 增加crictl cri命令行工具
 
-## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000)
+## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000) | 售价 15元
 
 * 强力推荐，1.10.3版本k8s优化了很多东西，如存储，大内存页等，比如你要对接ceph等，那一定不要用1.10以下版本的
 * 全部使用当前最新版本组建
@@ -27,7 +27,7 @@ menu = ""           # set "main" to add this content to the main menu
 * 1.10.3的功能我们进行过一个月的稳定性测试，大家可以放心使用
 
 
-## [kubernetes1.9.2离线安装包](https://market.aliyun.com/products/57742013/cmxz025618.html?spm=5176.730005.productlist.dcmxz025618.r9c1J1#sku=yuncode1961800000)
+## [kubernetes1.9.2离线安装包](https://market.aliyun.com/products/57742013/cmxz025618.html?spm=5176.730005.productlist.dcmxz025618.r9c1J1#sku=yuncode1961800000)  |  售价 50元
 ```
 1.9.2以及以下版本，kubelet服务启动不了？ 1.10.3 加了检测没此问题
 cgroup driver配置要相同
@@ -38,7 +38,7 @@ vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 KUBELET_CGROUP_ARGS=–cgroup-driver=cgroupfs #这个配置与docker改成一致
 ```
 
-## [kubernetes1.8.1离线安装包](https://market.aliyun.com/products/56014009/cmxz022571.html?spm=5176.730005.productlist.dcmxz022571.r9c1J1#sku=yuncode1657100000) 推荐使用1.9.2以上版本
+## [kubernetes1.8.1离线安装包](https://market.aliyun.com/products/56014009/cmxz022571.html?spm=5176.730005.productlist.dcmxz022571.r9c1J1#sku=yuncode1657100000) 推荐使用1.9.2以上版本  |  售价 50元
 
 # QQ群：98488045
 
