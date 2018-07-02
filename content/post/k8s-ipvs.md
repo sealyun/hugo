@@ -11,6 +11,59 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
+# 1.11版本ipset bug说明
+1.11版本centos下使用ipvs模式会出问题 [65461](https://github.com/kubernetes/kubernetes/issues/65461)
+```
+Jun 25 20:50:00 VM_3_4_centos kube-proxy[3828]: E0625 20:50:00.312569    3828 ipset.go:156] Failed to make sure ip set: &{{KUBE-LOOP-BACK hash:ip,port,ip inet 1024 65536 0-65535 Kubernetes endpoints dst ip:port, source ip for solving hairpin purpose} map[] 0xc42073e1d0} exist, error: error creating ipset KUBE-LOOP-BACK, error: exit status 2
+```
+主要是ipset不支持comment:
+```
+[root@compute063 ~]# ipset create foo hash:ip comment
+ipset v6.19: Unknown argument: `comment'
+Try `ipset help' for more information.
+```
+尝试升级ipset问题依然没解决
+```
+[root@izrj9auny05eigffvcosvbz ipset-6.38]# ipset create foo hash:ip comment
+ipset v6.38: Argument `comment' is supported in the kernel module of the set type hash:ip starting from the revision 2 and you have installed revision 1 only. Your kernel is behind your ipset utility.
+Try `ipset help' for more information.
+```
+
+## 升级内核
+[rpm地址]()
+```
+rpm -ivh kernel-4.14.49-1.x86_64.rpm
+rpm -ivh kernel-devel-4.14.49-1.x86_64.rpm
+```
+```
+修改grub配置，默认启动新内核
+ vi /etc/default/grub
+修改成 GRUB_DEFAULT=0
+grub2-mkconfig -o /boot/grub2/grub.cfg 
+```
+
+## ipset 安装过程
+```
+yum install -y kernel-devel
+
+yum install -y bzip2
+
+wget http://ipset.netfilter.org/ipset-6.38.tar.bz2
+
+cd ipset-6.38
+
+bzip2 -d ipset-6.38.tar.bz2
+
+tar xvf ipset-6.38.tar
+
+cd /lib/modules/3.10.0-693.2.2.el7.x86_64
+ln -s /usr/src/kernels/3.10.0-862.3.3.el7.x86_64 build
+
+./configure && make && make install
+```
+
+在不改kubernetes情况下可以通过升级内核和ipset解决
+
 # kubernetes启用ipvs
 确保内核开启了ipvs模块
 ```
