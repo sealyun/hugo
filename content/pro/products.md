@@ -43,11 +43,15 @@ KUBELET_CGROUP_ARGS=–cgroup-driver=cgroupfs #这个配置与docker改成一致
 # QQ群：98488045
 
 # kubernetes离线包安装教程：
+安装包中不包含docker，如没装docker 请先安装之`yum install -y docker`
+
 ```
 1. master上： cd shell && sh init.sh && sh master.sh
 2. node上：cd shell && sh init.sh
 3. 在node上执行master输出的join命令即可 (命令忘记了可以用这个查看，kubeadm token create --print-join-command)
 ```
+> dashboard地址 https://masterip:32000
+
 ## master 节点 (录屏加载较慢，别焦躁。。。)
 <script data-speed="3" src="https://asciinema.org/a/RZ3a74x8qE6DZy7jSjaDrLvYM.js" id="asciicast-RZ3a74x8qE6DZy7jSjaDrLvYM" async></script>
 
