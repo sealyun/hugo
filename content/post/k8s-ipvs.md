@@ -31,7 +31,7 @@ Try `ipset help' for more information.
 
 在不改kubernetes情况下可以通过升级内核和ipset解决
 ## 升级内核
-[rpm地址]()
+[rpm地址](https://github.com/sealyun/kernel/releases/tag/v4.14.49)
 ```
 rpm -ivh kernel-4.14.49-1.x86_64.rpm
 rpm -ivh kernel-devel-4.14.49-1.x86_64.rpm
