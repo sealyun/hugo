@@ -29,6 +29,7 @@ ipset v6.38: Argument `comment' is supported in the kernel module of the set typ
 Try `ipset help' for more information.
 ```
 
+在不改kubernetes情况下可以通过升级内核和ipset解决
 ## 升级内核
 [rpm地址]()
 ```
@@ -61,8 +62,6 @@ ln -s /usr/src/kernels/3.10.0-862.3.3.el7.x86_64 build
 
 ./configure && make && make install
 ```
-
-在不改kubernetes情况下可以通过升级内核和ipset解决
 
 # kubernetes启用ipvs
 确保内核开启了ipvs模块
