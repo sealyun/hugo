@@ -63,4 +63,3 @@ iptables [-t table]  # 指定表名
          [-j target] # 符合规则的数据包采取什么动作
 ```
 
-## neutron中的自定义链
