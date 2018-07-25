@@ -11,9 +11,9 @@ menu = ""           # set "main" to add this content to the main menu
 +++
 
 # 安装包列表
-## [kubernetes1.11.1离线安装包]( )  |  售价 50元 云市场审核中，敬请期待
+## [kubernetes1.11.1离线安装包](https://market.aliyun.com/products/57742013/cmxz029676.html#sku=yuncode2367600001)  |  售价 50元 
 
-* kubernetesv1.11.1离线包全网最快发布
+* kubernetesv1.11.1离线包全网最快发布,修改calico ip段，再也不会地址冲突
 * 修复kubernetes 1.11.0版本centos下ipvs ipset comment 的bug, kubernetes[65461](https://github.com/kubernetes/kubernetes/issues/65461)
 * 将ipvs设置成默认的service模式,无需用户修改任何配置即可开启ipvs之旅
 
