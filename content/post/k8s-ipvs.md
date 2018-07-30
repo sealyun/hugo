@@ -15,8 +15,8 @@ menu = ""           # set "main" to add this content to the main menu
 
 # 1.11.1版本已经修复此bug，如在centos下使用ipvs模式建议升级到[v1.11.1,包地址](http://sealyun.com/pro/products/)
 
-# 1.11版本ipset bug说明
-1.11版本centos下使用ipvs模式会出问题 [65461](https://github.com/kubernetes/kubernetes/issues/65461)
+# 1.11.0版本ipset bug说明
+1.11.0版本centos下使用ipvs模式会出问题 [65461](https://github.com/kubernetes/kubernetes/issues/65461)
 ```
 Jun 25 20:50:00 VM_3_4_centos kube-proxy[3828]: E0625 20:50:00.312569    3828 ipset.go:156] Failed to make sure ip set: &{{KUBE-LOOP-BACK hash:ip,port,ip inet 1024 65536 0-65535 Kubernetes endpoints dst ip:port, source ip for solving hairpin purpose} map[] 0xc42073e1d0} exist, error: error creating ipset KUBE-LOOP-BACK, error: exit status 2
 ```
