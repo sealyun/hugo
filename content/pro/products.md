@@ -17,8 +17,9 @@ menu = ""           # set "main" to add this content to the main menu
 * 修复kubernetes 1.11.0版本centos下ipvs ipset comment 的bug, kubernetes[65461](https://github.com/kubernetes/kubernetes/issues/65461)
 * 将ipvs设置成默认的service模式,无需用户修改任何配置即可开启ipvs之旅
 
-## [kubernetes1.11.0离线安装包](https://market.aliyun.com/products/57742013/cmxz029129.html)  |  售价 50元
+## [kubernetes1.11.0离线安装包](https://market.aliyun.com/products/57742013/cmxz029129.html) 推荐使用v1.11.1版本 |  售价 50元
 
+* 此版本ipvs在centos下有[bug 65461](sealyun.com/post/k8s-ipvs/)，请谨慎选择使用
 * 全网最快发布的kubernetes1.11.0离线包
 * coreDNS ipvs走起，ipvs性能甩iptables好多条街，赶快行动吧
 * 增加crictl cri命令行工具
