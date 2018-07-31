@@ -13,11 +13,15 @@ menu = ""           # set "main" to add this content to the main menu
 # 安装包列表
 ## [kubernetes1.11.1离线安装包](https://market.aliyun.com/products/57742013/cmxz029676.html#sku=yuncode2367600001)  |  售价 50元 
 
+推荐指数：:star: :star: :star: :star: :star:
+
 * kubernetesv1.11.1离线包全网最快发布,修改calico ip段，再也不会地址冲突
 * 修复kubernetes 1.11.0版本centos下ipvs ipset comment 的bug, kubernetes[65461](https://github.com/kubernetes/kubernetes/issues/65461)
 * 将ipvs设置成默认的service模式,无需用户修改任何配置即可开启ipvs之旅
 
 ## [kubernetes1.11.0离线安装包](https://market.aliyun.com/products/57742013/cmxz029129.html) 推荐使用v1.11.1版本 |  售价 50元
+
+推荐指数：:star: :star: 
 
 * 此版本ipvs在centos下有[bug 65461](sealyun.com/post/k8s-ipvs/)，请谨慎选择使用
 * 全网最快发布的kubernetes1.11.0离线包
@@ -25,6 +29,8 @@ menu = ""           # set "main" to add this content to the main menu
 * 增加crictl cri命令行工具
 
 ## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000) | 售价 15元
+
+推荐指数：:star: :star: :star: :star: :star:
 
 * 强力推荐，1.10.3版本k8s优化了很多东西，如存储，大内存页等，比如你要对接ceph等，那一定不要用1.10以下版本的
 * 全部使用当前最新版本组建
@@ -35,6 +41,9 @@ menu = ""           # set "main" to add this content to the main menu
 
 
 ## [kubernetes1.9.2离线安装包](https://market.aliyun.com/products/57742013/cmxz025618.html?spm=5176.730005.productlist.dcmxz025618.r9c1J1#sku=yuncode1961800000)  |  售价 50元
+
+推荐指数：:star: :star: 
+
 ```
 1.9.2以及以下版本，kubelet服务启动不了？ 1.10.3 加了检测没此问题
 cgroup driver配置要相同
@@ -46,6 +55,8 @@ KUBELET_CGROUP_ARGS=–cgroup-driver=cgroupfs #这个配置与docker改成一致
 ```
 
 ## [kubernetes1.8.1离线安装包](https://market.aliyun.com/products/56014009/cmxz022571.html?spm=5176.730005.productlist.dcmxz022571.r9c1J1#sku=yuncode1657100000) 推荐使用1.9.2以上版本  |  售价 50元
+
+推荐指数：:star: 
 
 # QQ群：98488045
 
