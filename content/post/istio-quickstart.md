@@ -2,7 +2,7 @@
 author = "fanux"
 date = "2018-07-30T10:54:24+02:00"
 draft = false
-title = "istio教程"
+title = "istio安装使用教程"
 #slug = "dotscale-2014-as-a-sketch"
 tags = ["event","dotScale","sketchnote"]
 #image = "images/2014/Jul/titledotscale.png"
