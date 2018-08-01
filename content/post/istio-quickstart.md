@@ -253,3 +253,33 @@ Sorry, product reviews are currently unavailable for this book.
 所以我们就可能通过故障注入去发现这些异常现象
 
 ## 链路切换 Traffic Shifting
+我们先把50%流量发送给reviews:v1 50%流量发送给v3，然后再把100%的流量都切给v3
+### 把100%流量切到v1
+```
+kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml
+```
+此时不论刷几遍，都没有星星
+
+### v1 v3各50%流量
+```
+kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-50-v3.yaml
+```
+```
+  - route:
+    - destination:
+        host: reviews
+        subset: v1
+      weight: 50
+    - destination:
+        host: reviews
+        subset: v3
+      weight: 50
+```
+此时一会有星，一会没星，但是已经不是轮询算法了
+
+### 全切v3
+```
+kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-v3.yaml
+```
+这时不管怎么刷都是红心了
+
