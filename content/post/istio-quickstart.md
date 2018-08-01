@@ -19,6 +19,8 @@ menu = ""           # set "main" to add this content to the main menu
 
 > 安装k8s [强势插播广告](http://sealyun.com/pro/products/) 
 
+三步安装，不多说
+
 > 安装helm, 推荐生产环境用helm安装，可以调参
 
 [release地址](https://github.com/helm/helm/releases)
