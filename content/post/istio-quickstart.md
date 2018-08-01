@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2018-08-1T10:54:24+02:00"
+date = "2018-07-30T10:54:24+02:00"
 draft = false
 title = "istio教程"
 #slug = "dotscale-2014-as-a-sketch"
@@ -12,6 +12,8 @@ menu = ""           # set "main" to add this content to the main menu
 +++
 
 > 广告 | [kubernetes各版本离线安装包](http://sealyun.com/pro/products/)
+
+祝贺istio1.0发布, 在此献上教程一份
 
 # 安装
 
