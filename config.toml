@@ -42,10 +42,15 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   identifier = "categories"
   url = "/categories/"
 [[menu.main]]
-  name = "Products"
+  name = "Kubernetes"
   weight = 50
   identifier = "pro"
   url = "/pro/products"
+[[menu.main]]
+  name = "Istio"
+  weight = 50
+  identifier = "istio"
+  url = "/pro/istio"
 
 [params]
   version = "3.x"           # Used to give a friendly message when you have an incompatible update
