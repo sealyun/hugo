@@ -513,7 +513,9 @@ infra0节点加入集群重复上述操作；注意在加入集群之前，将�
 # 实践 - 给kubeadm单etcd增加etcd节点
 ## 环境介绍
 10.1.86.201   单点etcd   etcd0
+
 10.1.86.202   扩展节点   etcd1
+
 10.1.86.203   扩展节点   etcd2
 
 ## 安装k8s
@@ -656,7 +658,7 @@ kubectl get pod -n kube-system  # 能正常返回pod标志成功
 [root@dev-86-201 ~]# docker exec -it a7001397e1e5 sh
 / # alias etcdv3="ETCDCTL_API=3 etcdctl --endpoints=https://[10.1.86.201]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.pem --cert=/etc/kubernetes/pki/etcd/client.pem --key=/etc/kubernetes/pki/etcd/client-key
 .pem"
-/ # etcdv3 member update a874c87fd42044f  --peer-urls="https://10.1.86.201:2379" # 更新peer url 很重要
+/ # etcdv3 member update a874c87fd42044f  --peer-urls="https://10.1.86.201:2380" # 更新peer url 很重要
 / # etcdv3 member add etcd1 --peer-urls="https://10.1.86.202:2380"
 Member 20c2a99381581958 added to cluster c9be114fc2da2776
 
@@ -664,8 +666,7 @@ ETCD_NAME="etcd1"
 ETCD_INITIAL_CLUSTER="dev-86-201=https://127.0.0.1:2380,etcd1=https://10.1.86.202:2380"
 ETCD_INITIAL_CLUSTER_STATE="existing"
 
-/ # alias etcdv2="ETCDCTL_API=2 etcdctl --endpoints=https://[10.1.86.201]:2379 --ca-file=/etc/kubernetes/pki/etcd/ca.pem --cert-file=/etc/kubernetes/pki/etcd/client.pem --key-file=/etc/kubernetes/
-pki/etcd/client-key.pem"
+/ # alias etcdv2="ETCDCTL_API=2 etcdctl --endpoints=https://[10.1.86.201]:2379 --ca-file=/etc/kubernetes/pki/etcd/ca.pem --cert-file=/etc/kubernetes/pki/etcd/client.pem --key-file=/etc/kubernetes/pki/etcd/client-key.pem"
 / # etcdv2 cluster-health
 ```
 
@@ -781,4 +782,20 @@ spec:
     name: etcd-certs
 status: {}
 ```
+在容器内查看集群已经健康运行了：
+```
+/ # alias etcdv2="ETCDCTL_API=2 etcdctl --endpoints=https://[10.1.86.201]:2379 --ca-file=/etc/kubernetes/pki/etcd/ca.pem --cert-file=/etc/kubernetes/pki/etcd/client.pem --key-file=/etc/kubernetes/pki/etcd/client-key.pem"
+/ # etcdv2 cluster-health
+member a874c87fd42044f is healthy: got healthy result from https://10.1.86.201:2379
+member bbbbf223ec75e000 is healthy: got healthy result from https://10.1.86.202:2379
+cluster is healthy
+```
+然后就可以把apiserver启动参数再加一个etcd1:
+```
+    - --etcd-servers=https://10.1.86.201:2379
+    - --etcd-servers=https://10.1.86.202:2379
+```
+第三个节点同第二个，不再赘述。
 
+细节问题非常多，一个端口，一个IP都不要填错，否则就会各种错误, 包括新加节点要清etcd数据这些小细节问题。
+大功告成！
