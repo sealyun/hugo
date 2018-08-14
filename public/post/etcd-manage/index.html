@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>etcd管理指南 - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+          var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119962244-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-119962244-1');
+</script>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="fanux" />
+  <meta name="description" content="广告 | kubernetes各版本离线安装包 安装 etcd快照恢复 说明： 有证书集群以下所有命令需带上如下证书参数，否则访问不了 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key endpoi" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.40.3" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/etcd-manage/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="etcd管理指南" />
+<meta property="og:description" content="广告 | kubernetes各版本离线安装包 安装 etcd快照恢复 说明： 有证书集群以下所有命令需带上如下证书参数，否则访问不了 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key endpoi" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/etcd-manage/" />
+
+
+
+<meta property="article:published_time" content="2018-08-12T10:54:24&#43;02:00"/>
+
+<meta property="article:modified_time" content="2018-08-12T10:54:24&#43;02:00"/>
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="etcd管理指南">
+<meta itemprop="description" content="广告 | kubernetes各版本离线安装包 安装 etcd快照恢复 说明： 有证书集群以下所有命令需带上如下证书参数，否则访问不了 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key endpoi">
+
+
+<meta itemprop="datePublished" content="2018-08-12T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2018-08-12T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="1681">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="etcd管理指南"/>
+<meta name="twitter:description" content="广告 | kubernetes各版本离线安装包 安装 etcd快照恢复 说明： 有证书集群以下所有命令需带上如下证书参数，否则访问不了 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key endpoi"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/pro/istio">
+        <li class="mobile-menu-item">Istio</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/istio">Istio</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">etcd管理指南</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-12 </span>
+        
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#安装">安装</a>
+<ul>
+<li>
+<ul>
+<li><a href="#etcd快照恢复">etcd快照恢复</a></li>
+<li><a href="#etcd节点扩容">etcd节点扩容</a>
+<ul>
+<li><a href="#以如下三个节点为例">以如下三个节点为例</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li><a href="#etcd-证书配置">etcd 证书配置</a>
+<ul>
+<li><a href="#证书生成">证书生成</a></li>
+<li><a href="#启动etcd">启动etcd</a></li>
+<li><a href="#增加节点">增加节点</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<blockquote>
+<p>广告 | <a href="http://sealyun.com/pro/products/">kubernetes各版本离线安装包</a></p>
+</blockquote>
+
+<h1 id="安装">安装</h1>
+
+<h3 id="etcd快照恢复">etcd快照恢复</h3>
+
+<p>说明：
+有证书集群以下所有命令需带上如下证书参数，否则访问不了</p>
+
+<pre><code>--cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key
+</code></pre>
+
+<p>endpoints默认为<code>127.0.0.1:2379</code>，若需指定远程etcd地址，可通过如下参数指定</p>
+
+<pre><code>--endpoints 172.16.154.81:2379
+</code></pre>
+
+<p>1、获取数据快照</p>
+
+<pre><code>ETCDCTL_API=3 etcdctl snapshot save snapshot.db
+</code></pre>
+
+<p>2、从快照恢复数据</p>
+
+<pre><code>ETCDCTL_API=3 etcdctl snapshot restore snapshot.db --data-dir=/var/lib/etcd/
+</code></pre>
+
+<p>3、启动新etcd节点，指定&ndash;data-dir=/var/lib/etcd/</p>
+
+<h3 id="etcd节点扩容">etcd节点扩容</h3>
+
+<h4 id="以如下三个节点为例">以如下三个节点为例</h4>
+
+<table>
+<thead>
+<tr>
+<th>节点名</th>
+<th>IP</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>infra0</td>
+<td>172.16.154.81</td>
+<td>初始节点，k8s的master节点，kubeadm所部署的单节点etcd所在机器</td>
+</tr>
+
+<tr>
+<td>infra1</td>
+<td>172.16.154.82</td>
+<td>待添加节点，k8s的node节点</td>
+</tr>
+
+<tr>
+<td>infra2</td>
+<td>172.16.154.83</td>
+<td>待添加节点，k8s的node节点</td>
+</tr>
+</tbody>
+</table>
+
+<p>1、从初始etcd节点获取数据快照</p>
+
+<pre><code>ETCDCTL_API=3 etcdctl --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key --endpoints=https://127.0.0.1:2379 snapshot save snapshot.db
+</code></pre>
+
+<p>2、将快照文件snapshot.db复制到infra1节点，并执行数据恢复命令</p>
+
+<p>数据恢复命令</p>
+
+<pre><code>ETCDCTL_API=3 etcdctl snapshot restore snapshot.db --data-dir=/var/lib/etcd/
+
+注：执行上述命令需要机器上有etcdctl
+</code></pre>
+
+<p>上述命令执行成功会将快照中的数据存放到/var/lib/etcd目录中</p>
+
+<p>3、在infra1节点启动etcd
+将如下yaml放入/etc/kubernetes/manifests</p>
+
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: etcd
+    tier: control-plane
+  name: etcd-172.16.154.82
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - etcd
+    - --name=infra0
+    - --initial-advertise-peer-urls=http://172.16.154.82:2380
+    - --listen-peer-urls=http://172.16.154.82:2380
+    - --listen-client-urls=http://172.16.154.82:2379,http://127.0.0.1:2379
+    - --advertise-client-urls=http://172.16.154.82:2379
+    - --data-dir=/var/lib/etcd
+    - --initial-cluster-token=etcd-cluster-1
+    - --initial-cluster=infra0=http://172.16.154.82:2380
+    - --initial-cluster-state=new
+    image: hub.xfyun.cn/k8s/etcd-amd64:3.1.12
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /health
+        port: 2379
+        scheme: HTTP
+      failureThreshold: 8
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: etcd
+    volumeMounts:
+    - name: etcd-data
+      mountPath: /var/lib/etcd
+  hostNetwork: true
+  volumes:
+  - hostPath:
+      path: /var/lib/etcd
+      type: DirectoryOrCreate
+    name: etcd-data
+</code></pre>
+
+<p>4、infra2节点加入etcd集群中
+在infra1中etcd容器中执行</p>
+
+<pre><code>ETCDCTL_API=3 etcdctl member add infra2 --peer-urls=&quot;http://172.16.154.83:2380&quot;
+</code></pre>
+
+<p>将如下yaml放入/etc/kubernetes/manifests，由kubelet启动etcd容器</p>
+
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: etcd
+    tier: control-plane
+  name: etcd-172.16.154.83
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - etcd
+    - --name=infra1
+    - --initial-advertise-peer-urls=http://172.16.154.83:2380
+    - --listen-peer-urls=http://172.16.154.83:2380
+    - --listen-client-urls=http://172.16.154.83:2379,http://127.0.0.1:2379
+    - --advertise-client-urls=http://172.16.154.83:2379
+    - --data-dir=/var/lib/etcd
+    - --initial-cluster-token=etcd-cluster-1
+    - --initial-cluster=infra1=http://172.16.154.82:2380,infra2=http://172.16.154.83:2380
+    - --initial-cluster-state=existing
+    image: hub.xfyun.cn/k8s/etcd-amd64:3.1.12
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /health
+        port: 2379
+        scheme: HTTP
+      failureThreshold: 8
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: etcd
+    volumeMounts:
+    - name: etcd-data
+      mountPath: /var/lib/etcd
+  hostNetwork: true
+  volumes:
+  - hostPath:
+      path: /home/etcd
+      type: DirectoryOrCreate
+    name: etcd-data
+</code></pre>
+
+<p>infra0节点加入集群重复上述操作；注意在加入集群之前，将之前/var/lib/etcd/的数据删除。</p>
+
+<h1 id="etcd-证书配置">etcd 证书配置</h1>
+
+<h2 id="证书生成">证书生成</h2>
+
+<p>cfssl安装：</p>
+
+<pre><code>mkdir ~/bin
+curl -s -L -o ~/bin/cfssl https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+curl -s -L -o ~/bin/cfssljson https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+chmod +x ~/bin/{cfssl,cfssljson}
+export PATH=$PATH:~/bin
+</code></pre>
+
+<pre><code>mkdir ~/cfssl
+cd ~/cfssl
+</code></pre>
+
+<p>写入如下json文件，ip替换成自己的</p>
+
+<pre><code>root@dev-86-201 cfssl]# cat ca-config.json
+{
+    &quot;signing&quot;: {
+        &quot;default&quot;: {
+            &quot;expiry&quot;: &quot;43800h&quot;
+        },
+        &quot;profiles&quot;: {
+            &quot;server&quot;: {
+                &quot;expiry&quot;: &quot;43800h&quot;,
+                &quot;usages&quot;: [
+                    &quot;signing&quot;,
+                    &quot;key encipherment&quot;,
+                    &quot;server auth&quot;
+                ]
+            },
+            &quot;client&quot;: {
+                &quot;expiry&quot;: &quot;43800h&quot;,
+                &quot;usages&quot;: [
+                    &quot;signing&quot;,
+                    &quot;key encipherment&quot;,
+                    &quot;client auth&quot;
+                ]
+            },
+            &quot;peer&quot;: {
+                &quot;expiry&quot;: &quot;43800h&quot;,
+                &quot;usages&quot;: [
+                    &quot;signing&quot;,
+                    &quot;key encipherment&quot;,
+                    &quot;server auth&quot;,
+                    &quot;client auth&quot;
+                ]
+            }
+        }
+    }
+}
+[root@dev-86-201 cfssl]# cat ca-csr.json
+{
+    &quot;CN&quot;: &quot;My own CA&quot;,
+    &quot;key&quot;: {
+        &quot;algo&quot;: &quot;rsa&quot;,
+        &quot;size&quot;: 2048
+    },
+    &quot;names&quot;: [
+        {
+            &quot;C&quot;: &quot;US&quot;,
+            &quot;L&quot;: &quot;CA&quot;,
+            &quot;O&quot;: &quot;My Company Name&quot;,
+            &quot;ST&quot;: &quot;San Francisco&quot;,
+            &quot;OU&quot;: &quot;Org Unit 1&quot;,
+            &quot;OU&quot;: &quot;Org Unit 2&quot;
+        }
+    ]
+}
+[root@dev-86-201 cfssl]# cat server.json
+{
+    &quot;CN&quot;: &quot;etcd0&quot;,
+    &quot;hosts&quot;: [
+        &quot;127.0.0.1&quot;,
+        &quot;0.0.0.0&quot;,
+        &quot;10.1.86.201&quot;,
+        &quot;10.1.86.203&quot;,
+        &quot;10.1.86.202&quot;
+    ],
+    &quot;key&quot;: {
+        &quot;algo&quot;: &quot;ecdsa&quot;,
+        &quot;size&quot;: 256
+    },
+    &quot;names&quot;: [
+        {
+            &quot;C&quot;: &quot;US&quot;,
+            &quot;L&quot;: &quot;CA&quot;,
+            &quot;ST&quot;: &quot;San Francisco&quot;
+        }
+    ]
+}
+
+[root@dev-86-201 cfssl]# cat member1.json  # 填本机IP
+{
+    &quot;CN&quot;: &quot;etcd0&quot;,
+    &quot;hosts&quot;: [
+        &quot;10.1.86.201&quot;
+    ],
+    &quot;key&quot;: {
+        &quot;algo&quot;: &quot;ecdsa&quot;,
+        &quot;size&quot;: 256
+    },
+    &quot;names&quot;: [
+        {
+            &quot;C&quot;: &quot;US&quot;,
+            &quot;L&quot;: &quot;CA&quot;,
+            &quot;ST&quot;: &quot;San Francisco&quot;
+        }
+    ]
+}
+
+[root@dev-86-201 cfssl]# cat client.json
+{
+    &quot;CN&quot;: &quot;client&quot;,
+    &quot;hosts&quot;: [
+       &quot;&quot;
+    ],
+    &quot;key&quot;: {
+        &quot;algo&quot;: &quot;ecdsa&quot;,
+        &quot;size&quot;: 256
+    },
+    &quot;names&quot;: [
+        {
+            &quot;C&quot;: &quot;US&quot;,
+            &quot;L&quot;: &quot;CA&quot;,
+            &quot;ST&quot;: &quot;San Francisco&quot;
+        }
+    ]
+}
+</code></pre>
+
+<p>生成证书：</p>
+
+<pre><code>cfssl gencert -initca ca-csr.json | cfssljson -bare ca -
+cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=server server.json | cfssljson -bare server
+cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=peer member1.json | cfssljson -bare member1
+cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client client.json | cfssljson -bare client
+</code></pre>
+
+<h2 id="启动etcd">启动etcd</h2>
+
+<p>cfssl目录拷贝到/etc/kubernetes/pki/cfssl 目录</p>
+
+<pre><code>[root@dev-86-201 manifests]# cat etcd.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: &quot;&quot;
+  creationTimestamp: null
+  labels:
+    component: etcd
+    tier: control-plane
+  name: etcd
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - etcd
+    - --advertise-client-urls=https://10.1.86.201:2379
+    - --cert-file=/etc/kubernetes/pki/etcd/server.pem
+    - --client-cert-auth=true
+    - --data-dir=/var/lib/etcd
+    - --initial-advertise-peer-urls=https://10.1.86.201:2380
+    - --initial-cluster=etcd0=https://10.1.86.201:2380
+    - --key-file=/etc/kubernetes/pki/etcd/server-key.pem
+    - --listen-client-urls=https://10.1.86.201:2379
+    - --listen-peer-urls=https://10.1.86.201:2380
+    - --name=etcd0
+    - --peer-cert-file=/etc/kubernetes/pki/etcd/member1.pem
+    - --peer-client-cert-auth=true
+    - --peer-key-file=/etc/kubernetes/pki/etcd/member1-key.pem
+    - --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem
+    - --snapshot-count=10000
+    - --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem
+    image: k8s.gcr.io/etcd-amd64:3.2.18
+    imagePullPolicy: IfNotPresent
+   #livenessProbe:
+   #  exec:
+   #    command:
+   #    - /bin/sh
+   #    - -ec
+   #    - ETCDCTL_API=3 etcdctl --endpoints=https://[10.1.86.201]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.pem
+   #      --cert=/etc/kubernetes/pki/etcd/client.pem --key=/etc/kubernetes/pki/etcd/client-key.pem
+   #      get foo
+   #  failureThreshold: 8
+   #  initialDelaySeconds: 15
+   #  timeoutSeconds: 15
+    name: etcd
+    resources: {}
+    volumeMounts:
+    - mountPath: /var/lib/etcd
+      name: etcd-data
+    - mountPath: /etc/kubernetes/pki/etcd
+      name: etcd-certs
+  hostNetwork: true
+  priorityClassName: system-cluster-critical
+  volumes:
+  - hostPath:
+      path: /var/lib/etcd
+      type: DirectoryOrCreate
+    name: etcd-data
+  - hostPath:
+      path: /etc/kubernetes/pki/cfssl
+      type: DirectoryOrCreate
+    name: etcd-certs
+status: {}
+</code></pre>
+
+<p>进入etcd容器执行：</p>
+
+<pre><code>alias etcdxx=&quot;ETCDCTL_API=3 etcdctl --endpoints=https://[10.1.86.201]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.pem --cert=/etc/kubernetes/pki/etcd/client.pem --key=/etc/kubernetes/pki/etcd/client-key.pem&quot;
+etcdxx member add etcd1 --peer-urls=&quot;https://10.1.86.202:2380&quot;
+</code></pre>
+
+<h2 id="增加节点">增加节点</h2>
+
+<p>拷贝etcd0(10.1.86.201)节点上的证书到etcd1(10.1.86.202)节点上
+修改member1.json:</p>
+
+<pre><code>{
+    &quot;CN&quot;: &quot;etcd1&quot;,
+    &quot;hosts&quot;: [
+        &quot;10.1.86.202&quot;
+    ],
+    &quot;key&quot;: {
+        &quot;algo&quot;: &quot;ecdsa&quot;,
+        &quot;size&quot;: 256
+    },
+    &quot;names&quot;: [
+        {
+            &quot;C&quot;: &quot;US&quot;,
+            &quot;L&quot;: &quot;CA&quot;,
+            &quot;ST&quot;: &quot;San Francisco&quot;
+        }
+    ]
+}
+</code></pre>
+
+<p>重新生成在etcd1上生成member1证书：</p>
+
+<pre><code>cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=peer member1.json | cfssljson -bare member1
+</code></pre>
+
+<p>启动etcd1：</p>
+
+<pre><code>[root@dev-86-202 manifests]# cat etcd.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: &quot;&quot;
+  creationTimestamp: null
+  labels:
+    component: etcd
+    tier: control-plane
+  name: etcd
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - etcd
+    - --advertise-client-urls=https://10.1.86.202:2379
+    - --cert-file=/etc/kubernetes/pki/etcd/server.pem
+    - --data-dir=/var/lib/etcd
+    - --initial-advertise-peer-urls=https://10.1.86.202:2380
+    - --initial-cluster=etcd0=https://10.1.86.201:2380,etcd1=https://10.1.86.202:2380
+    - --key-file=/etc/kubernetes/pki/etcd/server-key.pem
+    - --listen-client-urls=https://10.1.86.202:2379
+    - --listen-peer-urls=https://10.1.86.202:2380
+    - --name=etcd1
+    - --peer-cert-file=/etc/kubernetes/pki/etcd/member1.pem
+    - --peer-client-cert-auth=true
+    - --peer-key-file=/etc/kubernetes/pki/etcd/member1-key.pem
+    - --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem
+    - --snapshot-count=10000
+    - --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem
+    - --initial-cluster-state=existing  # 千万别加双引号，被坑死
+    image: k8s.gcr.io/etcd-amd64:3.2.18
+    imagePullPolicy: IfNotPresent
+  # livenessProbe:
+  #   exec:
+  #     command:
+  #     - /bin/sh
+  #     - -ec
+  #     - ETCDCTL_API=3 etcdctl --endpoints=https://[10.1.86.202]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt
+  #       --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
+  #       get foo
+  #   failureThreshold: 8
+  #   initialDelaySeconds: 15
+  #   timeoutSeconds: 15
+    name: etcd
+    resources: {}
+    volumeMounts:
+    - mountPath: /var/lib/etcd
+      name: etcd-data
+    - mountPath: /etc/kubernetes/pki/etcd
+      name: etcd-certs
+  hostNetwork: true
+  priorityClassName: system-cluster-critical
+  volumes:
+  - hostPath:
+      path: /var/lib/etcd
+      type: DirectoryOrCreate
+    name: etcd-data
+  - hostPath:
+      path: /etc/kubernetes/pki/cfssl
+      type: DirectoryOrCreate
+    name: etcd-certs
+status: {}
+</code></pre>
+
+<p>或者用docker起先测试一下：</p>
+
+<pre><code>docker run --net=host -v /etc/kubernetes/pki/cfssl:/etc/kubernetes/pki/etcd k8s.gcr.io/etcd-amd64:3.2.18 etcd \
+--advertise-client-urls=https://10.1.86.202:2379 \
+--cert-file=/etc/kubernetes/pki/etcd/server.pem \
+--data-dir=/var/lib/etcd \
+--initial-advertise-peer-urls=https://10.1.86.202:2380 \
+--initial-cluster=etcd0=https://10.1.86.201:2380,etcd1=https://10.1.86.202:2380 \
+--key-file=/etc/kubernetes/pki/etcd/server-key.pem  \
+--listen-client-urls=https://10.1.86.202:2379 \
+--listen-peer-urls=https://10.1.86.202:2380 --name=etcd1 \
+--peer-cert-file=/etc/kubernetes/pki/etcd/member1.pem \
+--peer-key-file=/etc/kubernetes/pki/etcd/member1-key.pem \
+--peer-client-cert-auth=true \
+--peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem --snapshot-count=10000 \
+--trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem --initial-cluster-state=&quot;existing&quot;
+</code></pre>
+
+<p>etcd0上检查集群健康:</p>
+
+<pre><code># etcdctl --endpoints=https://[10.1.86.201]:2379 --ca-file=/etc/kubernetes/pki/etcd/ca.pem --cert-file=/etc/kubernetes/pki/etcd/client.pem --key-file=/etc/kubernetes/pki/etcd/client-key.pem cluster-heal
+th
+member 5856099674401300 is healthy: got healthy result from https://10.1.86.201:2379
+member df99f445ac908d15 is healthy: got healthy result from https://10.1.86.202:2379
+cluster is healthy
+</code></pre>
+
+<p>etcd2增加同理，略</p>
+
+<p>apiserver etcd证书 配置：</p>
+
+<pre><code>- --etcd-cafile=/etc/kubernetes/pki/cfssl/ca.pem
+- --etcd-certfile=/etc/kubernetes/pki/cfssl/client.pem
+- --etcd-keyfile=/etc/kubernetes/pki/cfssl/client-key.pem
+</code></pre>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-08-12</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/event/">event</a>
+          
+          <a href="/tags/dotscale/">dotScale</a>
+          
+          <a href="/tags/sketchnote/">sketchnote</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/istio-quickstart/">
+            <span class="next-text nav-default">istio安装使用教程</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  <div id="comments-gitment"></div>
+  <link rel="stylesheet" href="/lib/gitment/gitment-0.0.3.min.css">
+    <script src="/lib/gitment/gitment-0.0.3.min.js"></script>
+  <script type="text/javascript">
+  const gitment = new Gitment({
+    id: '2018-08-12 10:54:24 \x2b0200 \x2b0200',
+    title: 'etcd管理指南',
+    link: decodeURI(location.href),
+    desc: '广告 | kubernetes各版本离线安装包 安装 etcd快照恢复 说明： 有证书集群以下所有命令需带上如下证书参数，否则访问不了 --cacert=\/etc\/kubernetes\/pki\/etcd\/ca.crt --cert=\/etc\/kubernetes\/pki\/etcd\/peer.crt --key=\/etc\/kubernetes\/pki\/etcd\/peer.key endpoi',
+    owner: 'fanux',
+    repo: 'fanux.github.io',
+    oauth: {
+      client_id: 'dbec2d3194e8cd765fae',
+      client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+    }
+  })
+  gitment.render('comments-gitment')
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:fhtjob@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/fanux/" class="iconfont icon-github" title="github"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2018
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
