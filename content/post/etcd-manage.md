@@ -353,7 +353,7 @@ apiserver etcd证书 配置：
 - --etcd-keyfile=/etc/kubernetes/pki/cfssl/client-key.pem
 ```
 
-### etcd快照恢复
+## etcd快照恢复
 
 说明：
 有证书集群以下所有命令需带上如下证书参数，否则访问不了
@@ -381,7 +381,7 @@ ETCDCTL_API=3 etcdctl snapshot restore snapshot.db --data-dir=/var/lib/etcd/
 
 3、启动新etcd节点，指定--data-dir=/var/lib/etcd/
 
-### etcd节点扩容
+## etcd节点扩容
 
 节点名|IP|备注
 ----|----|--------------
