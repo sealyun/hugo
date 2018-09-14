@@ -15,8 +15,8 @@ menu = ""           # set "main" to add this content to the main menu
 
 推荐指数：:star: :star: :star: :star: :star:
 
-* v1.11.3版本是1.11中最稳定的一个，修复了很多bug
-* 本包升级了calico到3.2.1版本，低版本calico我们在线上跑出出现过假死，高版本解决了这一bug
+* v1.11.3版本是1.11中最稳定的一个，修复了很多bug,对PVC有更好支持
+* 本包升级了calico到3.2.1版本，低版本calico我们在线上跑出出现过假死，高版本解决了这一bug,且高可用时此版本对证书安全支持更好
 * dashboard升级到当前最新版本v1.10，主要也是修复dashboard的一些bug
 
 
