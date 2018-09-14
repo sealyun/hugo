@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Docker架构分析 - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+          var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119962244-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-119962244-1');
+</script>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="fanux" />
+  <meta name="description" content="Docker架构分析 [root@docker-build-86-050 ~]# ls /usr/bin |grep docker docker docker-compose docker-containerd docker-containerd-ctr docker-containerd-shim dockerd docker-proxy docker-runc 大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥 初窥得出的结论是： docker是cl" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.40.3" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/docker-architech/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Docker架构分析" />
+<meta property="og:description" content="Docker架构分析 [root@docker-build-86-050 ~]# ls /usr/bin |grep docker docker docker-compose docker-containerd docker-containerd-ctr docker-containerd-shim dockerd docker-proxy docker-runc 大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥 初窥得出的结论是： docker是cl" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/docker-architech/" />
+
+
+
+<meta property="article:published_time" content="2017-07-11T10:54:24&#43;02:00"/>
+
+<meta property="article:modified_time" content="2017-07-11T10:54:24&#43;02:00"/>
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="Docker架构分析">
+<meta itemprop="description" content="Docker架构分析 [root@docker-build-86-050 ~]# ls /usr/bin |grep docker docker docker-compose docker-containerd docker-containerd-ctr docker-containerd-shim dockerd docker-proxy docker-runc 大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥 初窥得出的结论是： docker是cl">
+
+
+<meta itemprop="datePublished" content="2017-07-11T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2017-07-11T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="2569">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker架构分析"/>
+<meta name="twitter:description" content="Docker架构分析 [root@docker-build-86-050 ~]# ls /usr/bin |grep docker docker docker-compose docker-containerd docker-containerd-ctr docker-containerd-shim dockerd docker-proxy docker-runc 大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥 初窥得出的结论是： docker是cl"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/pro/istio">
+        <li class="mobile-menu-item">Istio</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/istio">Istio</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Docker架构分析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-07-11 </span>
+        
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#docker架构分析">Docker架构分析</a></li>
+<li><a href="#dockerd-与-containerd-之间的基情">dockerd 与 containerd 之间的基情</a></li>
+<li><a href="#docker-containerd-shim是何方神圣-与containerd和runc又有什么关系">docker-containerd-shim是何方神圣 与containerd和runc又有什么关系？</a></li>
+<li><a href="#shim进程与runc进程之间">shim进程与runc进程之间</a></li>
+<li><a href="#runc-与-容器内第一个进程-init进程">runc 与 容器内第一个进程 init进程</a></li>
+<li><a href="#docker-containerd-ctr-与-docker-containerd">docker-containerd-ctr 与 docker-containerd</a></li>
+<li><a href="#runc-架构破析">runc 架构破析</a>
+<ul>
+<li>
+<ul>
+<li><a href="#使用runc直接创建容器">使用runc直接创建容器</a></li>
+<li><a href="#容器状态文件">容器状态文件</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h2 id="docker架构分析">Docker架构分析</h2>
+
+<pre><code>[root@docker-build-86-050 ~]# ls /usr/bin |grep docker
+docker
+docker-compose
+docker-containerd
+docker-containerd-ctr
+docker-containerd-shim
+dockerd
+docker-proxy
+docker-runc
+</code></pre>
+
+<p>大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥</p>
+
+<p>初窥得出的结论是：</p>
+
+<ul>
+<li>docker是cli没啥可说的</li>
+<li>dockerd是docker engine守护进程，dockerd启动时会启动containerd子进程。</li>
+<li>dockerd与containerd通过rpc进行通信（待验证，可能是通过ctr）</li>
+<li>ctr是containerd的cli</li>
+<li>containerd通过shim操作runc，runc真正控制容器生命周期</li>
+<li>启动一个容器就会启动一个shim进程</li>
+<li>shim直接调用runc的包函数,shim与containerd之前通过rpc通信</li>
+<li>真正用户想启动的进程由runc的init进程启动，即<code>runc init [args ...]</code></li>
+</ul>
+
+<p>进程关系模型：</p>
+
+<pre><code>docker     ctr
+  |         |
+  V         V
+dockerd -&gt; containerd ---&gt; shim -&gt; runc -&gt; runc init -&gt; process
+                      |-- &gt; shim -&gt; runc -&gt; runc init -&gt; process
+                      +-- &gt; shim -&gt; runc -&gt; runc init -&gt; process
+</code></pre>
+
+<pre><code>[root@docker-build-86-050 ~]# ps -aux|grep docker
+root      3925  0.0  0.1 2936996 74020 ?       Ssl  3月06  68:14 /usr/bin/dockerd --storage-driver=aufs -H 0.0.0.0:2375 --label ip=10.1.86.50 -H unix:///var/run/docker.sock --insecure-registry 192.168.86.106 --insecure-registry 10.1.86.51 --insecure-registry dev.reg.iflytek.com
+root      3939  0.0  0.0 1881796 27096 ?       Ssl  3月06   9:10 docker-containerd -l unix:///var/run/docker/libcontainerd/docker-containerd.sock --shim docker-containerd-shim --metrics-interval=0 --start-timeout 2m --state-dir /var/run/docker/libcontainerd/containerd --runtime docker-runc
+root     21238  0.0  0.0 487664  6212 ?        Sl   4月20   0:00 docker-containerd-shim 48119c50a0ca8a53967364f75fb709017cc272ae248b78062e0dafaa22108d21 /var/run/docker/libcontainerd/48119c50a0ca8a53967364f75fb709017cc272ae248b78062e0dafaa22108d21 docker-runc
+</code></pre>
+
+<h2 id="dockerd-与-containerd-之间的基情">dockerd 与 containerd 之间的基情</h2>
+
+<p>首先dockerd的main函数相信你能找到<code>cmd/dockerd/docker.go</code></p>
+
+<p>其它的先略过,直接进start看一看：</p>
+
+<pre><code>err = daemonCli.start(opts)
+</code></pre>
+
+<p>这函数里我们先去关注两件事：</p>
+
+<ol>
+<li>创建了多个Hosts，这是给client去连接的，dockerd启动时用-H参数指定，可以是多个，如指定一个tcp 指定一个unix sock( -H unix:///var/run/docker.sock)</li>
+<li>创建了containerd子进程</li>
+</ol>
+
+<p>这个New很重要</p>
+
+<pre><code>containerdRemote, err := libcontainerd.New(cli.getLibcontainerdRoot(), cli.getPlatformRemoteOptions()...)
+</code></pre>
+
+<p>进去看看：</p>
+
+<pre><code>...
+    err := r.runContainerdDaemon(); 
+...
+    conn, err := grpc.Dial(r.rpcAddr, dialOpts...)
+    if err != nil {
+        return nil, fmt.Errorf(&quot;error connecting to containerd: %v&quot;, err)
+    }
+
+    r.rpcConn = conn
+    r.apiClient = containerd.NewAPIClient(conn)
+...
+</code></pre>
+
+<p>启动了一个containerd进程，并与之建立连接。通过protobuf进行rpc通信， grpc相关介绍看<a href="http://lameleg.com/tech/rpc-protobuf.html">这里</a></p>
+
+<p>具体如何创建containerd进程的可以进入runContainerDaemon里细看</p>
+
+<pre><code>    cmd := exec.Command(containerdBinary, args...)
+    // redirect containerd logs to docker logs
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+    cmd.SysProcAttr = setSysProcAttr(true)
+    cmd.Env = nil
+    // clear the NOTIFY_SOCKET from the env when starting containerd
+    for _, e := range os.Environ() {
+        if !strings.HasPrefix(e, &quot;NOTIFY_SOCKET&quot;) {
+            cmd.Env = append(cmd.Env, e)
+        }
+    }
+    if err := cmd.Start(); err != nil {
+        return err
+    }
+</code></pre>
+
+<p>看不明白的话，去标准库里恶补一下cmd怎么用。 cmd.Start()异步创建进程，创建完直接返回</p>
+
+<p>所以创建一个协程等待子进程退出</p>
+
+<pre><code>    go func() {
+        cmd.Wait()
+        close(r.daemonWaitCh)
+    }() // Reap our child when needed
+
+</code></pre>
+
+<h2 id="docker-containerd-shim是何方神圣-与containerd和runc又有什么关系">docker-containerd-shim是何方神圣 与containerd和runc又有什么关系？</h2>
+
+<p>代码中的一句话解释：<code>shim for container lifecycle and reconnection</code>, 容器生命周期和重连, 所以可以顺着这个思路去看。</p>
+
+<p>先看containerd/linux/runtime.go里的一段代码：
+Runtime 的Create方法里有这一行,这里的Runtime对象也是注册到register里面的，可以看init函数，然后containerd进程启动时去加载了这个Runtime</p>
+
+<pre><code>s, err := newShim(path, r.remote)
+</code></pre>
+
+<p>缩减版内容:</p>
+
+<pre><code>func newShim(path string, remote bool) (shim.ShimClient, error) {
+    l, err := sys.CreateUnixSocket(socket) //创建了一个UnixSocket
+    cmd := exec.Command(&quot;containerd-shim&quot;)
+    f, err := l.(*net.UnixListener).File()
+    cmd.ExtraFiles = append(cmd.ExtraFiles, f) //留意一下这个，非常非常重要，不知道这个原理可能就看不懂shim里面的代码了
+    if err := reaper.Default.Start(cmd); err != nil { //启动了一个shim进程
+    }
+    return connectShim(socket) // 这里返回了与shim进程通信的客户端
+}
+</code></pre>
+
+<p>再去看看shim的代码：
+shim进程启动干的最主要的一件事就是启动一个grpc server:</p>
+
+<pre><code>if err := serve(server, &quot;shim.sock&quot;); err != nil {
+</code></pre>
+
+<p>进去一探究竟：</p>
+
+<pre><code>func serve(server *grpc.Server, path string) error {
+    l, err := net.FileListener(os.NewFile(3, &quot;socket&quot;))
+    logrus.WithField(&quot;socket&quot;, path).Debug(&quot;serving api on unix socket&quot;)
+    go func() {
+        if err := server.Serve(l); err != nil &amp;&amp;
+        }
+    }()
+}
+</code></pre>
+
+<p>我曾经因为这个<code>os.NewFile(3, &quot;socket&quot;)</code>看了半天看不懂，为啥是3？联系<code>cmd.ExtraFiles = append(cmd.ExtraFiles, f)</code> 创建shim进程时的这句，问题解决了。</p>
+
+<p>这个3的文件描述符，就是containerd用于创建UnixSocket的文件，这样containerd的client刚好与这边启动的 grpc server连接上了，可以远程调用其接口了：</p>
+
+<pre><code>type ContainerServiceClient interface {
+    Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+    Start(ctx context.Context, in *StartRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+    Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+    Info(ctx context.Context, in *InfoRequest, opts ...grpc.CallOption) (*containerd_v1_types1.Container, error)
+    List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
+    Kill(ctx context.Context, in *KillRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+    Events(ctx context.Context, in *EventsRequest, opts ...grpc.CallOption) (ContainerService_EventsClient, error)
+    Exec(ctx context.Context, in *ExecRequest, opts ...grpc.CallOption) (*ExecResponse, error)
+    Pty(ctx context.Context, in *PtyRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+    CloseStdin(ctx context.Context, in *CloseStdinRequest, opts ...grpc.CallOption) (*google_protobuf.Empty, error)
+}
+
+</code></pre>
+
+<p><a href="https://github.com/fanux/fanux.github.io/tree/master/demo/grpc">containerd与shim通信模型介绍</a></p>
+
+<p>再看shim与runc的关系，这个比较简单了，直接进入shim service 实现的Create方法即可</p>
+
+<pre><code>sv = shim.New(path)
+</code></pre>
+
+<pre><code>func (s *Service) Create(ctx context.Context, r *shimapi.CreateRequest) (*shimapi.CreateResponse, error) {
+    process, err := newInitProcess(ctx, s.path, r)
+    return &amp;shimapi.CreateResponse{
+        Pid: uint32(pid),
+    }, nil
+}
+</code></pre>
+
+<p>进入到newInitProcess里面：</p>
+
+<pre><code>func newInitProcess(context context.Context, path string, r *shimapi.CreateRequest) (*initProcess, error) {
+    runtime := &amp;runc.Runc{
+        Command:      r.Runtime,
+        Log:          filepath.Join(path, &quot;log.json&quot;),
+        LogFormat:    runc.JSON,
+        PdeathSignal: syscall.SIGKILL,
+    }
+    p := &amp;initProcess{
+        id:     r.ID,
+        bundle: r.Bundle,
+        runc:   runtime,
+    }
+  
+    if err := p.runc.Create(context, r.ID, r.Bundle, opts); err != nil {
+        return nil, err
+    }
+    return p, nil
+}
+</code></pre>
+
+<p>可以看到，在这里调用了runc的API去真正执行创建容器的操作。其本质是调用了<code>runc create --bundle [bundle] [containerid]</code> 命令,在此不多作介绍了</p>
+
+<h2 id="shim进程与runc进程之间">shim进程与runc进程之间</h2>
+
+<p>上文可知，shim进程创建runc子进程。</p>
+
+<h2 id="runc-与-容器内第一个进程-init进程">runc 与 容器内第一个进程 init进程</h2>
+
+<p>看docker创建了这么多子进程，然后到了runc我们期待的自己Dockerfile中的CMD进程就要被创建了，想想都有点小激动，然而。。。</p>
+
+<p>runc进程启动后会去启动init进程，去创建容器，然后在容器中创建进程，那才是真正我们需要的进程</p>
+
+<p>关于runc init进程关键看StartInitialization方法（main_unix.go）</p>
+
+<h2 id="docker-containerd-ctr-与-docker-containerd">docker-containerd-ctr 与 docker-containerd</h2>
+
+<p>ctr 是一个containerd的client，之间通过proto rpc通信, containerd监听了unix:///run/containerd/containerd.sock。</p>
+
+<pre><code>[root@dev-86-201 ~]# docker-containerd --help
+NAME:
+   containerd - High performance container daemon
+
+USAGE:
+   docker-containerd [global options] command [command options] [arguments...]
+
+VERSION:
+   0.2.0 commit: 0ac3cd1be170d180b2baed755e8f0da547ceb267
+
+COMMANDS:
+   help, h    Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --debug                            enable debug output in the logs
+   --state-dir &quot;/run/containerd&quot;                runtime state directory
+   --metrics-interval &quot;5m0s&quot;                    interval for flushing metrics to the store
+   --listen, -l &quot;unix:///run/containerd/containerd.sock&quot;    proto://address on which the GRPC API will listen
+   --runtime, -r &quot;runc&quot;                        name or path of the OCI compliant runtime to use when executing containers
+   --runtime-args [--runtime-args option --runtime-args option]    specify additional runtime args
+   --shim &quot;containerd-shim&quot;                    Name or path of shim
+   --pprof-address                         http address to listen for pprof events
+   --start-timeout &quot;15s&quot;                    timeout duration for waiting on a container to start before it is killed
+   --retain-count &quot;500&quot;                        number of past events to keep in the event log
+   --graphite-address                         Address of graphite server
+   --help, -h                            show help
+   --version, -v                        print the version
+</code></pre>
+
+<pre><code>[root@dev-86-201 ~]# docker-containerd-ctr --help
+NAME:
+   ctr - High performance container daemon cli
+
+USAGE:
+   docker-containerd-ctr [global options] command [command options] [arguments...]
+
+VERSION:
+   0.2.0 commit: 0ac3cd1be170d180b2baed755e8f0da547ceb267
+
+COMMANDS:
+   checkpoints    list all checkpoints
+   containers    interact with running containers
+   events    receive events from the containerd daemon
+   state    get a raw dump of the containerd state
+   version    return the daemon version
+   help, h    Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --debug                        enable debug output in the logs
+   --address &quot;unix:///run/containerd/containerd.sock&quot;    proto://address of GRPC API
+   --conn-timeout &quot;1s&quot;                    GRPC connection timeout
+   --help, -h                        show help
+   --version, -v                    print the version
+</code></pre>
+
+<h2 id="runc-架构破析">runc 架构破析</h2>
+
+<p>比较复杂也比较重要，所以我将单独写一篇相关的介绍 <a href="http://lameleg.com/tech/runc.html">这里</a></p>
+
+<h4 id="使用runc直接创建容器">使用runc直接创建容器</h4>
+
+<pre><code>mkdir /mycontainer
+cd /mycontainer
+mkdir rootfs
+docker export $(docker create busybox) | tar -C rootfs -xvf -
+# 生成容器的配置文件config.json
+runc spec
+runc run mycontainerid
+</code></pre>
+
+<h4 id="容器状态文件">容器状态文件</h4>
+
+<p>默认存在/run/runc目录下,不管是docker engine创建的容器还是通过runc直接创建的容器都会在/run/runc目录下创建一个以容器名命名的目录，下面有个state.json文件用于存储文件状态</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-07-11</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/event/">event</a>
+          
+          <a href="/tags/dotscale/">dotScale</a>
+          
+          <a href="/tags/sketchnote/">sketchnote</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/sealyun-k8s-offline/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">k8s离线包解析</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/post/calico/">
+            <span class="next-text nav-default">calico 网络原理</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  <div id="comments-gitment"></div>
+  <link rel="stylesheet" href="/lib/gitment/gitment-0.0.3.min.css">
+    <script src="/lib/gitment/gitment-0.0.3.min.js"></script>
+  <script type="text/javascript">
+  const gitment = new Gitment({
+    id: '2017-07-11 10:54:24 \x2b0200 \x2b0200',
+    title: 'Docker架构分析',
+    link: decodeURI(location.href),
+    desc: 'Docker架构分析 [root@docker-build-86-050 ~]# ls \/usr\/bin |grep docker docker docker-compose docker-containerd docker-containerd-ctr docker-containerd-shim dockerd docker-proxy docker-runc 大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥 初窥得出的结论是： docker是cl',
+    owner: 'fanux',
+    repo: 'fanux.github.io',
+    oauth: {
+      client_id: 'dbec2d3194e8cd765fae',
+      client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+    }
+  })
+  gitment.render('comments-gitment')
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:fhtjob@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/fanux/" class="iconfont icon-github" title="github"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2018
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
