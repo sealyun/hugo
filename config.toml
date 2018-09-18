@@ -42,12 +42,12 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   identifier = "categories"
   url = "/categories/"
 [[menu.main]]
-  name = "Kubernetes"
+  name = "Kubernetes下载"
   weight = 50
   identifier = "pro"
   url = "/pro/products"
 [[menu.main]]
-  name = "Istio"
+  name = "Istio下载"
   weight = 50
   identifier = "istio"
   url = "/pro/istio"
