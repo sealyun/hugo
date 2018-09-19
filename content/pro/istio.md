@@ -12,10 +12,15 @@ menu = ""           # set "main" to add this content to the main menu
 +++
 
 ## 安装教程 QQ群:98488045
+### 注意事项
 1. 已经安装[sealyun k8s](https://sealyun.com/pro/products/)
 2. 安装socat(脚本里使用yum安装的，所以如果是离线环境自行搞定socat, ubuntu等也请自己装)
 3. 确保环境之前没装过istio helm，如已经装过请清理干净
-4. 解压后执行install.sh即可
+4. 如k8s有多个节点，那每个节点都需要导入istio镜像 `docker load -i istio-images.tar && docker load -i other-images.tar`
+5. 如在执行helm list时报错，可能是因为tiller启动时间超过30秒，等待启动成功再去执行完剩下步骤即可
+
+### 安装
+解压后执行install.sh即可
 
 bookinfo的事例地址: http://ip:31380/productpage
 
