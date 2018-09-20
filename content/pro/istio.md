@@ -25,7 +25,7 @@ menu = ""           # set "main" to add this content to the main menu
 bookinfo的事例地址: http://ip:31380/productpage
 
 ## Istio离线安装包
-### [istio1.0.2 离线安装包](https://market.aliyun.com/products/57742013/cmxz030869.html?spm=5176.730005.productlist.d_cmxz030869.54f93524yLeTRb#sku=yuncode2486900001) | 售价30元
+### [istio1.0.2 离线安装包](https://market.aliyun.com/products/57742013/cmxz030869.html?spm=5176.730005.productlist.d_cmxz030869.54f93524yLeTRb#sku=yuncode2486900001) | 售价20元
 推荐指数：:star: :star: :star: :star: :star:
 
 * 包含helm
