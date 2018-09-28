@@ -26,6 +26,12 @@ menu = ""           # set "main" to add this content to the main menu
 
 推荐指数：:star: :star: :star: :star: :star:
 
+* v1.12.0大版本更新了不少有用的东西，如kubeadm证书更新，把node变成控制节点等特性
+* RuntimeClass可以让node上运行多种不同的运行时
+* 调度器性能的优化，DaemonSet调度规则优化，具备镜像的节点具有更高的调度优先级等特性
+* CSI存储快照与恢复接口开放，等等
+* 特性比较多不一一列举，对新特性无需求的可不升级此版本
+
 
 ## [kubernetes1.11.3离线安装包](https://market.aliyun.com/products/57742013/cmxz030730.html) | 售价 50元 
 
