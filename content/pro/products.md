@@ -22,7 +22,7 @@ menu = ""           # set "main" to add this content to the main menu
 > dashboard地址 https://masterip:32000
 
 # 安装包列表
-## [kubernetes1.12.0离线安装包](https://sealyun.com) 阿里云审核中 | 售价 50元 
+## [kubernetes1.12.0离线安装包](https://market.aliyun.com/products/57742013/cmxz030981.html#sku=yuncode2498100001) 阿里云审核中 | 售价 50元 
 
 推荐指数：:star: :star: :star: :star: :star:
 
