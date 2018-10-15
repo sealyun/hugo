@@ -32,6 +32,8 @@ menu = ""           # set "main" to add this content to the main menu
 * CSI存储快照与恢复接口开放，等等
 * 特性比较多不一一列举，对新特性无需求的可不升级此版本
 
+已知问题：`/var/lib/kubelet/config.yaml: No such file or directory` 解决：`mkdir /var/lib/kubelet && sh init.sh`
+
 
 ## [kubernetes1.11.3离线安装包](https://market.aliyun.com/products/57742013/cmxz030730.html) | 售价 50元 
 
