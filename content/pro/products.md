@@ -36,8 +36,6 @@ rm -rf /usr/bin/kube*
 rm -rf /etc/cni
 rm -rf /opt/cni
 rm -rf /var/lib/etcd
-rm -rf /etc/keepalived
-rm -rf /etc/haproxy
 rm -rf /var/etcd
 ```
 
