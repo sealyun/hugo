@@ -21,6 +21,26 @@ menu = ""           # set "main" to add this content to the main menu
 ```
 > dashboard地址 https://masterip:32000
 
+卸载：`kubeadm reset`
+
+清理：
+```
+kubeadm reset -f
+modprobe -r ipip
+lsmod
+rm -rf ~/.kube/
+rm -rf /etc/kubernetes/
+rm -rf /etc/systemd/system/kubelet.service.d
+rm -rf /etc/systemd/system/kubelet.service
+rm -rf /usr/bin/kube*
+rm -rf /etc/cni
+rm -rf /opt/cni
+rm -rf /var/lib/etcd
+rm -rf /etc/keepalived
+rm -rf /etc/haproxy
+rm -rf /var/etcd
+```
+
 # 安装包列表
 ## [kubernetes1.12.0离线安装包](https://market.aliyun.com/products/57742013/cmxz030981.html#sku=yuncode2498100001) | 售价 50元 
 
