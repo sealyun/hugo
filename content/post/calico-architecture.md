@@ -11,6 +11,24 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
+## 安装常见问题
+
+calico无法启动：
+```
+Readiness probe failed: calico/node is not ready: felix is not ready: Get http://localhost:9099/readiness: dial tcp [::1]:9099: connect: connection refused 
+```
+很可能是网卡发现有问题，calico虚拟化时没找对网卡，calico会经常找docker0网桥，导致clusterIP不通从而calico node连不上etcd
+
+解决办法：
+配置好/etc/hosts
+
+或者修改网卡发现机制：
+calico网卡发现：
+```
+- name: IP_AUTODETECTION_METHOD
+              value: "interface=eth.*"   # 如果你的网卡不是eth开头，换成自己的，在yaml文件里修改
+```
+
 ## calico架构分析
 
 ### 组件
