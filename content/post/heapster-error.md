@@ -1,8 +1,8 @@
 +++
 author = "fanux"
-date = "2018-9-10T10:54:24+02:00"
+date = "2018-08-10T10:54:24+02:00"
 draft = false
-title = "dashboard监控数据无法正常显示"
+title = "kubernetes dashboard监控数据无法正常显示"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
