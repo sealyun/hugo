@@ -35,7 +35,7 @@ kubectl edit deploy heapster -n kube-system
 ```
 source参数改成：
 ```
- --source=kubernetes:https://kubernetes.default:6443?useServiceAccount=true&kubeletHttps=true&kubeletPort=10250&insecure=true
+ --source=kubernetes:https://kubernetes.default:443?useServiceAccount=true&kubeletHttps=true&kubeletPort=10250&insecure=true
 ```
 
 2. 此时还是不正常的，因为heapster的service account没有权限访问API，我们需要提权：
