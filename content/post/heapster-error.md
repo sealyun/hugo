@@ -20,7 +20,11 @@ E0228 20:01:05.019281       1 manager.go:101] Error in scraping containers from 
 因为1.12.0已经取消了这个端口：
 
 ```
-      --read-only-port int32                                                                                      The read-only port for the Kubelet to serve on with no authentication/authorization (set to 0 to disable) (default 10255) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+      --read-only-port int32    
+ The read-only port for the Kubelet to serve on with no authentication/authorization 
+(set to 0 to disable) (default 10255) (DEPRECATED: 
+This parameter should be set via the config file specified by the Kubelet's --config flag. 
+See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 ```
 
 解决办法：
