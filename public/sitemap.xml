@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml-stylesheet type="text/xsl" href="https://sealyun.com/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://sealyun.com/post/sealos/</loc>
+    <lastmod>2018-10-24T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/ci-cd/</loc>
+    <lastmod>2018-10-10T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/etcd-manage/</loc>
+    <lastmod>2018-08-12T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/heapster-error/</loc>
+    <lastmod>2018-08-10T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/istio-quickstart/</loc>
+    <lastmod>2018-07-30T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/kube-dev/</loc>
+    <lastmod>2018-06-21T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/kube-proxy-src/</loc>
+    <lastmod>2018-06-20T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/k8s-ipvs/</loc>
+    <lastmod>2018-05-29T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/kubeadm-source/</loc>
+    <lastmod>2018-05-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/k8s-rbac/</loc>
+    <lastmod>2018-05-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/k8s-authenticating/</loc>
+    <lastmod>2018-05-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/k8s-ha-conf/</loc>
+    <lastmod>2018-05-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/sealyun-k8s-offline/</loc>
+    <lastmod>2018-04-24T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/docker-architech/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/calico/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/calico-architecture/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/calico-network-policy/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/install-k8s/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/install-k8s-cluster/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/container-stop-timeout/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/docker-dev/</loc>
+    <lastmod>2016-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/docker-ovs/</loc>
+    <lastmod>2016-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/docker-network/</loc>
+    <lastmod>2016-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/iptables/</loc>
+    <lastmod>2016-05-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/rpc-protobuf/</loc>
+    <lastmod>2015-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/kubernetes-dns/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/grafana-promethus/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/pro/istio/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/pro/products/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/runc/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/scratch/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/offline-install/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/k8s-offline-install-ha/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/keep_containers_alive_deamon_downtme/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/categories/docs/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/categories/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/categories/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/dotscale/</loc>
+    <lastmod>2018-10-24T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/event/</loc>
+    <lastmod>2018-10-24T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/post/</loc>
+    <lastmod>2018-10-24T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/pro/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/sketchnote/</loc>
+    <lastmod>2018-10-24T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/</loc>
+    <lastmod>2018-10-24T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/</loc>
+    <lastmod>2018-10-24T10:54:24+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

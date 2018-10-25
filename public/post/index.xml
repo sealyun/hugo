@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on sealyun | kubernetes安装</title>
+    <link>https://sealyun.com/post/</link>
+    <description>Recent content in Posts on sealyun | kubernetes安装</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 24 Oct 2018 10:54:24 +0200</lastBuildDate>
+    
+	<atom:link href="https://sealyun.com/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>构建生产环境可用的高可用kubernetes集群</title>
+      <link>https://sealyun.com/post/sealos/</link>
+      <pubDate>Wed, 24 Oct 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/sealos/</guid>
+      <description>kubernetes集群三步安装 构建生产环境可用的高可用kubernetes集群 | sealos项目地址 特性 支持任意节点的etcd集群自动构建</description>
+    </item>
+    
+    <item>
+      <title>基于drone构建CI/CD系统,对接k8s</title>
+      <link>https://sealyun.com/post/ci-cd/</link>
+      <pubDate>Wed, 10 Oct 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/ci-cd/</guid>
+      <description>kubernetes集群三步安装 CI 概述 用一个可描述的配置定义整个工作流 程序员是很懒的动物，所以想各种办法解决重复劳动的问题，如果你的工作流中</description>
+    </item>
+    
+    <item>
+      <title>etcd管理指南</title>
+      <link>https://sealyun.com/post/etcd-manage/</link>
+      <pubDate>Sun, 12 Aug 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/etcd-manage/</guid>
+      <description>广告 | kubernetes各版本离线安装包 etcd 证书配置 生产环境中给etcd配置证书相当重要，如果没有证书，那么k8s集群很容易被黑客利用而去挖</description>
+    </item>
+    
+    <item>
+      <title>kubernetes dashboard监控数据无法正常显示</title>
+      <link>https://sealyun.com/post/heapster-error/</link>
+      <pubDate>Fri, 10 Aug 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/heapster-error/</guid>
+      <description>kubernetes集群三步安装 kubernetes1.12.0版本dashboard使用heapster无法正常显示监控数据 查看heaps</description>
+    </item>
+    
+    <item>
+      <title>istio安装使用教程</title>
+      <link>https://sealyun.com/post/istio-quickstart/</link>
+      <pubDate>Mon, 30 Jul 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/istio-quickstart/</guid>
+      <description>广告 | kubernetes各版本离线安装包 祝贺istio1.0发布, 在此献上教程一份 安装 安装k8s 强势插播广告 三步安装，不多说 安装helm,</description>
+    </item>
+    
+    <item>
+      <title>kubernetes开发指南</title>
+      <link>https://sealyun.com/post/kube-dev/</link>
+      <pubDate>Thu, 21 Jun 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/kube-dev/</guid>
+      <description>广告 | kubernetes离线安装包，仅需三步 官方例子 大部分使用方式调用clientgo即可，我增加一些clientgo事例里没有的一些技巧</description>
+    </item>
+    
+    <item>
+      <title>kube-proxy源码解析</title>
+      <link>https://sealyun.com/post/kube-proxy-src/</link>
+      <pubDate>Wed, 20 Jun 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/kube-proxy-src/</guid>
+      <description>广告 | kubernetes离线安装包，仅需三步 kube-proxy源码解析 ipvs相对于iptables模式具备较高的性能与稳定性, 本文讲以</description>
+    </item>
+    
+    <item>
+      <title>kubernetes启用ipvs</title>
+      <link>https://sealyun.com/post/k8s-ipvs/</link>
+      <pubDate>Tue, 29 May 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/k8s-ipvs/</guid>
+      <description>广告 | kubernetes各版本离线安装包 1.11.1版本已经修复此bug，如在centos下使用ipvs模式建议升级到v1.11.1,包地</description>
+    </item>
+    
+    <item>
+      <title>kubeadm源码分析</title>
+      <link>https://sealyun.com/post/kubeadm-source/</link>
+      <pubDate>Fri, 11 May 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/kubeadm-source/</guid>
+      <description>k8s离线安装包 三步安装，简单到难以置信 kubeadm源码分析 说句实在话，kubeadm的代码写的真心一般，质量不是很高。 几个关键点来先说一</description>
+    </item>
+    
+    <item>
+      <title>kubernetes RBAC实战</title>
+      <link>https://sealyun.com/post/k8s-rbac/</link>
+      <pubDate>Fri, 11 May 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/k8s-rbac/</guid>
+      <description>kubernetes RBAC实战 环境准备 先用kubeadm安装好kubernetes集群，包地址在此 好用又方便，服务周到，童叟无欺 本文目的，让名为devuse</description>
+    </item>
+    
+    <item>
+      <title>kubernetes对接第三方认证</title>
+      <link>https://sealyun.com/post/k8s-authenticating/</link>
+      <pubDate>Fri, 11 May 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/k8s-authenticating/</guid>
+      <description>kubernetes对接第三方认证 广告： 安装包地址 概述 本文介绍如何使用github账户去关联自己kubernetes账户。达到如下效果： 1. 使</description>
+    </item>
+    
+    <item>
+      <title>kubernetes高可用相关配置</title>
+      <link>https://sealyun.com/post/k8s-ha-conf/</link>
+      <pubDate>Fri, 11 May 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/k8s-ha-conf/</guid>
+      <description>kubeadm HA教程 机器 IP 用途 备注 10.100.81.11 master、etcd 主节点 10.100.81.12 master、etcd、keepalived、haproxy 主节点，同时部署keep</description>
+    </item>
+    
+    <item>
+      <title>k8s离线包解析</title>
+      <link>https://sealyun.com/post/sealyun-k8s-offline/</link>
+      <pubDate>Tue, 24 Apr 2018 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/sealyun-k8s-offline/</guid>
+      <description>k8s离线包解析 产品地址 鸣谢 大家好，首先感谢大家对我们产品的支持，特别是一些老客户的持续支持，让我可以有动力把这个事情持续进行下去。 感谢大家</description>
+    </item>
+    
+    <item>
+      <title>Docker架构分析</title>
+      <link>https://sealyun.com/post/docker-architech/</link>
+      <pubDate>Tue, 11 Jul 2017 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/docker-architech/</guid>
+      <description>Docker架构分析 [root@docker-build-86-050 ~]# ls /usr/bin |grep docker docker docker-compose docker-containerd docker-containerd-ctr docker-containerd-shim dockerd docker-proxy docker-runc 大家一定很困惑 dockerd, containerd, ctr,shim, runc,等这几个进程的关系到底是啥 初窥得出的结论是： docker是cl</description>
+    </item>
+    
+    <item>
+      <title>calico 网络原理</title>
+      <link>https://sealyun.com/post/calico/</link>
+      <pubDate>Tue, 11 Jul 2017 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/calico/</guid>
+      <description>calico 网络原理 node节点 装网络之前路由 [root@iZj6c3cqwumhn5jov661z7Z ~]# route -n Kernel IP routing table Destination Gateway Genmask Flags Metric Ref Use Iface 0.0.0.0 172.31.255.253 0.0.0.0 UG 0 0 0 eth0 169.254.0.0 0.0.0.0 255.255.0.0 U 1002 0 0 eth0 172.17.0.0 0.0.0.0 255.255.0.0 U 0 0 0 docker0 172.31.240.0 0.0.0.0 255.255.240.0 U 0 0 0 eth0 网卡： [root@iZj6c3cqwumhn5jov661z7Z</description>
+    </item>
+    
+    <item>
+      <title>calico架构</title>
+      <link>https://sealyun.com/post/calico-architecture/</link>
+      <pubDate>Tue, 11 Jul 2017 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/calico-architecture/</guid>
+      <description>安装常见问题 calico无法启动： Readiness probe failed: calico/node is not ready: felix is not ready: Get http://localhost:9099/readiness: dial tcp [::1]:9099: connect: connection refused 很可能是网卡发现有问题，calico虚拟化时没找对网卡，calico</description>
+    </item>
+    
+    <item>
+      <title>calico网络策略</title>
+      <link>https://sealyun.com/post/calico-network-policy/</link>
+      <pubDate>Tue, 11 Jul 2017 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/calico-network-policy/</guid>
+      <description>calico网络策略 使用kubernetes NetworkPolicy让用户定义pod之间的访问策略，精细的控制哪些pod之间有相互访问的权</description>
+    </item>
+    
+    <item>
+      <title>kubernetes安装</title>
+      <link>https://sealyun.com/post/install-k8s/</link>
+      <pubDate>Tue, 11 Jul 2017 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/install-k8s/</guid>
+      <description>alico node &amp;lsquo;iZ2ze3nu0s9j3v57be4xuuZ&amp;rsquo; is already using the IPv4 address 192.168.152.65 基础环境 关闭防火墙 selinux $ systemctl stop firewalld &amp;amp;&amp;amp; systemctl disable firewalld $ setenforce 0 打开forward sysctl -w net.ipv4.ip_forward=1 关闭swap swapoff -a 再把/etc/fstab文件中带有sw</description>
+    </item>
+    
+    <item>
+      <title>使用kubeadm安装安全高可用kubernetes集群</title>
+      <link>https://sealyun.com/post/install-k8s-cluster/</link>
+      <pubDate>Tue, 11 Jul 2017 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/install-k8s-cluster/</guid>
+      <description>使用kubeadm安装安全高可用kubernetes集群 系统架构图 kubectl dashboard | V +------------------------+ join | LB 10.1.245.94 | &amp;lt;--- Nodes +------------------------+ | |--master1 manager1 schedule1 10.1.245.93 |--master2 manager2 schedule2 10.1.245.95 =============&amp;gt; etcd cluster http://10.1.245.93:2379,http://10.1.245.94:2379,http://10.1.245.95:2379 |--master3 manager3 schedule3 10.1.245.94 起动etcd集</description>
+    </item>
+    
+    <item>
+      <title>容器信号使用</title>
+      <link>https://sealyun.com/post/container-stop-timeout/</link>
+      <pubDate>Tue, 11 Jul 2017 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/container-stop-timeout/</guid>
+      <description>容器信号使用 我们跑在容器中的程序通常想在容器退出之前做一些清理操作，比较常用的方式是监听一个信号，延迟关闭容器。 docker提供了这样的功能</description>
+    </item>
+    
+    <item>
+      <title>docker开发流程</title>
+      <link>https://sealyun.com/post/docker-dev/</link>
+      <pubDate>Mon, 11 Jul 2016 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/docker-dev/</guid>
+      <description>docker开发流程 注意容器构建时的信息： Install runc version 992a5be178a62e026f4069f443c6164912adbf09 + git clone https://github.com/opencontainers/runc.git /tmp/tmp.NdftaLJucp/src/github.com/opencontainers/runc Cloning into &#39;/tmp/tmp.NdftaLJucp/src/github.com/opencontainers/runc&#39;... + cd /tmp/tmp.NdftaLJucp/src/github.com/opencontainers/runc + git checkout -q 992a5be178a62e026f4069f443c6164912adbf09 + make BUILDTAGS=seccomp apparmor selinux static CGO_ENABLED=1 go build -i -tags &amp;quot;seccomp apparmor selinux cgo static_build&amp;quot; -ldflags &amp;quot;-w -extldflags -static -X main.gitCommit=&amp;quot;992a5be178a62e026f4069f443c6164912adbf09&amp;quot; -X main.version=1.0.0-rc3&amp;quot; -o runc . CGO_ENABLED=1 go</description>
+    </item>
+    
+    <item>
+      <title>ovs对接容器网络</title>
+      <link>https://sealyun.com/post/docker-ovs/</link>
+      <pubDate>Mon, 11 Jul 2016 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/docker-ovs/</guid>
+      <description>初始化环境 升级内核： rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm yum --enablerepo=elrepo-kernel install kernel-ml-devel kernel-ml awk -F\&#39; &#39;$1==&amp;quot;menuentry &amp;quot; {print $2}&#39; /etc/grub2.cfg grub2-set-default 0 reboot uname -a 安装docker: yum install -y yum-utils yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo yum-config-manager --disable docker-ce-edge yum makecache fast yum install docker-ce service docker start 安装open vswitch: yum -y</description>
+    </item>
+    
+    <item>
+      <title>容器网络概述</title>
+      <link>https://sealyun.com/post/docker-network/</link>
+      <pubDate>Mon, 11 Jul 2016 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/docker-network/</guid>
+      <description>网络概述 端口映射： $ docker run -p 8080:80 nginx:latest 如果没有这个-p，会发现启动了nginx但是无法通过宿主机访问到web服务，而使用了-p参数后就可以通过访问主</description>
+    </item>
+    
+    <item>
+      <title>iptables教程</title>
+      <link>https://sealyun.com/post/iptables/</link>
+      <pubDate>Wed, 11 May 2016 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/iptables/</guid>
+      <description>iptables教程 内核空间中的五个包处理位置，和五个函数钩子（规则链） PREROUTING 数据包刚进入网络层 , 路由之前 INPUT 路由判断，流入用户空间 OUTPUT 用户空间发出</description>
+    </item>
+    
+    <item>
+      <title>golang基于protobuf的rpc使用</title>
+      <link>https://sealyun.com/post/rpc-protobuf/</link>
+      <pubDate>Sat, 11 Jul 2015 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/rpc-protobuf/</guid>
+      <description>golang基于protobuf的rpc使用 基本安装什么的在此不再赘述，不知道的看这里 proto文件 cat helloworld.proto syntax = &amp;quot;proto3&amp;quot;; option java_multiple_files = true; option java_package = &amp;quot;io.grpc.examples.helloworld&amp;quot;; option java_outer_classname = &amp;quot;HelloWorldProto&amp;quot;; package helloworld; //</description>
+    </item>
+    
+    <item>
+      <title>dns之锅TODO</title>
+      <link>https://sealyun.com/post/kubernetes-dns/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/kubernetes-dns/</guid>
+      <description>dns之锅 kubectl run --namespace=kube-system access -it --image busybox -- /bin/sh [root@fortest1513671663-master-00 ~]# kubectl exec access-79f4758b79-qwl8s nslookup kubernetes-dashboard.kube-system.svc -n kube-system Server: 10.96.0.10 Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local Name: kubernetes-dashboard.kube-system.svc Address 1: 10.110.146.248 kubernetes-dashboard.kube-system.svc.cluster.local [root@fortest1513671663-master-00 ~]# kubectl get svc kubernetes-dashboard -n kube-system NAME TYPE CLUSTER-IP EXTERNAL-IP PORT(S) AGE kubernetes-dashboard NodePort 10.110.146.248 &amp;lt;none&amp;gt; 443:30089/TCP 27m</description>
+    </item>
+    
+    <item>
+      <title>grafana配置教程</title>
+      <link>https://sealyun.com/post/grafana-promethus/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/grafana-promethus/</guid>
+      <description>grafana配置教程 json文件在此 长期更新，直接复制粘贴进去即可</description>
+    </item>
+    
+    <item>
+      <title>runc 架构破析</title>
+      <link>https://sealyun.com/post/runc/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/runc/</guid>
+      <description>runc 架构破析 这里的spec.Process就是我们真正要运行的容器中的进程。 return r.run(&amp;amp;spec.Process) 把这个塞到libcontainer.Process里去了： lp :=</description>
+    </item>
+    
+    <item>
+      <title>如何让docker镜像尽可能小</title>
+      <link>https://sealyun.com/post/scratch/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/scratch/</guid>
+      <description>如何让镜像尽可能小 很容器想到from scratch, 就是没任何基础镜像 FROM scratch COPY p / ENTRYPOINT [&amp;quot;/p&amp;quot;] 有几点要注意： ENTRYPOINT 或者CMD 必须要用[]这种模式，如果直接/p会用sh去</description>
+    </item>
+    
+    <item>
+      <title>安装包列表</title>
+      <link>https://sealyun.com/post/offline-install/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/offline-install/</guid>
+      <description>安装包列表 [kubernetes1.10.3离线安装包 审核中]() 全部使用当前最新版本组建 Cgroup driver自动检测，99%以上一键安装成功，遇</description>
+    </item>
+    
+    <item>
+      <title>离线使用kubeadm安装安全高可用kubernetes集群</title>
+      <link>https://sealyun.com/post/k8s-offline-install-ha/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/k8s-offline-install-ha/</guid>
+      <description>使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。 单个master流程：</description>
+    </item>
+    
+    <item>
+      <title>配置docker engine使engine挂掉时容器继续运行</title>
+      <link>https://sealyun.com/post/keep_containers_alive_deamon_downtme/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/post/keep_containers_alive_deamon_downtme/</guid>
+      <description>配置docker engine使engine挂掉时容器继续运行 两种方式： * 修改/etc/docker/daemon.json 如果不想engin</description>
+    </item>
+    
+  </channel>
+</rss>
