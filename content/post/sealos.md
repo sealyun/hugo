@@ -14,7 +14,7 @@ menu = ""           # set "main" to add this content to the main menu
 # 构建生产环境可用的高可用kubernetes集群 | [sealos项目地址](https://github.com/fanux/sealos)
 
 # 特性
-- [x] 支持任意节点的etcd集群自动构建，切etcd集群使用安全证书，通过static pod方式启动，这样可以通过监控pod来监控etcd集群健康状态
+- [x] 支持任意节点的etcd集群自动构建，且etcd集群使用安全证书，通过static pod方式启动，这样可以通过监控pod来监控etcd集群健康状态
 - [x] 支持多master节点，允许任意一台master宕机集群功能不受影响
 - [x] calico使用etcd集群，配置安全证书，网络管控数据无单点故障
 - [x] 包含dashboard, heapster coreDNS addons, coreDNS双副本，无单点故障
