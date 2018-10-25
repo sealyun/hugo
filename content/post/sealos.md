@@ -2,7 +2,7 @@
 author = "fanux"
 date = "2018-10-24T10:54:24+02:00"
 draft = false
-title = "基于drone构建CI/CD系统,对接k8s"
+title = "构建生产环境可用的高可用kubernetes集群"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
