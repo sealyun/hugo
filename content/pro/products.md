@@ -40,6 +40,14 @@ rm -rf /var/etcd
 ```
 
 # 安装包列表
+## [kubernetes1.12.2离线安装包](www.sealyun.com) 阿里云审核中 | 售价 50元 
+
+推荐指数：:star: :star: :star: :star: :star:
+
+* ipvs支持优雅关闭, 以及官方其它新特性与bug修复
+* 修复1.12.0版本heapster无法获取到metric的bug
+* 修复1.12.0版本/var/kubelet目录未创建bug
+
 ## [kubernetes1.12.0离线安装包](https://market.aliyun.com/products/57742013/cmxz030981.html#sku=yuncode2498100001) | 售价 50元 
 
 推荐指数：:star: :star: :star: :star: :star:
