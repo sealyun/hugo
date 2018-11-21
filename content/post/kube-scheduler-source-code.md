@@ -184,3 +184,5 @@ COPY cmd/kube-scheduler/kube-scheduler /
 CMD ["/kube-scheduler"]
 ```
 后面再补上CD的配置
+
+[未完待续。。。]
