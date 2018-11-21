@@ -15,6 +15,7 @@ menu = ""           # set "main" to add this content to the main menu
 
 ## 调度器扩展
 定制化调度器有三种方式：
+
 * 改scheduler代码重新编译 - 没啥可讨论
 * 重写调度器，调度时选择调度器 - 比较简单，问题是没法与默认调度器共同作用
 * 写调度器扩展（extender）让k8s调度完了 把符合的节点扔给你 你再去过滤和优选 - 重点讨论，新版本做了一些升级，老的方式可能都无用了 [资料](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/scheduler_extender.md)
@@ -96,6 +97,7 @@ type HTTPExtender struct {
 ```
 
 看其预选和优选逻辑：
+
 ```
 args = &schedulerapi.ExtenderArgs{  # 调度的是哪个pod，哪些节点符合调度条件, 返回的也是这个结构体
 	Pod:       pod,
@@ -111,6 +113,7 @@ if err := h.send(h.filterVerb, args, &result); err != nil { # 发了个http请�
 ## HTTPExtender配置参数从哪来
 
 ## scheduler extender配置：
+
 ```
 NamespaceSystem string = "kube-system"
 
@@ -136,12 +139,14 @@ docker run -v /work/src/k8s.io/kubernetes:/go/src/k8s.io/kubernetes golang:1.11.
 ```
 cd cmd/kube-scheduler && go build
 ```
+
 二进制就产生了。。。
 
 ### 源码编译接入CI/CD
 作为高端玩家，自动化是必须的，因为服务器性能更好，用CI/CD编译更快，这里分享一下我的一些配置:
 
 1. 我把vendor打到编译的基础镜像里了，因为vendor大而且不经常更新
+
 ```
 $ cat Dockerfile-build1.12.2
 FROM golang:1.11.2
@@ -150,6 +155,7 @@ COPY vendor/ /vendor
 然后代码里的vendor就可以删了
 
 2. .drone.yml
+
 ```
 workspace:
   base: /go/src/k8s.io
@@ -177,6 +183,7 @@ pipeline:
 ```
 
 3. Dockerfile 静态编译连基础镜像都省了
+
 ```
 $ cat dockerfile/Dockerfile-kube-scheduler
 FROM scratch
