@@ -190,6 +190,22 @@ FROM scratch
 COPY cmd/kube-scheduler/kube-scheduler /
 CMD ["/kube-scheduler"]
 ```
+
+对于kubeadm这种二进制交付的，可直接编译然后传到nexus上, 通过drone deploy事件选择是不是要编译kubeadm：
+
+```
+    build_kubeadm:
+        image: fanux/kubernetes-build:1.12.2-beta.3
+        commands:
+           - mv /vendor .
+           - cd cmd/kubeadm
+           - go build --ldflags '-linkmode external -extldflags "-static"'
+           - curl -v -u container:container --upload-file kubeadm http://172.16.59.153:8081/repository/kubernetes/kubeadm/
+        when:
+            event: deployment
+            enviroment: kubeadm
+```
+
 后面再补上CD的配置
 
 如此我编译scheduler代码大约40秒左右，如vendor可软连接还可节省十几秒
