@@ -14,6 +14,8 @@ menu = ""           # set "main" to add this content to the main menu
 # 修改kubeadm证书过期时间
 本文通过修改kubeadm源码让kubeadm默认的一年证书过期时间修改为99年
 
+我已经编译好了一个放在了[github](https://github.com/fanux/sealos/releases/tag/kubeadm1.12.2)上，有需要的可以直接下
+
 ## 代码编译
 编译环境镜像我已经放到dockerhub上了：fanux/kubernetes-build:v1.0.0
 
