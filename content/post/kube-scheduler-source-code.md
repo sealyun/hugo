@@ -206,6 +206,18 @@ CMD ["/kube-scheduler"]
             enviroment: kubeadm
 ```
 
+### 直接go build的大坑
+发现build完的kubeadm二进制并不能用，可能是build时选用的基础镜像的问题，也可能是没去生成一些代码导致的问题
+```
+[signal SIGSEGV: segmentation violation code=0x1 addr=0x63 pc=0x7f2b7f5f057c]
+
+runtime stack:
+runtime.throw(0x17c74a8, 0x2a)
+	/usr/local/go/src/runtime/panic.go:608 +0x72
+runtime.sigpanic()
+	/usr/local/go/src/runtime/signal_unix.go:374 +0x2f2
+```
+
 后面再补上CD的配置
 
 如此我编译scheduler代码大约40秒左右，如vendor可软连接还可节省十几秒
