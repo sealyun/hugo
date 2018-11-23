@@ -16,6 +16,13 @@ menu = ""           # set "main" to add this content to the main menu
 
 我已经编译好了一个放在了[github](https://github.com/fanux/sealos/releases/tag/kubeadm1.12.2)上，有需要的可以直接下
 
+使用方法:
+```
+[root@dev-86-202 ~]# chmod +x kubeadm && cp kubeadm /usr/bin
+[root@dev-86-202 ~]# rm /etc/kubernetes/pki/ -rf
+[root@dev-86-202 ~]# kubeadm alpha phase certs all --config  kube/conf/kubeadm.yaml
+```
+
 ## 代码编译
 编译环境镜像我已经放到dockerhub上了：fanux/kubernetes-build:v1.0.0
 
