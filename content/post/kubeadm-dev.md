@@ -23,6 +23,13 @@ menu = ""           # set "main" to add this content to the main menu
 [root@dev-86-202 ~]# kubeadm alpha phase certs all --config  kube/conf/kubeadm.yaml
 ```
 
+更新kubeconfig
+
+```
+[root@dev-86-202 ~]# rm -rf /etc/kubernetes/*conf
+[root@dev-86-202 ~]# kubeadm alpha phase kubeconfig all --config ~/kube/conf/kubeadm.yaml
+```
+
 ## 代码编译
 编译环境镜像我已经放到dockerhub上了：fanux/kubernetes-build:v1.0.0
 
