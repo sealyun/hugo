@@ -28,6 +28,7 @@ menu = ""           # set "main" to add this content to the main menu
 ```
 [root@dev-86-202 ~]# rm -rf /etc/kubernetes/*conf
 [root@dev-86-202 ~]# kubeadm alpha phase kubeconfig all --config ~/kube/conf/kubeadm.yaml
+[root@dev-86-202 ~]# cp /etc/kubernetes/admin.conf ~/.kube/config
 ```
 
 ## 代码编译
