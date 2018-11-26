@@ -31,6 +31,24 @@ menu = ""           # set "main" to add this content to the main menu
 [root@dev-86-202 ~]# cp /etc/kubernetes/admin.conf ~/.kube/config
 ```
 
+验证：
+
+```
+$ cd /etc/kubernetes/pki
+$ openssl x509 -in apiserver-etcd-client.crt -text -noout
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 4701787282062078235 (0x41401a9f34c2711b)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=etcd-ca
+        Validity
+            Not Before: Nov 22 11:58:50 2018 GMT
+            Not After : Oct 29 11:58:51 2117 GMT   # 时间已经变成99年了
+```
+
+其它证书验证同理
+
 ## 代码编译
 编译环境镜像我已经放到dockerhub上了：fanux/kubernetes-build:v1.0.0
 
