@@ -165,9 +165,7 @@ pipeline:
     build:
         image: fanux/kubernetes-build:1.12.2-beta.3
         commands:
-           - mv /vendor ./vendor    # 本来想用软链的，不知道为啥ln后编译不了，导致多用了十几秒，难以接受
-           - cd cmd/kube-scheduler
-           - go build --ldflags '-linkmode external -extldflags "-static"'  # 采用静态编译
+           - make all WHAT=cmd/kube-kubescheduler GOFLAGS=-v
     publish:
         image: plugins/docker
         registry: xxx
@@ -187,7 +185,7 @@ pipeline:
 ```
 $ cat dockerfile/Dockerfile-kube-scheduler
 FROM scratch
-COPY cmd/kube-scheduler/kube-scheduler /
+COPY  _output/local/bin/linux/amd64/kube-scheduler /
 CMD ["/kube-scheduler"]
 ```
 
@@ -197,9 +195,7 @@ CMD ["/kube-scheduler"]
     build_kubeadm:
         image: fanux/kubernetes-build:1.12.2-beta.3
         commands:
-           - mv /vendor .
-           - cd cmd/kubeadm
-           - go build --ldflags '-linkmode external -extldflags "-static"'
+           - make all WHAT=cmd/kube-kubeadm GOFLAGS=-v
            - curl -v -u container:container --upload-file kubeadm http://172.16.59.153:8081/repository/kubernetes/kubeadm/
         when:
             event: deployment

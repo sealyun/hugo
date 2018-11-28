@@ -40,9 +40,14 @@ rm -rf /var/etcd
 ```
 
 # 安装包列表
+## [kubernetes1.12.3离线安装包](sealyun.com) 阿里云审核中 | 售价 50元 
+
 ## [kubernetes1.12.2离线安装包](https://market.aliyun.com/products/57742013/cmxz031371.html#sku=yuncode2537100001) | 售价 50元 
 
-推荐指数：:star: :star: :star: :star: :star:
+推荐指数：:star: 不推荐线上使用
+
+此版本kube-proxy有[重大bug](https://github.com/kubernetes/kubernetes/pull/71413) 直接导致service丢失，Endpoint丢失  官方1.12.3版本修复
+我们在压力测试时发现这一问题，官方在高版本进行了修复，sealyun也会尽快发布1.12.3版本
 
 * ipvs支持优雅关闭, 以及官方其它新特性与bug修复
 * 修复1.12.0版本heapster无法获取到metric的bug
