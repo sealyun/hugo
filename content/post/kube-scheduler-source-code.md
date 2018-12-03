@@ -107,7 +107,6 @@ runtime.sigpanic()
 
 如此我编译scheduler代码大约40秒左右，如vendor可软连接还可节省十几秒
 
-[未完待续。。。]
 
 # 调度器cache
 ## cache状态机
