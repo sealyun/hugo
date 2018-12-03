@@ -321,27 +321,161 @@ func (sched *Scheduler) Run() {
 
 ```
    +-------------+
-   | 获取一个pod
+   | 获取一个pod |
    +-------------+
           |
-   +-------------+
-   | 如果pod的DeletionTimestamp 存在就不用进行调度, kubelet发现这个字段会直接去删除pod
-   +-------------+
+   +-----------------------------------------------------------------------------------+
+   | 如果pod的DeletionTimestamp 存在就不用进行调度, kubelet发现这个字段会直接去删除pod |
+   +-----------------------------------------------------------------------------------+
           |
-   +-------------+
-   | 选一个suggestedHost，可理解为合适的节点
-   +-------------+
+   +-----------------------------------------+
+   | 选一个suggestedHost，可理解为合适的节点 |
+   +-----------------------------------------+
           |_____________选不到就进入强占的逻辑，与我当初写swarm调度器逻辑类似
           |
-   +-------------+
-   | 虽然还没真调度到node上，但是告诉cache pod已经被调度到node上了，变成assume pod
-   +-------------+
+   +--------------------------------------------------------------------------------+
+   | 虽然还没真调度到node上，但是告诉cache pod已经被调度到node上了，变成assume pod  |
+   | 这里面会先检查volumes                                                          |
+   | 然后：err = sched.assume(assumedPod, suggestedHost) 假设pod被调度到node上了    |
+   +--------------------------------------------------------------------------------+
           |
-   +-------------+
-   |
-   +-------------+
+   +---------------------------+
+   | 异步的bind这个pod到node上 |
+   | 先bind volume             |
+   | bind pod                  |
+   +---------------------------+
           |
-   +-------------+
-   |
-   +-------------+
+   +----------------+
+   | 暴露一些metric |
+   +----------------+
 ```
+
+## bind动作：
+
+```
+err := sched.bind(assumedPod, &v1.Binding{
+	ObjectMeta: metav1.ObjectMeta{Namespace: assumedPod.Namespace, Name: assumedPod.Name, UID: assumedPod.UID},
+	Target: v1.ObjectReference{
+		Kind: "Node",
+		Name: suggestedHost,
+	},
+})
+```
+
+先去bind pod，然后告诉cache bind结束
+```
+err := sched.config.GetBinder(assumed).Bind(b)
+if err := sched.config.SchedulerCache.FinishBinding(assumed); 
+```
+
+TODO: bind具体做了什么
+
+## 调度算法
+现在最重要的就是选节点的实现
+```
+suggestedHost, err := sched.schedule(pod)
+```
+
+也就是调度算法的实现：
+
+```
+type ScheduleAlgorithm interface {
+    // 传入pod 节点列表，返回一下合适的节点
+	Schedule(*v1.Pod, NodeLister) (selectedMachine string, err error)
+    // 资源抢占用的
+	Preempt(*v1.Pod, NodeLister, error) (selectedNode *v1.Node, preemptedPods []*v1.Pod, cleanupNominatedPods []*v1.Pod, err error)
+
+    // 预选函数集，
+	Predicates() map[string]FitPredicate
+                                |                              这一个节点适合不适合调度这个pod，不适合的话返回原因
+                                +-------type FitPredicate func(pod *v1.Pod, meta PredicateMetadata, nodeInfo *schedulercache.NodeInfo) (bool, []PredicateFailureReason, error)
+    // 返回优选配置,最重要两个函数 map 和 reduce
+	Prioritizers() []PriorityConfig
+                         |____________PriorityMapFunction 计算 节点的优先级
+                         |____________PriorityReduceFunction 根据map的结果计算所有node的最终得分
+                         |____________PriorityFunction 废弃
+}
+```
+
+调度算法可以通过两种方式生成： 
+
+* Provider 默认方式, 通用调度器
+* Policy   策略方式, 特殊调度器
+
+最终new了一个scheduler:
+
+```
+priorityConfigs, err := c.GetPriorityFunctionConfigs(priorityKeys)
+priorityMetaProducer, err := c.GetPriorityMetadataProducer()
+predicateMetaProducer, err := c.GetPredicateMetadataProducer()
+                                              |
+algo := core.NewGenericScheduler(             |
+	c.schedulerCache,                         |
+	c.equivalencePodCache,                    V
+	c.podQueue,
+	predicateFuncs,   ============> 这里面把预选优选函数都注入进来了
+	predicateMetaProducer,
+	priorityConfigs,
+	priorityMetaProducer,
+	extenders,
+	c.volumeBinder,
+	c.pVCLister,
+	c.alwaysCheckAllPredicates,
+	c.disablePreemption,
+	c.percentageOfNodesToScore,
+)
+
+
+type genericScheduler struct {
+	cache                    schedulercache.Cache
+	equivalenceCache         *equivalence.Cache
+	schedulingQueue          SchedulingQueue
+	predicates               map[string]algorithm.FitPredicate
+	priorityMetaProducer     algorithm.PriorityMetadataProducer
+	predicateMetaProducer    algorithm.PredicateMetadataProducer
+	prioritizers             []algorithm.PriorityConfig
+	extenders                []algorithm.SchedulerExtender
+	lastNodeIndex            uint64
+	alwaysCheckAllPredicates bool
+	cachedNodeInfoMap        map[string]*schedulercache.NodeInfo
+	volumeBinder             *volumebinder.VolumeBinder
+	pvcLister                corelisters.PersistentVolumeClaimLister
+	disablePreemption        bool
+	percentageOfNodesToScore int32
+}
+```
+这个scheduler实现了ScheduleAlgorithm中定义的接口
+
+Schedule 流程：
+
+```
+   +------------------------------------+
+   | trace记录一下，要开始调度哪个pod了 | 
+   +------------------------------------+
+          |
+   +-----------------------------------------------+
+   | pod基本检查，这里主要检查卷和delete timestamp |
+   +-----------------------------------------------+
+          |
+   +----------------------------------------+
+   | 获取node列表, 更新cache的node info map |
+   +----------------------------------------+
+          |
+   +----------------------------------------------+
+   | 预选，返回合适的节点列表和预选失败节点的原因 |
+   +----------------------------------------------+
+          |
+   +----------------------------------------------------------+
+   | 优选，                                                   |
+   | 如果预选结果只有一个节点，那么直接使用之，不需要进行优选 |
+   | 否则进行优选过程                                         |
+   +----------------------------------------------------------+
+          |
+   +------------------------------------+
+   | 在优选结果列表中选择得分最高的节点 |
+   +------------------------------------+
+```
+
+### 预选
+
+### 优选
