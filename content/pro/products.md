@@ -40,6 +40,11 @@ rm -rf /var/etcd
 ```
 
 # 安装包列表
+## [kubernetes1.13.0离线安装包](sealyun.com) 阿里云审核中 | 售价 50元 
+
+* 修改kubeadm证书过期时间到99年，默认证书是1年过期
+* 集成promethus监控系统！！！
+
 ## [kubernetes1.12.3离线安装包](sealyun.com) 阿里云审核中 | 售价 50元 
 
 ## [kubernetes1.12.2离线安装包](https://market.aliyun.com/products/57742013/cmxz031371.html#sku=yuncode2537100001) | 售价 50元 
