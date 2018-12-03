@@ -484,5 +484,66 @@ Schedule 流程：
 
 podFitOnNode: 判断这个节点是不是适合这个pod调度
 
+这里插播一个小知识，调度器里有个Ecache:
+
+Equivalence Class目前是用来在Kubernetes Scheduler加速Predicate，提升Scheduler的吞吐性能。
+Kubernetes scheduler及时维护着Equivalence Cache的数据，当某些情况发生时（比如delete node、bind pod等事件），
+需要立刻invalid相关的Equivalence Cache中的缓存数据。
+
+一个Equivalence Class是用来定义一组具有相同Requirements和Constraints的Pods的相关信息的集合，
+在Scheduler进行Predicate阶段时可以只需对Equivalence Class中一个Pod进行Predicate，并把Predicate的结果放到
+Equivalence Cache中以供该Equivalence Class中其他Pods（成为Equivalent Pods）重用该结果。只有当Equivalence Cache
+中没有可以重用的Predicate Result才会进行正常的Predicate流程。
+
+ecache这块后续可以深入讨论，本文更多关注核心架构与流程
+
+所以这块就比较简单了, 把所有的预选函数执行行一遍
+
+```
+先排序 predicates.Ordering() 
+if predicate, exist := predicateFuncs[predicateKey]; exist {
+		fit, reasons, err = predicate(pod, metaToUse, nodeInfoToUse)
+```
+
+顺序是这样的：
+
+```
+	predicatesOrdering = []string{CheckNodeConditionPred, CheckNodeUnschedulablePred,
+		GeneralPred, HostNamePred, PodFitsHostPortsPred,
+		MatchNodeSelectorPred, PodFitsResourcesPred, NoDiskConflictPred,
+		PodToleratesNodeTaintsPred, PodToleratesNodeNoExecuteTaintsPred, CheckNodeLabelPresencePred,
+		CheckServiceAffinityPred, MaxEBSVolumeCountPred, MaxGCEPDVolumeCountPred, MaxCSIVolumeCountPred,
+		MaxAzureDiskVolumeCountPred, CheckVolumeBindingPred, NoVolumeZoneConflictPred,
+		CheckNodeMemoryPressurePred, CheckNodePIDPressurePred, CheckNodeDiskPressurePred, MatchInterPodAffinityPred}
+```
+
+这些预选函数是存在一个map里的，key是一个string，value就是一个预选函数, 再回头去看注册map的逻辑
+
+```
+predicateFuncs, err := c.GetPredicates(predicateKeys)
+```
+pkg/scheduler/algorithmprovider/defaults/defaults.go 里面会对这些函数进行注册,如：
+
+```
+factory.RegisterFitPredicate(predicates.NoDiskConflictPred, predicates.NoDiskConflict),
+factory.RegisterFitPredicate(predicates.GeneralPred, predicates.GeneralPredicates),
+factory.RegisterFitPredicate(predicates.CheckNodeMemoryPressurePred, predicates.CheckNodeMemoryPressurePredicate),
+factory.RegisterFitPredicate(predicates.CheckNodeDiskPressurePred, predicates.CheckNodeDiskPressurePredicate),
+factory.RegisterFitPredicate(predicates.CheckNodePIDPressurePred, predicates.CheckNodePIDPressurePredicate),
+```
+
+然后直接在init函数里调用注册逻辑
 
 ### 优选
+PrioritizeNodes 优选大概可分为三个步骤:
+
+* Map      计算单个节点
+* Reduce   计算结果聚合
+* Extender 与预选差不多
+
+优选函数同理也是注册进去的, 不再赘述
+```
+factory.RegisterPriorityFunction2("LeastRequestedPriority", priorities.LeastRequestedPriorityMap, nil, 1),
+// Prioritizes nodes to help achieve balanced resource usage
+factory.RegisterPriorityFunction2("BalancedResourceAllocation", priorities.BalancedResourceAllocationMap, nil, 1),
+```
