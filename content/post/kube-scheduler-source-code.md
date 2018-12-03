@@ -2,7 +2,7 @@
 author = "fanux"
 date = "2018-11-06T10:54:24+02:00"
 draft = false
-title = "kubernetes源码分析之kube-scheduler - 扩展调度器"
+title = "kubernetes源码分析之kube-scheduler - 从代码看原理"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
@@ -219,3 +219,129 @@ runtime.sigpanic()
 如此我编译scheduler代码大约40秒左右，如vendor可软连接还可节省十几秒
 
 [未完待续。。。]
+
+# 调度器cache
+## cache状态机
+```
+   +-------------------------------------------+  +----+
+   |                            Add            |  |    |
+   |                                           |  |    | Update
+   +      Assume                Add            v  v    |
+Initial +--------> Assumed +------------+---> Added <--+
+   ^                +   +               |       +
+   |                |   |               |       |
+   |                |   |           Add |       | Remove
+   |                |   |               |       |
+   |                |   |               +       |
+   +----------------+   +-----------> Expired   +----> Deleted
+```
+
+* Assume 尝试调度，会把node信息聚合到node上，如pod require多少CPU内存，那么加到node上，如果超时了需要重新减掉 
+* AddPod 会检测是不是已经尝试调度了该pod，校验是否过期,如果过期了会被重新添加
+* Remove pod信息会在该节点上被清除掉
+* cache其它接口如node相关的cache接口  ADD update等
+
+## cache实现
+```
+type schedulerCache struct {
+	stop   <-chan struct{}
+	ttl    time.Duration
+	period time.Duration
+
+	// This mutex guards all fields within this cache struct.
+	mu sync.RWMutex
+	// a set of assumed pod keys.
+	// The key could further be used to get an entry in podStates.
+	assumedPods map[string]bool
+	// a map from pod key to podState.
+	podStates map[string]*podState
+	nodes     map[string]*NodeInfo
+	nodeTree  *NodeTree
+	pdbs      map[string]*policy.PodDisruptionBudget
+	// A map from image name to its imageState.
+	imageStates map[string]*imageState
+}
+```
+
+这里存储了基本调度所需要的所有信息
+
+以AddPod接口为例，本质上就是把监听到的一个pod放到了cache的map里：
+
+```
+cache.addPod(pod)
+ps := &podState{
+	pod: pod,
+}
+cache.podStates[key] = ps
+```
+
+node Tree
+节点信息有这样一个结构体保存：
+
+```
+type NodeTree struct {
+	tree      map[string]*nodeArray // a map from zone (region-zone) to an array of nodes in the zone.
+	zones     []string              // a list of all the zones in the tree (keys)
+	zoneIndex int
+	NumNodes  int
+	mu        sync.RWMutex
+}
+```
+
+cache 运行时会循环清理过期的assume pod
+
+```
+func (cache *schedulerCache) run() {
+	go wait.Until(cache.cleanupExpiredAssumedPods, cache.period, cache.stop)
+}
+```
+
+# scheduler
+scheduler里面最重要的两个东西：cache 和调度算法
+```
+type Scheduler struct {
+	config *Config  -------> SchedulerCache
+                       |
+                       +---> Algorithm
+}
+```
+
+等cache更新好了，调度器就是调度一个pod:
+```
+func (sched *Scheduler) Run() {
+	if !sched.config.WaitForCacheSync() {
+		return
+	}
+
+	go wait.Until(sched.scheduleOne, 0, sched.config.StopEverything)
+}
+```
+
+核心逻辑来了：
+
+```
+   +-------------+
+   | 获取一个pod
+   +-------------+
+          |
+   +-------------+
+   | 如果pod的DeletionTimestamp 存在就不用进行调度, kubelet发现这个字段会直接去删除pod
+   +-------------+
+          |
+   +-------------+
+   | 选一个suggestedHost，可理解为合适的节点
+   +-------------+
+          |_____________选不到就进入强占的逻辑，与我当初写swarm调度器逻辑类似
+          |
+   +-------------+
+   | 虽然还没真调度到node上，但是告诉cache pod已经被调度到node上了，变成assume pod
+   +-------------+
+          |
+   +-------------+
+   |
+   +-------------+
+          |
+   +-------------+
+   |
+   +-------------+
+```
