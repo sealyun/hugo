@@ -44,6 +44,9 @@ rm -rf /var/etcd
 
 * 修改kubeadm证书过期时间到99年，默认证书是1年过期
 * 集成promethus监控系统！！！ grafana地址 http://ip:30000  管理账户密码 admin/admin
+   * 高可用的promethus
+   * 高可用的alertmanager告警
+   * node-exporter kube-state-metrics grafana, 用operator实现
 * 官方kubeadm GA, CSI GA 修复[重大安全漏洞](https://github.com/kubernetes/kubernetes/issues/71411)
 ![](/prometheus/nodes.png)
 
