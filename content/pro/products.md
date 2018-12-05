@@ -49,6 +49,10 @@ kind: ClusterConfiguration
 networking:
   podSubnet: 100.64.0.0/10
 kubernetesVersion: v1.13.0
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: "ipvs"
 ```
 这个命令可以查看如何配置：`kubeadm config print init-defaults --component-configs KubeProxyConfiguration`
 
