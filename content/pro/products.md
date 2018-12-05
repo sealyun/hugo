@@ -42,6 +42,15 @@ rm -rf /var/etcd
 # 安装包列表
 ## [kubernetes1.13.0离线安装包](https://market.aliyun.com/products/57742013/cmxz031803.html?spm=5176.730005.productlist.d_cmxz031803.4d763524RknZgg&innerSource=search_kubernetes1.13.0#sku=yuncode2580300001) | 售价 50元 
 
+已知问题, conf/kubeadm.yaml 文件修改成下面，否则安装会失败，因为官方修改了获取版本配置的值，而配置文件写错读取不到配置，此问题修复上传中：
+```
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+networking:
+  podSubnet: 100.64.0.0/10
+kubernetesVersion: v1.13.0
+```
+
 * 修改kubeadm证书过期时间到99年，默认证书是1年过期
 * 集成promethus监控系统！！！ grafana地址 http://ip:30000  管理账户密码 admin/admin
    * 高可用的promethus
