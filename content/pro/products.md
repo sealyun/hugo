@@ -40,7 +40,7 @@ rm -rf /var/etcd
 ```
 
 # 安装包列表
-## [kubernetes1.13.0离线安装包](sealyun.com) 阿里云审核中 | 售价 50元 
+## [kubernetes1.13.0离线安装包](https://market.aliyun.com/products/57742013/cmxz031803.html?spm=5176.730005.productlist.d_cmxz031803.4d763524RknZgg&innerSource=search_kubernetes1.13.0#sku=yuncode2580300001) | 售价 50元 
 
 * 修改kubeadm证书过期时间到99年，默认证书是1年过期
 * 集成promethus监控系统！！！ grafana地址 http://ip:30000  管理账户密码 admin/admin
