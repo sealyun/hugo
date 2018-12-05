@@ -50,6 +50,7 @@ networking:
   podSubnet: 100.64.0.0/10
 kubernetesVersion: v1.13.0
 ```
+这个命令可以查看如何配置：`kubeadm config print init-defaults --component-configs KubeProxyConfiguration`
 
 * 修改kubeadm证书过期时间到99年，默认证书是1年过期
 * 集成promethus监控系统！！！ grafana地址 http://ip:30000  管理账户密码 admin/admin
