@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2019-01-04T10:54:24+02:00"
+date = "2018-12-04T10:54:24+02:00"
 draft = false
 title = "kubeadm杂谈"
 tags = ["event","dotScale","sketchnote"]
