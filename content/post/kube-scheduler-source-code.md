@@ -435,8 +435,8 @@ factory.RegisterFitPredicate(predicates.CheckNodePIDPressurePred, predicates.Che
 ### 优选
 PrioritizeNodes 优选大概可分为三个步骤:
 
-* Map      计算单个节点
-* Reduce   计算结果聚合
+* Map      计算单个节点,优先级
+* Reduce   计算每个节点结果聚合,计算所有节点的最终得分
 * Extender 与预选差不多
 
 优选函数同理也是注册进去的, 不再赘述
@@ -445,6 +445,63 @@ factory.RegisterPriorityFunction2("LeastRequestedPriority", priorities.LeastRequ
 // Prioritizes nodes to help achieve balanced resource usage
 factory.RegisterPriorityFunction2("BalancedResourceAllocation", priorities.BalancedResourceAllocationMap, nil, 1),
 ```
+
+这里注册时注册两个，一个map函数一个reduce函数，为了更好的理解mapreduce，去看一个实现
+```
+factory.RegisterPriorityFunction2("NodeAffinityPriority", priorities.CalculateNodeAffinityPriorityMap, priorities.CalculateNodeAffinityPriorityReduce, 1)
+```
+### node Affinity map reduce
+map 核心逻辑, 比较容易理解:
+```
+如果满足节点亲和，积分加权重
+count += preferredSchedulingTerm.Weight
+
+return schedulerapi.HostPriority{
+	Host:  node.Name,
+	Score: int(count),  # 算出积分
+}, nil
+```
+
+reduce:
+一个节点会走很多个map，每个map会产生一个分值，如node affinity产生一个，pod affinity再产生一个，所以node和分值是一对多的关系
+reduce对一个node的这些分值做一个处理
+去掉reverse的逻辑（分值越高优先级越低）
+```
+		var maxCount int
+		for i := range result {
+			if result[i].Score > maxCount {
+				maxCount = result[i].Score  # 所有分值里的最大值
+			}
+		}
+
+		for i := range result {
+			score := result[i].Score
+			score = maxPriority * score / maxCount  # 分值乘以最大优先级，除以最大值赋值给分值 我没明白
+			result[i].Score = score
+		}
+```
+```
+for i := range priorityConfigs {
+	if priorityConfigs[i].Function != nil {
+		continue
+	}
+	results[i][index], err = priorityConfigs[i].Map(pod, meta, nodeInfo)
+	if err != nil {
+		appendError(err)
+		results[i][index].Host = nodes[index].Name
+	}
+}
+
+err := config.Reduce(pod, meta, nodeNameToInfo, results[index]); 
+```
+看这里有个results,对理解很重要，是一个二维数组：
+|---|node1|node2|node3|
+|---|---|---|---|
+|nodeaffinity|1分|2分|1分|
+|pod affinity|1分|3分|6分|
+|...|...|...|...|
+
+这样reduce时取一列，其实也就是处理一个节点的各项得分
 
 # Extender
 ## 调度器扩展
