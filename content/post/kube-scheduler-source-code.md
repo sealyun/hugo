@@ -464,21 +464,21 @@ return schedulerapi.HostPriority{
 
 reduce:
 一个节点会走很多个map，每个map会产生一个分值，如node affinity产生一个，pod affinity再产生一个，所以node和分值是一对多的关系
-reduce对一个node的这些分值做一个处理
+
 去掉reverse的逻辑（分值越高优先级越低）
 ```
-		var maxCount int
-		for i := range result {
-			if result[i].Score > maxCount {
-				maxCount = result[i].Score  # 所有分值里的最大值
-			}
-		}
+var maxCount int
+for i := range result {
+	if result[i].Score > maxCount {
+		maxCount = result[i].Score  # 所有分值里的最大值
+	}
+}
 
-		for i := range result {
-			score := result[i].Score
-			score = maxPriority * score / maxCount  # 分值乘以最大优先级，除以最大值赋值给分值 我没明白
-			result[i].Score = score
-		}
+for i := range result {
+	score := result[i].Score
+	score = maxPriority * score / maxCount  # 分值乘以最大优先级是maxPriority = 10，除以最大值赋值给分值 我没明白
+	result[i].Score = score
+}
 ```
 ```
 for i := range priorityConfigs {
@@ -502,7 +502,13 @@ err := config.Reduce(pod, meta, nodeNameToInfo, results[index]);
 |pod affinity|1分|3分|6分|
 |...|...|...|...|
 
-这样reduce时取一列，其实也就是处理一个节点的各项得分
+这样reduce时取一行，其实也就是处理所有节点的某项得分
+
+```
+result[i].Score += results[j][i].Score * priorityConfigs[j].Weight  (二维变一维)
+
+```
+reduce完最终这个节点的得分就等于这个节点各项得分乘以该项权重的和,最后排序选最高分 (一维变0纬)
 
 # Extender
 ## 调度器扩展
