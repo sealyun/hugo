@@ -495,7 +495,7 @@ for i := range priorityConfigs {
 err := config.Reduce(pod, meta, nodeNameToInfo, results[index]); 
 ```
 看这里有个results,对理解很重要，是一个二维数组：
-|---|node1|node2|node3|
+|xxx|node1|node2|node3|
 |---|---|---|---|
 |nodeaffinity|1分|2分|1分|
 |pod affinity|1分|3分|6分|
