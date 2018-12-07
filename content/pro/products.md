@@ -10,7 +10,11 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
-# QQ群：98488045
+# sealyun公众号
+这里你能看到kubernetes一些深入的分析，我们遇到的坑，以及一些小知识
+
+![](/kubernetes-qrcode.jpg)
+
 # kubernetes离线包安装教程：
 安装包中不包含docker，如没装docker 请先安装之`yum install -y docker`
 
@@ -45,12 +49,11 @@ rm -rf /var/etcd
 推荐指数：:star: :star: :star: :star: :star:
 
 * 修改kubeadm证书过期时间到99年，默认证书是1年过期
-* 集成promethus监控系统！！！ grafana地址 http://ip:30000  管理账户密码 admin/admin
+* 集成promethus监控系统！ grafana地址 http://ip:30000  管理账户密码 admin/admin
    * 高可用的promethus
    * 高可用的alertmanager告警
    * node-exporter kube-state-metrics grafana, 用operator实现
 * 官方kubeadm GA, CSI GA 修复[重大安全漏洞](https://github.com/kubernetes/kubernetes/issues/71411)
-![](/prometheus/nodes.png)
 
 
 ## [kubernetes1.12.3离线安装包](sealyun.com) 阿里云审核中 | 售价 50元 
@@ -136,6 +139,7 @@ KUBELET_CGROUP_ARGS=–cgroup-driver=cgroupfs #这个配置与docker改成一致
 
 推荐指数：:star: 
 
+# QQ群：98488045
 ## master 节点 (录屏加载较慢，别焦躁。。。)
 <script data-speed="3" src="https://asciinema.org/a/RZ3a74x8qE6DZy7jSjaDrLvYM.js" id="asciicast-RZ3a74x8qE6DZy7jSjaDrLvYM" async></script>
 
