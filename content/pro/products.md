@@ -11,7 +11,11 @@ menu = ""           # set "main" to add this content to the main menu
 +++
 
 # sealyun公众号
-这里你能看到kubernetes一些深入的分析，我们遇到的坑，以及一些小知识
+这里你能看到
+
+* kubernetes一些深入的分析如各块的源码解析
+* 我们遇到的坑,大规模实践k8s时一些小细节 版本选择，各版本的坑，内核如何选择，存储与网络虚拟化方案等
+* 短文介绍一些小知识,如一些偏门小命令，又如集群证书更新，kubeadm如何配置，scheduler如何做一些扩展等
 
 ![](/kubernetes-qrcode.jpg)
 
