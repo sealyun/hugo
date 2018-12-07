@@ -510,6 +510,76 @@ result[i].Score += results[j][i].Score * priorityConfigs[j].Weight  (二维变�
 ```
 reduce完最终这个节点的得分就等于这个节点各项得分乘以该项权重的和,最后排序选最高分 (一维变0纬)
 
+# 调度队列 SchedulingQueue
+scheduler配置里有一个`NextPod` 方法，获取一个pod，并进行调度：
+```
+pod := sched.config.NextPod()
+```
+配置文件在这里初始化：
+```
+pkg/scheduler/factory/factory.go
+NextPod: func() *v1.Pod {
+	return c.getNextPod()
+},
+
+func (c *configFactory) getNextPod() *v1.Pod {
+	pod, err := c.podQueue.Pop()
+	if err == nil {
+		return pod
+	}
+...
+}
+```
+
+队列接口：
+```
+type SchedulingQueue interface {
+	Add(pod *v1.Pod) error
+	AddIfNotPresent(pod *v1.Pod) error
+	AddUnschedulableIfNotPresent(pod *v1.Pod) error
+	Pop() (*v1.Pod, error)
+	Update(oldPod, newPod *v1.Pod) error
+	Delete(pod *v1.Pod) error
+	MoveAllToActiveQueue()
+	AssignedPodAdded(pod *v1.Pod)
+	AssignedPodUpdated(pod *v1.Pod)
+	WaitingPodsForNode(nodeName string) []*v1.Pod
+	WaitingPods() []*v1.Pod
+}
+```
+给了两种实现，优先级队列和FIFO ：
+```
+func NewSchedulingQueue() SchedulingQueue {
+	if util.PodPriorityEnabled() {
+		return NewPriorityQueue()  # 基于堆排序实现，根据优先级排序
+	}
+	return NewFIFO() # 简单的先进先出
+}
+```
+
+队列实现比较简单，不做深入分析, 更重要的是关注队列，调度器，cache之间的关系:
+
+```
+AddFunc:    c.addPodToCache,
+UpdateFunc: c.updatePodInCache,
+DeleteFunc: c.deletePodFromCache,
+            | informer监听,了pod创建事件之后往cache和队列里都更新了
+            V 
+if err := c.schedulerCache.AddPod(pod); err != nil {
+	glog.Errorf("scheduler cache AddPod failed: %v", err)
+}
+
+c.podQueue.AssignedPodAdded(pod)
+```
+```
++------------+ ADD   +-------------+   POP  +-----------+
+| informer   |------>|  sche Queue |------->| scheduler |
++------------+   |   +-------------+        +----^------+
+                 +-->+-------------+             |
+                     | sche cache  |<------------+
+                     +-------------+
+```
+
 # Extender
 ## 调度器扩展
 定制化调度器有三种方式：
