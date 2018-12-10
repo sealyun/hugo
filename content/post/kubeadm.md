@@ -53,6 +53,10 @@ W1210 20:41:04.485754  110121 strict.go:54] error unmarshaling configuration sch
 
 配置需要改成：
 ```
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: "ipvs"
+---
 apiVersion: kubeadm.k8s.io/v1beta1
 certificatesDir: /etc/kubernetes/pki
 clusterName: kubernetes
