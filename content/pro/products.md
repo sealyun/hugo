@@ -62,11 +62,13 @@ rm -rf /var/etcd
 
 ## [kubernetes1.12.3离线安装包](sealyun.com) 阿里云审核中 | 售价 50元 
 
-## [kubernetes1.12.2离线安装包](https://market.aliyun.com/products/57742013/cmxz031371.html#sku=yuncode2537100001) | 售价 50元 
+# 以下版本均[存在安全漏洞](https://github.com/kubernetes/kubernetes/issues/71411) 不推荐在生产环境中使用，特别是APIserver暴露到公网的场景
+
+## [kubernetes1.12.2离线安装包](https://market.aliyun.com/products/57742013/cmxz031371.html#sku=yuncode2537100001) | 售价 50元
 
 推荐指数：:star: 不推荐线上使用
 
-此版本kube-proxy有[重大bug](https://github.com/kubernetes/kubernetes/pull/71413) 直接导致service丢失，Endpoint丢失  官方1.12.3版本修复
+此版本kube-proxy有[重大bug](https://github.com/kubernetes/kubernetes/pull/71413) 官方1.12.3版本修复
 我们在压力测试时发现这一问题，官方在高版本进行了修复，sealyun也会尽快发布1.12.3版本
 
 * ipvs支持优雅关闭, 以及官方其它新特性与bug修复
@@ -87,7 +89,7 @@ rm -rf /var/etcd
 已知问题：`/var/lib/kubelet/config.yaml: No such file or directory` 解决：`mkdir /var/lib/kubelet && sh init.sh`
 
 
-## [kubernetes1.11.3离线安装包](https://market.aliyun.com/products/57742013/cmxz030730.html) | 售价 50元 
+## [kubernetes1.11.3离线安装包](https://market.aliyun.com/products/57742013/cmxz030730.html) | 售价 1元 
 
 推荐指数：:star: :star: :star: :star: :star:
 
@@ -113,7 +115,7 @@ rm -rf /var/etcd
 * coreDNS ipvs走起，ipvs性能甩iptables好多条街，赶快行动吧
 * 增加crictl cri命令行工具
 
-## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000) | 售价 15元
+## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000) | 1元
 
 推荐指数：:star: :star: :star: :star: :star:
 
