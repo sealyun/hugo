@@ -45,3 +45,49 @@ kubeadm init --config kubeadm.yaml 才行
 ```
 kubeadm config print init-defaults --component-configs KubeProxyConfiguration
 ```
+
+做HA时出现下面错误：
+```
+W1210 20:41:04.485754  110121 strict.go:54] error unmarshaling configuration schema.GroupVersionKind{Group:"kubeadm.k8s.io", Version:"v1beta1", Kind:"ClusterConfiguration"}: error unmarshaling JSON: while decoding JSON: json: unknown field "apiServerCertSANs"
+```
+
+配置需要改成：
+```
+apiVersion: kubeadm.k8s.io/v1beta1
+certificatesDir: /etc/kubernetes/pki
+clusterName: kubernetes
+controlPlaneEndpoint: ""
+controllerManager: {}
+dns:
+  type: CoreDNS
+imageRepository: k8s.gcr.io
+kind: ClusterConfiguration
+kubernetesVersion: v1.13.0
+networking:
+  dnsDomain: cluster.local
+  serviceSubnet: 10.96.0.0/12
+  podSubnet: 100.64.0.0/10
+apiServer:
+        certSANs:
+        - 10.1.86.209
+        - 10.1.86.204
+        - node01
+        - 10.1.86.205
+        - node02
+        - 10.1.86.206
+        - node03
+        - 127.0.0.1
+        extraArgs:
+           etcd-cafile: /etc/kubernetes/pki/cfssl/ca.pem
+           etcd-certfile: /etc/kubernetes/pki/cfssl/client.pem
+           etcd-keyfile: /etc/kubernetes/pki/cfssl/client-key.pem
+etcd:
+    external:
+        caFile: /etc/kubernetes/pki/cfssl/ca.pem
+        certFile: /etc/kubernetes/pki/cfssl/client.pem
+        keyFile: /etc/kubernetes/pki/cfssl/client-key.pem
+        endpoints:
+        - https://10.1.86.204:2379
+        - https://10.1.86.205:2379
+        - https://10.1.86.206:2379
+```
