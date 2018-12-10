@@ -256,7 +256,29 @@ err := sched.config.GetBinder(assumed).Bind(b)
 if err := sched.config.SchedulerCache.FinishBinding(assumed); 
 ```
 
-TODO: bind具体做了什么
+### bind 流程
+```
+   +----------------+
+   | GetBinder.Bind
+   +----------------+
+       |
+   +-------------------------------------+
+   | 告诉cache bind完成 FinishBinding接口
+   +-------------------------------------+
+       |
+   +-----------------------------------------------------+
+   | 失败了就ForgetPod, 更新一下pod状态为 BindingRejected
+   +-----------------------------------------------------+
+```
+
+### bind 实现
+最终就是调用了apiserver bind接口:
+```
+func (b *binder) Bind(binding *v1.Binding) error {
+	glog.V(3).Infof("Attempting to bind %v to %v", binding.Name, binding.Target.Name)
+	return b.Client.CoreV1().Pods(binding.Namespace).Bind(binding)
+}
+```
 
 
 ## 调度算法
@@ -476,10 +498,12 @@ for i := range result {
 
 for i := range result {
 	score := result[i].Score
-	score = maxPriority * score / maxCount  # 分值乘以最大优先级是maxPriority = 10，除以最大值赋值给分值 我没明白
+	score = maxPriority * score / maxCount  # 分值乘以最大优先级是maxPriority = 10，除以最大值赋值给分值 这里是做了归一化处理;
 	result[i].Score = score
 }
 ```
+这里做了归一化处理后分值就变成[0,maxPriority]之间了
+
 ```
 for i := range priorityConfigs {
 	if priorityConfigs[i].Function != nil {
