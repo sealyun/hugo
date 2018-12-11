@@ -48,7 +48,7 @@ sealos是一个轻量级kubernetes HA安装项目，重点关注功能的收敛�
 ```
 docker run --rm -v /data/kube{k8sversion}.tar.gz:/data/kube{k8sversion}.tar.gz -it -w /etc/ansible fanux/sealos:{k8sversion} bash
 ```
-如安装v1.13.0:
+如安装kubernetes v1.13.0 HA:
 ```
 docker run --rm -v /data/kube1.13.0.tar.gz:/data/kube1.13.0.tar.gz -it -w /etc/ansible fanux/sealos:v1.13.0 bash
 ```
