@@ -359,3 +359,6 @@ pipeline:
 不一定能提高效率。 你们项目如何构建，如何发布，如何部署都应该是代码，没有二义性，把人做的事让程序做，最终人仅是触发而已。
 
 个人见解，探讨可加QQ群：98488045
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

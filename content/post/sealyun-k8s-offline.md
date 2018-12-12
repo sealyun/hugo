@@ -139,3 +139,6 @@ kubectl apply -f ../conf/dashboard
 docker save -o images.tar $(docker images|grep ago|awk '{print $1":"$2}')
 这里最好搞干净的服务器，不然别的镜像也会被save下来
 
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

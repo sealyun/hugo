@@ -283,3 +283,5 @@ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-v3.yaml
 ```
 这时不管怎么刷都是红心了
 
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

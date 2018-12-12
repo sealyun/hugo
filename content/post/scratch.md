@@ -48,3 +48,7 @@ go build --ldflags '-linkmode external -extldflags "-static”'
 ```
 
 如果不静态编译那可能得拷贝一堆动态库到镜像中，很多lowB就是那么做的
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+

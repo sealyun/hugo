@@ -287,3 +287,6 @@ docker  run --restart=always --net=host -v /etc/haproxy:/usr/local/etc/haproxy -
 ### 再删掉一个master
 ### 恢复一个master
 ### 再删掉最后一个master 
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

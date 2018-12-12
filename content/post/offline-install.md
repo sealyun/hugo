@@ -23,3 +23,6 @@ menu = ""           # set "main" to add this content to the main menu
 
 ## [kubernetes1.8.1离线安装包](https://market.aliyun.com/products/56014009/cmxz022571.html?spm=5176.730005.productlist.dcmxz022571.r9c1J1#sku=yuncode1657100000) 推荐使用1.9.2以上版本
 
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+

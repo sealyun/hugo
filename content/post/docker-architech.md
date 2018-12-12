@@ -289,3 +289,6 @@ runc run mycontainerid
 ```
 #### 容器状态文件 
 默认存在/run/runc目录下,不管是docker engine创建的容器还是通过runc直接创建的容器都会在/run/runc目录下创建一个以容器名命名的目录，下面有个state.json文件用于存储文件状态
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

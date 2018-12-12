@@ -202,3 +202,6 @@ PING 192.168.0.3 (192.168.0.3) 56(84) bytes of data.
 64 bytes from 192.168.0.3: icmp_seq=1 ttl=64 time=0.251 ms
 64 bytes from 192.168.0.3: icmp_seq=2 ttl=64 time=0.170 ms
 ```
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

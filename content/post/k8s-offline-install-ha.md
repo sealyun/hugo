@@ -416,3 +416,6 @@ $ kubectl exec your-busybox-pod-name nslookup kubernetes
 
 杀非LB的master，多次测试看创建pod与dns是否正常，还可以telnet 10.96.0.1 443 去验证clusterip是否正常
 
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

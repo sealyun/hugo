@@ -63,3 +63,5 @@ iptables [-t table]  # 指定表名
          [-j target] # 符合规则的数据包采取什么动作
 ```
 
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

@@ -172,3 +172,6 @@ EOF
 ```
 kubectl delete ns advanced-policy-demo
 ```
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

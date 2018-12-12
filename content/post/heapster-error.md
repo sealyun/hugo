@@ -63,3 +63,6 @@ kubectl create -f ../heapster/rbac/heapster-rbac.yaml
 
 如此heapster可正常访问kubelet和APIserver metric了
 
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

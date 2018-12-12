@@ -23,3 +23,6 @@ Address 1: 10.110.146.248 kubernetes-dashboard.kube-system.svc.cluster.local
 NAME                   TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
 kubernetes-dashboard   NodePort   10.110.146.248   <none>        443:30089/TCP   27m
 ```
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

@@ -157,3 +157,6 @@ TCP  10.96.232.136:6666 rr
 是通的，完全ok
 
 这里十分推荐大家使用ipvs模式，iptables出了问题不好调试，而且规则一多性能显著下降，我们甚至出现规则丢失的情况，ipvs稳定很多。
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

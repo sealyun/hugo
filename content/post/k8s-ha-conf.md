@@ -374,3 +374,6 @@ users:
 ```
 net.ipv4.ip_forward = 1
 ```
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

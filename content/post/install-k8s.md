@@ -402,3 +402,5 @@ $ docker-compose -f etcd.yaml up -d
 $ kubeadm init --config config.yaml
 ```
 
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

@@ -24,3 +24,6 @@ menu = ""           # set "main" to add this content to the main menu
 #### [json文件在此](http://lameleg.com/resource/grafana.json) 长期更新，直接复制粘贴进去即可
 
 ![](../images/grafana/promethus6.png)
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

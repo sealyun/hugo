@@ -170,3 +170,6 @@ serviceInformer.Informer().AddEventHandlerWithResyncPeriod(
 )
 informerFactory.Start(wait.NeverStop) // 开始监听
 ```
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

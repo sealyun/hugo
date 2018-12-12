@@ -177,4 +177,5 @@ Breakpoint 1 set at 0x6c8a0b for main.main() /go/src/github.com/opencontainers/r
 ## 总结
 至此我们容器创建流程大的架构梳理了一遍，为了看清整个架构忽略了很多细节，当然我会在其它文章中介绍别的一些细节内容. 欢迎大家关注[sealyun](lameleg.com)
 
-
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

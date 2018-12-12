@@ -800,3 +800,6 @@ cluster is healthy
 
 细节问题非常多，一个端口，一个IP都不要填错，否则就会各种错误, 包括新加节点要清etcd数据这些小细节问题。
 大功告成！
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

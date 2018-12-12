@@ -139,3 +139,6 @@ k8s_crts=["apiserver.crt","apiserver-kubelet-client.crt","ca.crt", "front-proxy-
 再执行`ansible-playbook roles/install-kubenode.yaml` 即可
 
 同理role下其它yaml文件也可执行, 如单独安装keepalived，单独安装etcd，haproxy等
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

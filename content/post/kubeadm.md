@@ -95,3 +95,6 @@ etcd:
         - https://10.1.86.205:2379
         - https://10.1.86.206:2379
 ```
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

@@ -426,3 +426,6 @@ Error from server (Forbidden): pods is forbidden: User "fhtjob@hotmail.com" cann
 ```
 已经无权限了。
 至于给用户分配更细的权限，比较简单，读者门自己倒持去吧
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

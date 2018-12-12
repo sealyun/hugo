@@ -105,3 +105,6 @@ COPY main.go .
 RUN go build -o signal && cp signal $GOPATH/bin
 CMD ["signal"]  # 不能写成 CMD signal, 这会直接exec，否则会以shell的方式派生子进程。
 ```
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

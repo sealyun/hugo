@@ -592,3 +592,6 @@ func fillService(s *Service) nl.NetlinkRequestData {
 
 ## 总结
 Service总体来讲代码比较简单，但是觉得有些地方实现的有点绕，不够简单直接。 总体来说就是监听apiserver事件，然后比对 处理，定期也会去执行同步策略.
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

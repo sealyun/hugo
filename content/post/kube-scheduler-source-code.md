@@ -713,3 +713,6 @@ SchedulerPolicyConfigMapKey = "policy.cfg"
 ## 总结
 调度器的代码写的还是挺不错的，相比较于kube-proxy好多了，可扩展性也还可以，不过目测调度器会面临一次大的重构，现阶段调度器对深度学习的批处理任务支持就不好
 而one by one调度的这种设定关系到整个项目的架构，要想优雅的支持更优秀的调度估计重构是跑不掉了
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

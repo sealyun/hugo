@@ -196,3 +196,6 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 192.168.83.131  0.0.0.0         255.255.255.255 UH    0      0        0 cali65bda6d8589
 192.168.179.0   172.31.242.157  255.255.255.192 UG    0      0        0 tunl0
 ```
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

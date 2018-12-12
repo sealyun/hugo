@@ -194,3 +194,6 @@ root@7d8c68bba090:/go/src/github.com/opencontainers/mycontainer# runc run test
 spec is:  {1.0.0-rc5 {linux amd64} {true {0 0} {0 0 [] } [sh] [PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin TERM=xterm] / 0xc42001a500 [{RLIMIT_NOFILE 1024 1024}] true  } {rootfs true} runc [{/proc proc proc []} {/dev tmpfs tmpfs [nosuid strictatime mode=755 size=65536k]} {/dev/pts devpts devpts [nosuid noexec newinstance ptmxmode=0666 mode=0620 gid=5]} {/dev/shm tmpfs shm [nosuid noexec nodev mode=1777 size=65536k]} {/dev/mqueue mqueue mqueue [nosuid noexec nodev]} {/sys sysfs sysfs [nosuid noexec nodev ro]} {/sys/fs/cgroup cgroup cgroup [nosuid noexec nodev relatime ro]}] <nil> map[] 0xc420084380 <nil> <nil>}
 / #
 ```
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)

@@ -27,3 +27,6 @@ menu = ""           # set "main" to add this content to the main menu
 CONTAINER ID        IMAGE                                      COMMAND             CREATED             STATUS              PORTS               NAMES
 4c73d9658275        dev.reg.iflytek.com/devops/whoami:latest   "/whoamI"           2 weeks ago         Up 10 minutes       80/tcp              0Fack
 ```
+
+# 公众号：
+![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
