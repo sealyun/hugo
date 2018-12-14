@@ -57,20 +57,15 @@ docker run --rm -v /data/kube1.13.0.tar.gz:/data/kube1.13.0.tar.gz -it -w /etc/a
 ```
 mkdir ~/.ssh
 cd ~/.ssh
-ssh-keygen -t rsa
-```
-ssh public key:
-```
-cat ~/.ssh/id_rsa.pub
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7fTirP9zPcx7wIjhsF+Dyu0A2sV5llC8jsmp/xtiyuJirE3mclpNEqgrzHC26f+ckfzwoE0HPU0wDPxbWFl3B0K89EwJSBsVZSZ0VLYnZp0u2JgwCLZzZzKfY0018yoqoL9KHz/68RpqtG2bWVf0/WSj+4hN7xTRpRTtXJHBOQRQBfqVSIcfMBSEnO15buUbDaLol/HvQd0YBrWwafQtMacmBlqDG0Z6/yeY4sTNRVRV2Uu5TeaHfzgYgmY9+NxtvPn8Td6tgZtq7cVU//kSsbzkUzDSD8zsh8kPUm4yljT5tYM1cPFLGM4m/zqAjAZN2YaEdFckJFAQ7TWAK857d root@8682294b9464
-```
-这样公钥就生成了
-## 在其它所有要安装k8s的服务器上执行：
-```
-cd ~/.ssh
-echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7fTirP9zPcx7wIjhsF+Dyu0A2sV5llC8jsmp/xtiyuJirE3mclpNEqgrzHC26f+ckfzwoE0HPU0wDPxbWFl3B0K89EwJSBsVZSZ0VLYnZp0u2JgwCLZzZzKfY0018yoqoL9KHz/68RpqtG2bWVf0/WSj+4hN7xTRpRTtXJHBOQRQBfqVSIcfMBSEnO15buUbDaLol/HvQd0YBrWwafQtMacmBlqDG0Z6/yeY4sTNRVRV2Uu5TeaHfzgYgmY9+NxtvPn8Td6tgZtq7cVU//kSsbzkUzDSD8zsh8kPUm4yljT5tYM1cPFLGM4m/zqAjAZN2YaEdFckJFAQ7TWAK857d root@8682294b9464" >> authorized_keys
+ssh-keygen -t rsa -b 2048
+ssh-copy-id $IP # $IP就是你需要安装的目标机器，所有机器都要做免密钥
 ```
 这样公钥分发工作完成了，所有的机器直接ssh无需输入密码即可登录
+
+如果还有交互验证，ansible无法连接那就得改ansible参数了：
+```
+ssh_args = -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -C
+```
 
 # 修改配置
 Config your own hosts
