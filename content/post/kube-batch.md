@@ -347,7 +347,6 @@ func IsBatch(pod *v1.Pod) bool {
 [资源包](https://github.com/sealyun/GPU/releases)
 
 这里包含docker nv-docker GPU-device plugin
-```
 install.sh...
 
 /etc/docker/daemon.json
@@ -382,7 +381,6 @@ Allocatable:
  memory:             788815132Ki
  nvidia.com/gpu:     2
  pods:               110
-```
 ```
 
 # 总结
