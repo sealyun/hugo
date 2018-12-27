@@ -128,7 +128,7 @@ RunBind 起一个task绑定协程
 PodQuePriority 去动态修改pod队列的优先级，让同task的pod优先调度
 
 执行流程：
-![](batch-scheduler-run.png)
+![](/batch-scheduler-run.png)
 
 ## 延迟绑定
 scheduler/scheduler.go:
