@@ -10,6 +10,9 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
+# 官方销售市场：http://store.lameleg.com/
+[kubernetes安装包store](http://store.lameleg.com/)
+
 # sealyun公众号
 这里你能看到
 
