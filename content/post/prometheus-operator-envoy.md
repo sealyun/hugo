@@ -226,8 +226,95 @@ kubectl create secret generic alertmanager-example --from-file=alertmanager.yaml
       - to: 'xxx@qq.com'
         send_resolved: true
 ```
-## 高静规则配置
-TODO 待续
+delete掉老的secret，根据自己的配置重新生成secret即可
+
+## 告警规则配置
+通过configmap下发告警规则, 用户仅需要写下面这种configmap即可
+```
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: prometheus-example-rules
+  labels:
+    role: prometheus-rulefiles    # 需要加这两个标签，operator才能识别到
+    prometheus: example
+data:
+  example.rules.yaml: |+
+    groups:
+    - name: ./example.rules
+      rules:
+      - alert: ExampleAlert
+        expr: vector(1)
+```
+
+operator定义了一个叫Prometheus的CRD，告诉operator告警规则去哪些configmap取等等
+```
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: example
+spec:
+  replicas: 2
+  alerting:
+    alertmanagers:
+    - namespace: default
+      name: alertmanager-example
+      port: web
+  serviceMonitorSelector:
+    matchLabels:
+      team: frontend
+  resources:
+    requests:
+      memory: 400Mi
+  ruleSelector:             # 告警规则的label
+    matchLabels:
+      role: prometheus-rulefiles  # 上面configmap需要这俩label才可以
+      prometheus: example
+```
+
+可以看一个k8s已经部署的告警规则：
+
+数据内容有点多，我就不全贴出来了
+```
+kubectl get configmap prometheus-k8s-rulefiles-0 -n monitoring -o yaml
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2018-12-05T11:55:18Z"
+  labels:
+    managed-by: prometheus-operator   # 这里
+    prometheus-name: k8s
+  name: prometheus-k8s-rulefiles-0
+```
+
+不重要的内容我就删掉了
+```
+[root@dev-86-201 ~]# kubectl get Prometheus k8s -n monitoring -o yaml
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  generation: 1
+  labels:
+    prometheus: k8s
+  name: k8s
+  namespace: monitoring
+spec:
+  alerting:
+    alertmanagers:
+    - name: alertmanager-main
+      namespace: monitoring
+      port: web
+  baseImage: quay.io/prometheus/prometheus
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+  replicas: 2
+  resources:
+    requests:
+      memory: 400Mi
+  ruleSelector:
+    matchLabels:
+      prometheus: k8s   # 这里，貌似与上面匹配不上。。。
+      role: alert-rules
+```
 
 
 探讨可加QQ群：98488045
