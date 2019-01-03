@@ -17,6 +17,8 @@ prometheus operator应当是使用监控系统的最佳实践了，首先它一�
 
 不过对于新手使用上还是有一丢丢小门槛，本文就结合如何给envoy做监控这个例子来分享使用prometheus operator的正确姿势
 
+至于如何写告警规则，如何配置prometheus查询语句不是本文探讨的重点，会在后续文章中给大家分享，本文着重探讨如何使用prometheus operator
+
 # prometheus operator安装
 [sealyun离线安装包](https://sealyun.com/pro/products/)内已经包含prometheus operator,安装完直接使用即可
 
