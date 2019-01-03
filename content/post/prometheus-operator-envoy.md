@@ -194,127 +194,72 @@ base64解码一下：
     "receiver": "null"
 ```
 所以配置alertmanager就非常简单了，就是创建一个secrect即可
-```
-kubectl create secret generic alertmanager-example --from-file=alertmanager.yaml
-```
 如alertmanager.yaml:
 ```
-    global:
-      smtp_smarthost: 'mail.qq.com:25'
-      smtp_from: 'xxx@qq.com'
-      smtp_auth_username: 'xxx@qq.com'
-      smtp_auth_password: 'xxxx'
-      smtp_require_tls: false
-    templates:
-    - '/etc/alertmanager/template/*.tmpl'
-    route:
-      group_by: ['alertmanager','cluster','service']
-      group_wait: 30s
-      group_interval: 5m
-      repeat_interval: 3h
-      receiver: sealyun
-      routes:
-      - receiver: 'sealyun'
-        match_re:
-          businesstype: test
-      - receiver: 'sealyun'
-        match:
-          severity: page
-    receivers:
-    - name: 'sealyun'
-      email_configs:
-      - to: 'xxx@qq.com'
-        send_resolved: true
+global:
+  smtp_smarthost: 'smtp.qq.com:465'
+  smtp_from: '474785153@qq.com'
+  smtp_auth_username: '474785153@qq.com'
+  smtp_auth_password: 'xxx'       # 这个密码是开启smtp授权后生成的,下文有说怎么配置
+  smtp_require_tls: false
+route:
+  group_by: ['alertmanager','cluster','service']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+  receiver: 'fanux'
+  routes:
+  - receiver: 'fanux'
+receivers:
+- name: 'fanux'
+  email_configs:
+  - to: '474785153@qq.com'
+    send_resolved: true
 ```
 delete掉老的secret，根据自己的配置重新生成secret即可
+```
+kubectl delete secret alertmanager-main -n monitoring
+kubectl create secret generic alertmanager-main --from-file=alertmanager.yaml -n monitoring
+```
+
+## 邮箱配置，以QQ邮箱为例
+开启smtp pop3服务
+![](/prometheus/email-setting.png)
+![](/prometheus/email-setting2.png) 照着操作即可，后面会弹框一个授权码，配置到上面的配置文件中
+然后就可以收到告警了：
+![](/prometheus/alert-email.png)
 
 ## 告警规则配置
-通过configmap下发告警规则, 用户仅需要写下面这种configmap即可
+prometheus operator自定义PrometheusRule crd去描述告警规则
 ```
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: prometheus-example-rules
-  labels:
-    role: prometheus-rulefiles    # 需要加这两个标签，operator才能识别到
-    prometheus: example
-data:
-  example.rules.yaml: |+
-    groups:
-    - name: ./example.rules
-      rules:
-      - alert: ExampleAlert
-        expr: vector(1)
+[root@dev-86-202 shell]# kubectl get PrometheusRule -n monitoring
+NAME                   AGE
+prometheus-k8s-rules   6m
 ```
 
-operator定义了一个叫Prometheus的CRD，告诉operator告警规则去哪些configmap取等等
+直接edit这个rule即可，也可以再自己去创建个PrometheusRule
 ```
-apiVersion: monitoring.coreos.com/v1
-kind: Prometheus
-metadata:
-  name: example
+kubectl edit PrometheusRule prometheus-k8s-rules -n monitoring
+```
+如我们在group里加一个告警：
+```
 spec:
-  replicas: 2
-  alerting:
-    alertmanagers:
-    - namespace: default
-      name: alertmanager-example
-      port: web
-  serviceMonitorSelector:
-    matchLabels:
-      team: frontend
-  resources:
-    requests:
-      memory: 400Mi
-  ruleSelector:             # 告警规则的label
-    matchLabels:
-      role: prometheus-rulefiles  # 上面configmap需要这俩label才可以
-      prometheus: example
+  groups:
+  - name: ./example.rules
+    rules:
+    - alert: ExampleAlert
+      expr: vector(1)
+  - name: k8s.rules
+    rules:
 ```
 
-可以看一个k8s已经部署的告警规则：
+重启prometheuspod:
+```
+kubectl delete pod prometheus-k8s-0 prometheus-k8s-1 -n monitoring
+```
+然后在界面上就可以看到新加的规则：
+![](prometheus/prometheus-rule.png)
 
-数据内容有点多，我就不全贴出来了
-```
-kubectl get configmap prometheus-k8s-rulefiles-0 -n monitoring -o yaml
-kind: ConfigMap
-metadata:
-  creationTimestamp: "2018-12-05T11:55:18Z"
-  labels:
-    managed-by: prometheus-operator   # 这里
-    prometheus-name: k8s
-  name: prometheus-k8s-rulefiles-0
-```
-
-不重要的内容我就删掉了
-```
-[root@dev-86-201 ~]# kubectl get Prometheus k8s -n monitoring -o yaml
-apiVersion: monitoring.coreos.com/v1
-kind: Prometheus
-metadata:
-  generation: 1
-  labels:
-    prometheus: k8s
-  name: k8s
-  namespace: monitoring
-spec:
-  alerting:
-    alertmanagers:
-    - name: alertmanager-main
-      namespace: monitoring
-      port: web
-  baseImage: quay.io/prometheus/prometheus
-  nodeSelector:
-    beta.kubernetes.io/os: linux
-  replicas: 2
-  resources:
-    requests:
-      memory: 400Mi
-  ruleSelector:
-    matchLabels:
-      prometheus: k8s   # 这里，貌似与上面匹配不上。。。
-      role: alert-rules
-```
 
 
 探讨可加QQ群：98488045
