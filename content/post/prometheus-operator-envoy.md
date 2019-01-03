@@ -200,8 +200,8 @@ base64解码一下：
 ```
 global:
   smtp_smarthost: 'smtp.qq.com:465'
-  smtp_from: '474785153@qq.com'
-  smtp_auth_username: '474785153@qq.com'
+  smtp_from: '5153@qq.com'
+  smtp_auth_username: '5153@qq.com'
   smtp_auth_password: 'xxx'       # 这个密码是开启smtp授权后生成的,下文有说怎么配置
   smtp_require_tls: false
 route:
@@ -215,7 +215,7 @@ route:
 receivers:
 - name: 'fanux'
   email_configs:
-  - to: '474785153@qq.com'
+  - to: '5153@qq.com'
     send_resolved: true
 ```
 delete掉老的secret，根据自己的配置重新生成secret即可
