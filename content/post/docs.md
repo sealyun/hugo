@@ -66,6 +66,9 @@ rm -rf /var/etcd
 # kubernetes高可用安装
 基本此安装包我们开发了[sealos](https://github.com/fanux/sealos)用于构建生产环境高可用的kubernetes集群，[文档地址](https://sealyun.com/post/sealos/)
 
+# 监控使用教程
+监控使用prometheus operator构建，更多信息请[参考](https://sealyun.com/post/prometheus-operator-envoy/)
+
 # sealyun公众号
 这里你能看到
 
