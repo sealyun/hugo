@@ -16,7 +16,7 @@ menu = ""           # set "main" to add this content to the main menu
 也就是如商品50元，别的用户通过您的链接购买成功，您可活的30元，平台获得20元
 
 # 操作步骤
-1. 获取营销链接
+1. 获取营销链接 [网站地址http://store.lameleg.com/](http://store.lameleg.com/)
 
 ![](/refe/sharelink.png)
 
