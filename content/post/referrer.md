@@ -20,6 +20,8 @@ menu = ""           # set "main" to add this content to the main menu
 
 ![](/refe/sharelink.png)
 
+红框里就是您的专属链接
+
 ![](/refe/sharelink1.png)
 
 2. 链接分享，这分享的方式由您来决定，如放到网站上，博客里，或是朋友圈，或者发QQ群等等
