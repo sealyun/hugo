@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2018-01-06T10:54:24+02:00"
+date = "2019-01-06T10:54:24+02:00"
 draft = false
 title = "关于sealyun营销系统"
 tags = ["event","dotScale","sketchnote"]
