@@ -442,3 +442,6 @@ kubeadm join的问题就是渲染配置时没有使用命令行传入的apiserve
 
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+### 微信群：
+![](/wechatgroup1.png)

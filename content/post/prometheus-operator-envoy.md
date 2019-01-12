@@ -268,3 +268,6 @@ kubectl delete pod prometheus-k8s-0 prometheus-k8s-1 -n monitoring
 
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+### 微信群：
+![](/wechatgroup1.png)

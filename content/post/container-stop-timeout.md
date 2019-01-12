@@ -108,3 +108,7 @@ CMD ["signal"]  # 不能写成 CMD signal, 这会直接exec，否则会以shell�
 
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+
+### 微信群：
+![](/wechatgroup1.png)

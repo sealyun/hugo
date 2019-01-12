@@ -197,3 +197,6 @@ spec is:  {1.0.0-rc5 {linux amd64} {true {0 0} {0 0 [] } [sh] [PATH=/usr/local/s
 
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+### 微信群：
+![](/wechatgroup1.png)

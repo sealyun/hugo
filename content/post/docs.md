@@ -80,3 +80,6 @@ rm -rf /var/etcd
 
 QQ群：98488045
 
+
+### 微信群：
+![](/wechatgroup1.png)

@@ -204,3 +204,6 @@ calico需要访问kubernets api server,找到pod的标签，所以需要配置ap
 ```
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+### 微信群：
+![](/wechatgroup1.png)

@@ -151,6 +151,10 @@ KUBELET_CGROUP_ARGS=–cgroup-driver=cgroupfs #这个配置与docker改成一致
 推荐指数：:star: 
 
 # QQ群：98488045
+
+# 微信群：
+![](/wechatgroup1.png)
+
 ## master 节点 (录屏加载较慢，别焦躁。。。)
 <script data-speed="3" src="https://asciinema.org/a/RZ3a74x8qE6DZy7jSjaDrLvYM.js" id="asciicast-RZ3a74x8qE6DZy7jSjaDrLvYM" async></script>
 

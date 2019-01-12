@@ -137,3 +137,6 @@ k8s_crts=["apiserver.crt","apiserver-kubelet-client.crt","ca.crt", "front-proxy-
 
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+### 微信群：
+![](/wechatgroup1.png)

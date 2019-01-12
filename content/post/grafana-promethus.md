@@ -27,3 +27,6 @@ menu = ""           # set "main" to add this content to the main menu
 
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+### 微信群：
+![](/wechatgroup1.png)

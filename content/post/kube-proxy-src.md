@@ -595,3 +595,6 @@ Service总体来讲代码比较简单，但是觉得有些地方实现的有点�
 
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+### 微信群：
+![](/wechatgroup1.png)

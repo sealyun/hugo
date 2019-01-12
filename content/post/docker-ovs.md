@@ -205,3 +205,6 @@ PING 192.168.0.3 (192.168.0.3) 56(84) bytes of data.
 
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+### 微信群：
+![](/wechatgroup1.png)

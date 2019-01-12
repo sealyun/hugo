@@ -12,6 +12,10 @@ menu = ""           # set "main" to add this content to the main menu
 +++
 
 ## 安装教程 QQ群:98488045
+
+### 微信群：
+![](/wechatgroup1.png)
+
 ### 注意事项
 1. 已经安装[sealyun k8s](https://sealyun.com/pro/products/)
 2. 安装socat(脚本里使用yum安装的，所以如果是离线环境自行搞定socat, ubuntu等也请自己装)

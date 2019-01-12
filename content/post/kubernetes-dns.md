@@ -26,3 +26,6 @@ kubernetes-dashboard   NodePort   10.110.146.248   <none>        443:30089/TCP  
 
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+### 微信群：
+![](/wechatgroup1.png)

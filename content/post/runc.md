@@ -179,3 +179,6 @@ Breakpoint 1 set at 0x6c8a0b for main.main() /go/src/github.com/opencontainers/r
 
 # 公众号：
 ![sealyun](https://sealyun.com/kubernetes-qrcode.jpg)
+
+### 微信群：
+![](/wechatgroup1.png)
