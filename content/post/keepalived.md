@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2018-10-10T10:54:24+02:00"
+date = "2019-01-10T10:54:24+02:00"
 draft = false
 title = "keepalived in docker"
 tags = ["event","dotScale","sketchnote"]
