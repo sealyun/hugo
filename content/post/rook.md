@@ -217,6 +217,21 @@ http://rook-prometheus.rook-ceph.svc.cluster.local:9090
 
 状态的都可以自动修复。 不过目前面临最大的挑战可能还是分布式存储的性能问题。  在性能要求不苛刻的场景下我是极推荐这种计算存储分离架构的。
 
+# 常见问题
+## ceph cluster无法启动
+报这个错误
+```
+$ kubectl logs rook-ceph-mon-a-c5f54799f-rd7s4 -n rook-ceph
+2019-01-27 11:04:59.985 7f0a34a4f140 -1 rocksdb: Invalid argument: /var/lib/rook/mon-a/data/store.db: does not exist (create_if_missing is false)
+2019-01-27 11:04:59.985 7f0a34a4f140 -1 rocksdb: Invalid argument: /var/lib/rook/mon-a/data/store.db: does not exist (create_if_missing is false)
+2019-01-27 11:04:59.985 7f0a34a4f140 -1 error opening mon data directory at '/var/lib/rook/mon-a/data': (22) Invalid argument
+2019-01-27 11:04:59.985 7f0a34a4f140 -1 error opening mon data directory at '/var/lib/rook/mon-a/data': (22) Invalid argument
+```
+需要把宿主机store.db文件删掉,然后delete pod即可, 主意别指错目录如果自己改了目录的话
+```
+rm -rf  /var/lib/rook/mon-a/data/store.db
+```
+
 
 探讨可加QQ群：98488045
 
