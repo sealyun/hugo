@@ -175,6 +175,39 @@ NAME              TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
 wordpress         NodePort    10.109.30.99   <none>        80:30130/TCP   148m
 ```
 
+# ceph集群监控
+通过prometheus operator配合rook可以快速构建ceph集群的监控，sealyun安装包中已经自带了prometheus operator，所以直接干即可
+
+## 启动ceph prometheus
+注意这里是为ceph单独起了一个prometheus，这样做挺好，因为毕竟可以缓解prometheus单点的压力
+```
+cd cluster/examples/kubernetes/ceph/monitoring
+kubectl create -f service-monitor.yaml
+kubectl create -f prometheus.yaml
+kubectl create -f prometheus-service.yaml
+```
+
+然后我们的grafana在30000端口，先在grafana上添加数据源
+
+![](/ceph/data-source.png)
+
+数据源要配置成：
+```
+http://rook-prometheus.rook-ceph.svc.cluster.local:9090
+```
+
+## 导入dashboard
+![](/ceph/import1.png)
+![](/ceph/import2.png)
+![](/ceph/import3.png)
+
+还有几个别的dashboard可以导入：
+[Ceph - Cluster](https://grafana.com/dashboards/2842)
+[Ceph - OSD](https://grafana.com/dashboards/5336)
+[Ceph - Pools](https://grafana.com/dashboards/5342)
+
+再次感叹生态之强大
+
 # 总结
 分布式存储在容器集群中充当非常重要的角色，使用容器集群一个非常重要的理念就是把集群当成一个整体使用，如果你在使用中还关心单个主机，比如调度到某个节点，
 
