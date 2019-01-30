@@ -175,6 +175,14 @@ NAME              TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
 wordpress         NodePort    10.109.30.99   <none>        80:30130/TCP   148m
 ```
 
+# 外部访问ceph集群
+cluster.yaml里有配置，可配置成共享宿主机网络，这样外面可直接连接ceph集群：
+```
+  network:
+    # toggle to use hostNetwork
+    hostNetwork: false
+```
+
 # ceph集群监控
 通过prometheus operator配合rook可以快速构建ceph集群的监控，sealyun安装包中已经自带了prometheus operator，所以直接干即可
 
