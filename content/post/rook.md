@@ -208,6 +208,193 @@ http://rook-prometheus.rook-ceph.svc.cluster.local:9090
 
 再次感叹生态之强大
 
+# 性能测试 
+这里着重说明测试方法，给出在我的场景下的测试结果，用户应当根据自己的场景进行自己的测试。
+
+## 测试环境
+我这里使用阿里云服务器，挂载了一个1000G的磁盘，不过我实际测试时用的盘很少（盘大太慢）
+```
+[root@izj6c3afuzdjhtkj156zt0z ~]# df -h|grep dev
+devtmpfs        3.9G     0  3.9G    0% /dev
+tmpfs           3.9G     0  3.9G    0% /dev/shm
+/dev/vda1        40G   17G   21G   44% /
+/dev/vdb1       985G   41G  895G    5% /data   
+/dev/rbd0       296G  2.1G  294G    1% /var/lib/kubelet/plugins/ceph.rook.io/rook-ceph-system/mounts/pvc-692e2be3-2434-11e9-aef7-00163e01e813
+```
+可看到一个本地盘和一个ceph挂过来的盘
+
+先搞个fio的镜像
+```
+[root@izj6c3afuzdjhtkj156zt0z fio]# cat Dockerfile
+FROM docker.io/centos:7.6.1810
+RUN yum install -y fio
+```
+
+测试容器，稍微改一下mysql的yaml:
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: wordpress
+spec:
+  storageClassName: rook-ceph-block
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 300Gi
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: wordpress-mysql
+  labels:
+    app: wordpress
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: mysql
+    spec:
+      containers:
+      - image: fio:latest
+        imagePullPolicy: IfNotPresent
+        command: ["sleep", "10000000"]
+        name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+```
+## 测试过程
+进入到容器内跑测试工具：
+```
+$ kubectl exec -it wordpress-mysql-775c44887c-5vhx9 bash
+
+# touch /var/lib/mysql/test # 创建测试文件
+# fio -filename=/var/lib/mysql/test -direct=1 -iodepth=128 -rw=randrw -ioengine=libaio -bs=4k -size=200G -numjobs=8 -runtime=100 -group_reporting -name=Rand_Write_Testing
+```
+结果：
+```
+Rand_Write_Testing: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=128
+...
+fio-3.1
+Starting 2 processes
+Rand_Write_Testing: Laying out IO file (1 file / 2048MiB)
+Jobs: 2 (f=2): [m(2)][100.0%][r=16.6MiB/s,w=17.2MiB/s][r=4240,w=4415 IOPS][eta 00m:00s]
+Rand_Write_Testing: (groupid=0, jobs=2): err= 0: pid=34: Wed Jan 30 02:44:18 2019
+   read: IOPS=3693, BW=14.4MiB/s (15.1MB/s)(1443MiB/100013msec)
+    slat (usec): min=2, max=203952, avg=262.47, stdev=2107.16
+    clat (msec): min=3, max=702, avg=30.85, stdev=30.97
+     lat (msec): min=3, max=702, avg=31.11, stdev=31.21
+    clat percentiles (msec):
+     |  1.00th=[   12],  5.00th=[   14], 10.00th=[   16], 20.00th=[   18],
+     | 30.00th=[   20], 40.00th=[   22], 50.00th=[   24], 60.00th=[   27],
+     | 70.00th=[   30], 80.00th=[   36], 90.00th=[   46], 95.00th=[   64],
+     | 99.00th=[  194], 99.50th=[  213], 99.90th=[  334], 99.95th=[  397],
+     | 99.99th=[  502]
+   bw (  KiB/s): min=  440, max=12800, per=49.98%, avg=7383.83, stdev=3004.90, samples=400
+   iops        : min=  110, max= 3200, avg=1845.92, stdev=751.22, samples=400
+  write: IOPS=3700, BW=14.5MiB/s (15.2MB/s)(1446MiB/100013msec)
+    slat (usec): min=2, max=172409, avg=266.11, stdev=2004.53
+    clat (msec): min=7, max=711, avg=37.85, stdev=37.52
+     lat (msec): min=7, max=711, avg=38.12, stdev=37.72
+    clat percentiles (msec):
+     |  1.00th=[   16],  5.00th=[   19], 10.00th=[   21], 20.00th=[   23],
+     | 30.00th=[   25], 40.00th=[   27], 50.00th=[   29], 60.00th=[   32],
+     | 70.00th=[   36], 80.00th=[   42], 90.00th=[   53], 95.00th=[   73],
+     | 99.00th=[  213], 99.50th=[  292], 99.90th=[  397], 99.95th=[  472],
+     | 99.99th=[  600]
+   bw (  KiB/s): min=  536, max=12800, per=49.98%, avg=7397.37, stdev=3000.10, samples=400
+   iops        : min=  134, max= 3200, avg=1849.32, stdev=750.02, samples=400
+  lat (msec)   : 4=0.01%, 10=0.22%, 20=22.18%, 50=68.05%, 100=5.90%
+  lat (msec)   : 250=3.09%, 500=0.54%, 750=0.02%
+  cpu          : usr=1.63%, sys=4.68%, ctx=311249, majf=0, minf=18
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, >=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.1%
+     issued rwt: total=369395,370084,0, short=0,0,0, dropped=0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=128
+
+Run status group 0 (all jobs):
+   READ: bw=14.4MiB/s (15.1MB/s), 14.4MiB/s-14.4MiB/s (15.1MB/s-15.1MB/s), io=1443MiB (1513MB), run=100013-100013msec
+  WRITE: bw=14.5MiB/s (15.2MB/s), 14.5MiB/s-14.5MiB/s (15.2MB/s-15.2MB/s), io=1446MiB (1516MB), run=100013-100013msec
+
+Disk stats (read/write):
+  rbd0: ios=369133/369841, merge=0/35, ticks=4821508/7373587, in_queue=12172273, util=99.93%
+```
+
+在宿主机上测试：
+```
+$ touch /data/test
+$ fio -filename=/data/test -direct=1 -iodepth=128 -rw=randrw -ioengine=libaio -bs=4k -size=2G -numjobs=2 -runtime=100 -group_reporting -name=Rand_Write_Testing
+```
+```
+Rand_Write_Testing: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=128
+...
+fio-3.1
+Starting 2 processes
+Rand_Write_Testing: Laying out IO file (1 file / 2048MiB)
+Jobs: 2 (f=2): [m(2)][100.0%][r=19.7MiB/s,w=19.8MiB/s][r=5043,w=5056 IOPS][eta 00m:00s]
+Rand_Write_Testing: (groupid=0, jobs=2): err= 0: pid=13588: Wed Jan 30 10:41:25 2019
+   read: IOPS=5024, BW=19.6MiB/s (20.6MB/s)(1963MiB/100019msec)
+    slat (usec): min=2, max=80213, avg=191.32, stdev=2491.48
+    clat (usec): min=1022, max=176786, avg=19281.58, stdev=23666.08
+     lat (usec): min=1031, max=176791, avg=19473.50, stdev=23757.08
+    clat percentiles (msec):
+     |  1.00th=[    3],  5.00th=[    4], 10.00th=[    5], 20.00th=[    6],
+     | 30.00th=[    7], 40.00th=[    8], 50.00th=[    9], 60.00th=[   10],
+     | 70.00th=[   12], 80.00th=[   25], 90.00th=[   67], 95.00th=[   73],
+     | 99.00th=[   81], 99.50th=[   85], 99.90th=[   93], 99.95th=[   96],
+     | 99.99th=[  104]
+   bw (  KiB/s): min= 9304, max=10706, per=49.99%, avg=10046.66, stdev=243.04, samples=400
+   iops        : min= 2326, max= 2676, avg=2511.62, stdev=60.73, samples=400
+  write: IOPS=5035, BW=19.7MiB/s (20.6MB/s)(1967MiB/100019msec)
+    slat (usec): min=3, max=76025, avg=197.61, stdev=2504.40
+    clat (msec): min=2, max=155, avg=31.21, stdev=27.12
+     lat (msec): min=2, max=155, avg=31.40, stdev=27.16
+    clat percentiles (msec):
+     |  1.00th=[    7],  5.00th=[    9], 10.00th=[   10], 20.00th=[   11],
+     | 30.00th=[   13], 40.00th=[   14], 50.00th=[   15], 60.00th=[   18],
+     | 70.00th=[   48], 80.00th=[   68], 90.00th=[   75], 95.00th=[   80],
+     | 99.00th=[   88], 99.50th=[   93], 99.90th=[  102], 99.95th=[  104],
+     | 99.99th=[  112]
+   bw (  KiB/s): min= 9208, max=10784, per=49.98%, avg=10066.14, stdev=214.26, samples=400
+   iops        : min= 2302, max= 2696, avg=2516.50, stdev=53.54, samples=400
+  lat (msec)   : 2=0.04%, 4=3.09%, 10=34.76%, 20=33.31%, 50=5.05%
+  lat (msec)   : 100=23.67%, 250=0.08%
+  cpu          : usr=1.54%, sys=5.80%, ctx=286367, majf=0, minf=20
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, >=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.1%
+     issued rwt: total=502523,503598,0, short=0,0,0, dropped=0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=128
+
+Run status group 0 (all jobs):
+   READ: bw=19.6MiB/s (20.6MB/s), 19.6MiB/s-19.6MiB/s (20.6MB/s-20.6MB/s), io=1963MiB (2058MB), run=100019-100019msec
+  WRITE: bw=19.7MiB/s (20.6MB/s), 19.7MiB/s-19.7MiB/s (20.6MB/s-20.6MB/s), io=1967MiB (2063MB), run=100019-100019msec
+
+Disk stats (read/write):
+  vdb: ios=502513/504275, merge=0/658, ticks=4271124/7962372, in_queue=11283349, util=92.48%
+```
+这里看到随机读写性能损失约 27%多，这个结论并没有太多参考意义，用户应当根据自己实际场景进行测试
+
+要想排除在容器内测试因素的影响，也可以直接在宿主机上对块设备进行测试，做法很简单，可以把块挂到别的目录上如：
+```
+umount /dev/rbd0
+mkdir /data1
+mount /dev/rbd0 /data1
+touch /data1/test  # 然后对这个文件测试，我这边测试结果与容器内差不多
+```
+
 # 总结
 分布式存储在容器集群中充当非常重要的角色，使用容器集群一个非常重要的理念就是把集群当成一个整体使用，如果你在使用中还关心单个主机，比如调度到某个节点，
 
@@ -218,6 +405,11 @@ http://rook-prometheus.rook-ceph.svc.cluster.local:9090
 状态的都可以自动修复。 不过目前面临最大的挑战可能还是分布式存储的性能问题。  在性能要求不苛刻的场景下我是极推荐这种计算存储分离架构的。
 
 # 常见问题
+注意主机时间一定要同步
+```
+ntpdate 0.asia.pool.ntp.org
+```
+
 ## ceph cluster无法启动
 报这个错误
 ```
@@ -232,6 +424,27 @@ $ kubectl logs rook-ceph-mon-a-c5f54799f-rd7s4 -n rook-ceph
 rm -rf  /var/lib/rook/mon-a/data/store.db
 ```
 
+## rook删除PVC PV依然存在
+因为storageclass回收参数：
+```
+reclaimPolicy: Retain  # 设置成Delete即可
+```
+
+## rook-ceph namespace无法删除 cephclusters.ceph.rook.io CRD无法删除
+```
+[root@izj6c3afuzdjhtkj156zt0z ~]# kubectl get ns
+NAME          STATUS        AGE
+default       Active        18h
+kube-public   Active        18h
+kube-system   Active        18h
+monitoring    Active        18h
+rook-ceph     Terminating   17h
+```
+
+把CRD metadata finalizers下面的内容删了，CRD就会自动删除，然后只要rook-ceph namespace里没有东西就会自动清理掉
+```
+$ kubectl edit crd cephclusters.ceph.rook.io
+```
 
 探讨可加QQ群：98488045
 
