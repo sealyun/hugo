@@ -27,6 +27,20 @@ menu = ""           # set "main" to add this content to the main menu
 
 部分版本定制过kubeadm证书过期时间调整到99年,默认是一年，一年后不更新证书集群就不可用
 
+## 展示
+官方dashboard
+![](/show/dashboard.png)
+![](/show/dashboard1.png)
+![](/show/dashboard3.png)
+
+集群监控
+![](/show/prometheus.png)
+![](/show/prometheus1.png)
+![](/show/prometheus2.png)
+
+ceph监控，依赖rook,包内暂时不包含
+![](/show/moni-ceph.png)
+
 # kubernetes安装文档
 安装包中不包含docker，如没装docker 请先安装之`yum install -y docker`
 
