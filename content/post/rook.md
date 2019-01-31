@@ -450,6 +450,55 @@ storage:
     devices:
     - name: "vdf"
 ```
+bluestore模式能显著提升ceph性能，我这边测试随机读写性能提升了8%左右
+```
+Rand_Write_Testing: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=128
+...
+fio-3.1
+Starting 2 processes
+Rand_Write_Testing: Laying out IO file (1 file / 2048MiB)
+Jobs: 2 (f=2): [m(2)][100.0%][r=16.4MiB/s,w=16.7MiB/s][r=4189,w=4284 IOPS][eta 00m:00s]]
+Rand_Write_Testing: (groupid=0, jobs=2): err= 0: pid=25: Thu Jan 31 11:37:39 2019
+   read: IOPS=3990, BW=15.6MiB/s (16.3MB/s)(1566MiB/100464msec)
+    slat (usec): min=2, max=246625, avg=239.16, stdev=1067.33
+    clat (msec): min=2, max=493, avg=27.68, stdev=16.71
+     lat (msec): min=2, max=493, avg=27.92, stdev=16.75
+    clat percentiles (msec):
+     |  1.00th=[   12],  5.00th=[   15], 10.00th=[   16], 20.00th=[   18],
+     | 30.00th=[   20], 40.00th=[   22], 50.00th=[   24], 60.00th=[   27],
+     | 70.00th=[   30], 80.00th=[   35], 90.00th=[   45], 95.00th=[   54],
+     | 99.00th=[   74], 99.50th=[   84], 99.90th=[  199], 99.95th=[  334],
+     | 99.99th=[  485]
+   bw (  KiB/s): min= 2118, max=10456, per=50.20%, avg=8013.40, stdev=1255.78, samples=400
+   iops        : min=  529, max= 2614, avg=2003.31, stdev=313.95, samples=400
+  write: IOPS=3997, BW=15.6MiB/s (16.4MB/s)(1569MiB/100464msec)
+    slat (usec): min=3, max=273211, avg=246.87, stdev=1026.98
+    clat (msec): min=11, max=499, avg=35.90, stdev=18.04
+     lat (msec): min=12, max=506, avg=36.15, stdev=18.08
+    clat percentiles (msec):
+     |  1.00th=[   19],  5.00th=[   22], 10.00th=[   23], 20.00th=[   26],
+     | 30.00th=[   28], 40.00th=[   30], 50.00th=[   33], 60.00th=[   35],
+     | 70.00th=[   39], 80.00th=[   44], 90.00th=[   54], 95.00th=[   63],
+     | 99.00th=[   85], 99.50th=[   95], 99.90th=[  309], 99.95th=[  351],
+     | 99.99th=[  489]
+   bw (  KiB/s): min= 2141, max=10163, per=50.20%, avg=8026.23, stdev=1251.78, samples=400
+   iops        : min=  535, max= 2540, avg=2006.51, stdev=312.94, samples=400
+  lat (msec)   : 4=0.01%, 10=0.10%, 20=16.63%, 50=73.71%, 100=9.25%
+  lat (msec)   : 250=0.22%, 500=0.09%
+  cpu          : usr=1.85%, sys=5.60%, ctx=366744, majf=0, minf=17
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, >=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.1%
+     issued rwt: total=400928,401597,0, short=0,0,0, dropped=0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=128
+
+Run status group 0 (all jobs):
+   READ: bw=15.6MiB/s (16.3MB/s), 15.6MiB/s-15.6MiB/s (16.3MB/s-16.3MB/s), io=1566MiB (1642MB), run=100464-100464msec
+  WRITE: bw=15.6MiB/s (16.4MB/s), 15.6MiB/s-15.6MiB/s (16.4MB/s-16.4MB/s), io=1569MiB (1645MB), run=100464-100464msec
+
+Disk stats (read/write):
+  rbd0: ios=400921/401817, merge=0/50, ticks=4341605/7883816, in_queue=12217335, util=99.96%
+```
 
 # 总结
 分布式存储在容器集群中充当非常重要的角色，使用容器集群一个非常重要的理念就是把集群当成一个整体使用，如果你在使用中还关心单个主机，比如调度到某个节点，
