@@ -11,6 +11,9 @@ menu = ""           # set "main" to add this content to the main menu
 
 > [kubernetes集群三步安装](https://sealyun.com/pro/products/)
 
+本文中需要用的yaml文件和Dockerfile等都放到这个[仓库](https://github.com/sealyun/rook)
+包含：rook operator ceph cluster storage class配置，mysql wordpress事例，性能测试fio Dockerfile与yaml等
+
 # 安装
 ```
 git clone https://github.com/rook/rook
@@ -395,7 +398,10 @@ Disk stats (read/write):
 ```
 这里看到随机读写性能损失约 27%多，这个结论并没有太多参考意义，用户应当根据自己实际场景进行测试
 
+改用ceph共享宿主机网络模式进行测试，结果差不多，并无性能提升
+
 要想排除在容器内测试因素的影响，也可以直接在宿主机上对块设备进行测试，做法很简单，可以把块挂到别的目录上如：
+
 ```
 umount /dev/rbd0
 mkdir /data1
