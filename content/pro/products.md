@@ -10,26 +10,15 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
-<<<<<<< HEAD
 > kubernetes安装全网最简单，没有之一，支持高可用安装，监控，dashboard等, 组件齐全，版本齐全,完全离线,优质售后服务
 
 # 购买方式
 
-[官方市场](http://store.lameleg.com/) 
+[官方市场 (荐)](http://store.lameleg.com/) 
 
 OR 
 
 [阿里云市场](https://shop929htt07.market.aliyun.com/page/productlist.html?cId=53366009)
-=======
-# 安装包获取方式 
-
-官方销售市场：http://store.lameleg.com/  
-[kubernetes安装包store](http://store.lameleg.com/) 
-
-or 
-
-[阿里云市场](https://shop929htt07.market.aliyun.com/page/productlist.htm)
->>>>>>> 4c5adc38a416b8dba2ee442f298e8011d2a5db35
 
 # kubernetes离线包安装教程：
 安装包中不包含docker，如没装docker 请先安装之`yum install -y docker`
