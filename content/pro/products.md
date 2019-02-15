@@ -10,19 +10,15 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
-# 官方销售市场：http://store.lameleg.com/  
-[kubernetes安装包store](http://store.lameleg.com/) 
+> kubernetes安装全网最简单，没有之一，支持高可用安装，监控，dashboard等, 组件齐全，版本齐全,完全离线,优质售后服务
 
-## [kubernetes 1.13.1安装包地址](http://store.lameleg.com/)  
+# 购买方式
 
-# sealyun公众号
-这里你能看到
+[官方市场](http://store.lameleg.com/) 
 
-* kubernetes一些深入的分析如各块的源码解析
-* 我们遇到的坑,大规模实践k8s时一些小细节 版本选择，各版本的坑，内核如何选择，存储与网络虚拟化方案等
-* 短文介绍一些小知识,如一些偏门小命令，又如集群证书更新，kubeadm如何配置，scheduler如何做一些扩展等
+OR 
 
-![](/kubernetes-qrcode.jpg)
+[阿里云市场](https://shop929htt07.market.aliyun.com/page/productlist.html?cId=53366009)
 
 # kubernetes离线包安装教程：
 安装包中不包含docker，如没装docker 请先安装之`yum install -y docker`
@@ -149,6 +145,15 @@ KUBELET_CGROUP_ARGS=–cgroup-driver=cgroupfs #这个配置与docker改成一致
 ## [kubernetes1.8.1离线安装包](https://market.aliyun.com/products/56014009/cmxz022571.html?spm=5176.730005.productlist.dcmxz022571.r9c1J1#sku=yuncode1657100000) 推荐使用1.9.2以上版本  |  售价 50元
 
 推荐指数：:star: 
+
+# sealyun公众号
+这里你能看到
+
+* kubernetes一些深入的分析如各块的源码解析
+* 我们遇到的坑,大规模实践k8s时一些小细节 版本选择，各版本的坑，内核如何选择，存储与网络虚拟化方案等
+* 短文介绍一些小知识,如一些偏门小命令，又如集群证书更新，kubeadm如何配置，scheduler如何做一些扩展等
+
+![](/kubernetes-qrcode.jpg)
 
 # QQ群：98488045
 

@@ -11,6 +11,9 @@ menu = ""           # set "main" to add this content to the main menu
 
 > [kubernetes集群三步安装](https://sealyun.com/pro/products/)
 
+本文中需要用的yaml文件和Dockerfile等都放到这个[仓库](https://github.com/sealyun/rook)
+包含：rook operator ceph cluster storage class配置，mysql wordpress事例，性能测试fio Dockerfile与yaml等
+
 # 安装
 ```
 git clone https://github.com/rook/rook
@@ -216,6 +219,26 @@ http://rook-prometheus.rook-ceph.svc.cluster.local:9090
 
 再次感叹生态之强大
 
+# 增加节点,删除节点
+```
+kubectl edit cephcluster rook-ceph -n rook-ceph
+```
+把useAllNodes设置成false，然后在nodes列表里增加节点名即可，保存退出后会自动增加ceph节点
+```
+    nodes:
+    - config: null
+      name: izj6c3afuzdjhtkj156zt0z
+      resources: {}
+    - config: null
+      name: izj6cg4wnagly61eny0hy9z
+      resources: {}
+    - config: null
+      name: izj6cg4wnagly61eny0hyaz
+      resources: {}
+    useAllDevices: false
+```
+删除同理，直接edit删除即可，十分强大
+
 # 性能测试 
 这里着重说明测试方法，给出在我的场景下的测试结果，用户应当根据自己的场景进行自己的测试。
 
@@ -395,12 +418,37 @@ Disk stats (read/write):
 ```
 这里看到随机读写性能损失约 27%多，这个结论并没有太多参考意义，用户应当根据自己实际场景进行测试
 
+改用ceph共享宿主机网络模式进行测试，结果差不多，并无性能提升
+
 要想排除在容器内测试因素的影响，也可以直接在宿主机上对块设备进行测试，做法很简单，可以把块挂到别的目录上如：
+
 ```
 umount /dev/rbd0
 mkdir /data1
 mount /dev/rbd0 /data1
 touch /data1/test  # 然后对这个文件测试，我这边测试结果与容器内差不多
+```
+
+# bluestore方式
+直接使用裸盘而不使用分区或者文件系统的方式部署ceph
+```
+storage:
+  useAllNodes: false
+  useAllDevices: false
+  deviceFilter:
+  location:
+  config:
+    storeType: bluestore
+  nodes:
+  - name: "ke-dev1-worker1"
+    devices:
+    - name: "vde"
+  - name: "ke-dev1-worker3"
+    devices:
+    - name: "vde"
+  - name: "ke-dev1-worker4"
+    devices:
+    - name: "vdf"
 ```
 
 # 总结
@@ -452,6 +500,18 @@ rook-ceph     Terminating   17h
 把CRD metadata finalizers下面的内容删了，CRD就会自动删除，然后只要rook-ceph namespace里没有东西就会自动清理掉
 ```
 $ kubectl edit crd cephclusters.ceph.rook.io
+```
+
+## 使用宿主机网络时集群无法正常启动
+集群中单节点时把mon设置成1即可
+```
+  mon:
+    count: 1
+    allowMultiplePerNode: true
+
+  network:
+    # toggle to use hostNetwork
+    hostNetwork: true
 ```
 
 探讨可加QQ群：98488045
