@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>容器网络概述 - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="fanux" /><meta name="description" content="网络概述 端口映射： 1 $ docker run -p 8080:80 nginx:latest 如果没有这个-p，会发现启动了nginx但是无法通过宿主机访问到web服务，而使用了-p参数后就可以通过访问" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/docker-network/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="容器网络概述" />
+<meta property="og:description" content="网络概述 端口映射： 1 $ docker run -p 8080:80 nginx:latest 如果没有这个-p，会发现启动了nginx但是无法通过宿主机访问到web服务，而使用了-p参数后就可以通过访问" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/docker-network/" />
+<meta property="article:published_time" content="2016-07-11T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2016-07-11T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="容器网络概述">
+<meta itemprop="description" content="网络概述 端口映射： 1 $ docker run -p 8080:80 nginx:latest 如果没有这个-p，会发现启动了nginx但是无法通过宿主机访问到web服务，而使用了-p参数后就可以通过访问">
+
+
+<meta itemprop="datePublished" content="2016-07-11T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2016-07-11T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="2509">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="容器网络概述"/>
+<meta name="twitter:description" content="网络概述 端口映射： 1 $ docker run -p 8080:80 nginx:latest 如果没有这个-p，会发现启动了nginx但是无法通过宿主机访问到web服务，而使用了-p参数后就可以通过访问"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">容器网络概述</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-07-11 </span>
+        
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#网络概述">网络概述</a>
+<ul>
+<li><a href="#bridge原理">bridge原理</a></li>
+</ul></li>
+<li><a href="#network-namespace实践">network namespace实践</a>
+<ul>
+<li><a href="#使用ip操作docker-net-namespace">使用ip操作docker net namespace</a></li>
+<li><a href="#docker-bridge的网络">Docker bridge的网络</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#ip-netns-list">ip netns list</a>
+<ul>
+<li>
+<ul>
+<li><a href="#bridge实现源码解析">bridge实现源码解析</a>
+<ul>
+<li><a href="#docker0网桥的建立">docker0网桥的建立</a></li>
+<li><a href="#创建容器时宿主机上的网络操作">创建容器时宿主机上的网络操作</a></li>
+<li><a href="#创建容器时容器内部的网络操作">创建容器时容器内部的网络操作</a></li>
+</ul></li>
+<li><a href="#overlay网络代表flannel原理">overlay网络代表flannel原理</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#公众号">公众号：</a>
+<ul>
+<li>
+<ul>
+<li><a href="#微信群">微信群：</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="网络概述">网络概述</h2>
+
+<ol>
+<li><p>端口映射：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ docker run -p 8080:80 nginx:latest</pre></td></tr></table>
+</div>
+</div>
+<p>如果没有这个-p，会发现启动了nginx但是无法通过宿主机访问到web服务，而使用了-p参数后就可以通过访问主机的8080断开去访问nginx了。
+端口映射的原理是作了net转发</p></li>
+
+<li><p>共享主机网络:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ docker run --net=host nginx:latest</pre></td></tr></table>
+</div>
+</div>
+<p>这种容器没有自己的网络，完全共享主机的网络，所以可以通过主机ip直接访问容器服务。 坏处是容器与其它容器端口冲突</p></li>
+
+<li><p>link网络</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ docker run --name mysql mysql:latest
+$ docker run --link=mysql nginx:latest</pre></td></tr></table>
+</div>
+</div>
+<p>这样nginx可以通过容器名去访问mysql，其原理是在nginx容器中的/etc/hosts中加入了mysql主机名解析。这种共享不可跨主机</p></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ docker run --rm -it --name c1 centos:latest /bin/bash</pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">$ docker run --rm -it --name c2 --link c1  centos:latest /bin/bash
+[root@178d290d873c /]# cat /etc/hosts
+127.0.0.1    localhost
+::1    localhost ip6-localhost ip6-loopback
+fe00::0    ip6-localnet
+ff00::0    ip6-mcastprefix
+ff02::1    ip6-allnodes
+ff02::2    ip6-allrouters
+172.17.0.4    c1 3b7b15fa7e20   # 看这里
+172.17.0.5    178d290d873c</pre></td></tr></table>
+</div>
+</div>
+<ol>
+<li><p>none模式
+容器不创建网络，需要自行定义</p></li>
+
+<li><p>overlay网络
+进群中常用的网络模式，使用vxlan等技术作了一层覆盖，使每个容器有自己独立的ip并可跨主机通信。</p></li>
+
+<li><p>共享容器网络</p></li>
+</ol>
+
+<p>如kubernetes里pod的实现，pod是多个容器的集合，这些容器都共享了同一个容器的网络，那么这些容器就如同在一个host上一样。</p>
+
+<h3 id="bridge原理">bridge原理</h3>
+
+<p>在宿主机上ifconfig:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">docker0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 0.0.0.0
+        inet6 fe80::42:a4ff:fe60:b79d  prefixlen 64  scopeid 0x20&lt;link&gt;
+        ether 02:42:a4:60:b7:9d  txqueuelen 0  (Ethernet)
+        RX packets 23465  bytes 3407255 (3.2 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 24676  bytes 22031766 (21.0 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+vethcd2d45d: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet6 fe80::c4d6:dcff:fe7d:5f44  prefixlen 64  scopeid 0x20&lt;link&gt;
+        ether c6:d6:dc:7d:5f:44  txqueuelen 0  (Ethernet)
+        RX packets 415  bytes 82875 (80.9 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 372  bytes 379450 (370.5 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</pre></td></tr></table>
+</div>
+</div>
+<p>docker0是一个虚拟网桥，类似一个交换机的存在。 veth开头的网卡就是为容器分配的一个设备,但是要注意这不是容器中的设备。由于linux物理网卡只能出现在一个namespace中，所以只能用虚拟设备给容器创建独立的网卡。</p>
+
+<p>docker network inspect bridge 看一下,这是给容器内部分配的地址：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&#34;Containers&#34;: {
+    &#34;ac8c983592f06d585a75184b4dcd012338645fb7fa60b07c722f59ce43ceb807&#34;: {
+        &#34;Name&#34;: &#34;sick_snyder&#34;,
+        &#34;EndpointID&#34;: &#34;0755707344f30c40d686a2b4fdcabf45d6e1a64f8de8618b9a3a8c8e5b203ddc&#34;,
+        &#34;MacAddress&#34;: &#34;02:42:ac:11:00:02&#34;,
+        &#34;IPv4Address&#34;: &#34;172.17.0.2/16&#34;,
+        &#34;IPv6Address&#34;: &#34;&#34;
+    }
+}</pre></td></tr></table>
+</div>
+</div>
+<p>再引入一个概念：linux设备对，类似管道一样，在一端写另一端就可以读,容器内的eth0就与这个veth是一对设备对</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">           docker0         eth0 -&gt; 宿主机
+        ---------------    ----
+         |          |
+        vethx      vethy
+        ----       ----
+          |          |    ----&gt;设备对
+     +----+---+ +----+---+
+     |  eth0  | |  eth0  |
+     +--------+ +--------+
+      容器1       容器2</pre></td></tr></table>
+</div>
+</div>
+<p>单有这些还不够，还需要iptables对包作一些处理,下文细说。有了这些理论，再去顺着这个思路去读网络模块的代码</p>
+
+<h2 id="network-namespace实践">network namespace实践</h2>
+
+<h3 id="使用ip操作docker-net-namespace">使用ip操作docker net namespace</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">docker inspect --format &#39;{{ .State.Pid }}&#39; test1
+mkdir /var/run/netns   # ip命令的网络命名空间
+ln -s /proc/1231221/ns/net /var/run/netns/test1
+ip netns list
+ip netns exec test1 ip link</pre></td></tr></table>
+</div>
+</div>
+<p>使用ip命令，如果没有的话安装一下：<code>yum install net-tools</code></p>
+
+<p>基本命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ip netns add nstest  # 创建一个net namespace
+ip netns list        # 查看net namespace列表
+ip netns delete nstest # 删除
+ip netns exec [ns name] command # 到对应的ns里去执行命令
+ip netns exec [ns name] bash # 在ns中使用bash,需要要ns中做一系列操作时方便</pre></td></tr></table>
+</div>
+</div>
+<p>开启ns中的回环设备,以创建的nstest为例</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ip netns exec nstest ip link set dev lo up</pre></td></tr></table>
+</div>
+</div>
+<p>在主机上创建两个虚拟网卡两张网卡是linux设备对</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ip link set add veth-a type veth peer name veth-b</pre></td></tr></table>
+</div>
+</div>
+<p>添加veth-b到nstest中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ip link set veth-b netns nstest</pre></td></tr></table>
+</div>
+</div>
+<p>验证：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@dev-86-208 ~]# ip netns exec nstest ip link
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+251: veth-b@if252: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN mode DEFAULT qlen 1000
+    link/ether aa:0a:7d:01:06:d3 brd ff:ff:ff:ff:ff:ff link-netnsid 0</pre></td></tr></table>
+</div>
+</div>
+<p>为网卡设置ip并启动：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@dev-86-208 ~]# ip addr add 10.0.0.1/24 dev veth-a
+[root@dev-86-208 ~]# ip link set dev veth-a up
+
+[root@dev-86-208 ~]# ip netns exec nstest ip addr add 10.0.0.2/24 dev veth-b
+[root@dev-86-208 ~]# ip netns exec nstest ip link set dev veth-b up
+
+设置完ip，自动添加了这个路由
+[root@dev-86-208 ~]# route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         10.1.86.1       0.0.0.0         UG    100    0        0 eth0
+10.0.0.0        0.0.0.0         255.255.255.0   U     0      0        0 veth-a # 目的地址是10.0.0.0/24的就从这张网卡发出
+10.1.86.0       0.0.0.0         255.255.255.0   U     100    0        0 eth0
+172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
+172.18.0.0      0.0.0.0         255.255.0.0     U     0      0        0 br-4b03f208bc30
+
+ns里面的路由表
+[root@dev-86-208 ~]# ip netns exec nstest ip route
+10.0.0.0/24 dev veth-b  proto kernel  scope link  src 10.0.0.2</pre></td></tr></table>
+</div>
+</div>
+<p>验证相互ping：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@dev-86-208 ~]# ip netns exec nstest ping 10.0.0.1
+PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
+64 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.043 ms
+64 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.032 ms
+
+[root@dev-86-208 ~]# ping 10.0.0.2
+PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
+64 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.069 ms
+64 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.024 ms</pre></td></tr></table>
+</div>
+</div>
+<h3 id="docker-bridge的网络">Docker bridge的网络</h3>
+
+<p>我们去创建两个ns（ns1 与 ns2）模拟两个容器，创建四张网卡（两对设备对）模仿容器网卡。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"> brtest
+   |          +-------------+
+   |-veth1 &lt;--|--&gt; eth1 ns1 |  
+   |          |-------------+
+   |-veth2 &lt;--|--&gt; eth1 ns2 |  
+   |          +-------------+
+````
+再在宿主机上创建一个网桥brtest模拟docker0网桥，将veth1和veth2桥接到上面。
+
+添加namespace:</pre></td></tr></table>
+</div>
+</div>
+<p>[root@dev-86-208 ~]# ip netns add ns1
+[root@dev-86-208 ~]# ip netns add ns2
+[root@dev-86-208 ~]# ip netns list
+ns2
+ns1
+test1 (id: 3)
+nstest (id: 2)</p>
+
+<p>[root@dev-86-208 ~]# ip netns exec ns1 ip link set dev lo up
+[root@dev-86-208 ~]# ip netns exec ns2 ip link set dev lo up</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">添加网卡对：</pre></td></tr></table>
+</div>
+</div>
+<p>[root@dev-86-208 ~]# ip link add veth1 type veth peer name eth1
+[root@dev-86-208 ~]# ip link set eth1 netns ns1
+[root@dev-86-208 ~]# ip link add veth2 type veth peer name eth1
+[root@dev-86-208 ~]# ip link set eth1 netns ns2</p>
+
+<p>[root@dev-86-208 ~]# ip netns exec ns1 ip link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+255: eth1@if256: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT qlen 1000
+    link/ether ae:93:ba:2c:54:93 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+[root@dev-86-208 ~]# ip netns exec ns2 ip link
+257: eth1@if258: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT qlen 1000
+    link/ether 3a:a6:f3:27:9d:83 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">配置地址：</pre></td></tr></table>
+</div>
+</div>
+<p>[root@dev-86-208 ~]# ip netns exec ns1 ip addr add 172.17.1.<sup>1</sup>&frasl;<sub>24</sub> dev eth1
+[root@dev-86-208 ~]# ip netns exec ns2 ip addr add 172.17.1.<sup>2</sup>&frasl;<sub>24</sub> dev eth1</p>
+
+<p>[root@dev-86-208 ~]# ip netns exec ns1 ip link set dev eth1 up
+[root@dev-86-208 ~]# ip netns exec ns2 ip link set dev eth1 up</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">创建网桥：</pre></td></tr></table>
+</div>
+</div>
+<p>[root@dev-86-208 ~]# brctl addbr brtest
+[root@dev-86-208 ~]# ifconfig brtest
+brtest: flags=4098<BROADCAST,MULTICAST>  mtu 1500
+        ether 1e:60:eb:c1:e6:d0  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</p>
+
+<p>[root@dev-86-208 ~]# brctl addif brtest veth1
+[root@dev-86-208 ~]# brctl addif brtest veth2</p>
+
+<p>[root@dev-86-208 ~]# ifconfig brtest up
+[root@dev-86-208 ~]# ifconfig veth1 up      # 主机上这两张网卡工作在数据链路层，因此不需要设置ip也能通
+[root@dev-86-208 ~]# ifconfig veth2 up</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">恭喜两个eth1之间可以通了：</pre></td></tr></table>
+</div>
+</div>
+<p>[root@dev-86-208 ~]# ip netns exec ns1 ping 172.17.1.2
+PING 172.17.1.2 (172.17.1.2) 56(84) bytes of data.
+64 bytes from 172.17.1.2: icmp_seq=1 ttl=64 time=0.063 ms
+64 bytes from 172.17.1.2: icmp_seq=2 ttl=64 time=0.022 ms</p>
+
+<p>[root@dev-86-208 ~]# ip netns exec ns2 ping 172.17.1.1
+PING 172.17.1.1 (172.17.1.1) 56(84) bytes of data.
+64 bytes from 172.17.1.1: icmp_seq=1 ttl=64 time=0.038 ms
+64 bytes from 172.17.1.1: icmp_seq=2 ttl=64 time=0.041 ms</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">当然想在主机上能ping通容器的话需要给brtest加ip：</pre></td></tr></table>
+</div>
+</div>
+<p>[root@dev-86-208 ~]# ip addr add 172.17.1.<sup>254</sup>&frasl;<sub>24</sub> dev brtest</p>
+
+<p>[root@dev-86-208 ~]# route -n # 上面动作设置了路由
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+172.17.1.0      0.0.0.0         255.255.255.0   U     0      0        0 brtest</p>
+
+<p>[root@dev-86-208 ~]# ping 172.17.1.1
+PING 172.17.1.1 (172.17.1.1) 56(84) bytes of data.
+64 bytes from 172.17.1.1: icmp_seq=1 ttl=64 time=0.046 ms
+64 bytes from 172.17.1.1: icmp_seq=2 ttl=64 time=0.030 ms</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">以上操作就是docker bridge模式的模型
+
+### 用ip命令配置docker网络
+我们如果需要对容器网络进行配置，如修改ip地址，进入到容器里面显然不合适，而且有时不使用特权模式时是操作不了的，不过我们可以使用ip命令对其进行操作。</pre></td></tr></table>
+</div>
+</div>
+<p>docker run -itd &ndash;name test ubuntu:14.04 /bin/bash</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">这时namespace其实已经建立了，不过使用ip命令看不到</pre></td></tr></table>
+</div>
+</div>
+<p>docker inspect &ndash;format &lsquo;{{ .State.Pid }}&rsquo; test
+3847
+mkdir /var/run/netns # 如果不存在才创建
+ln -s /proc/3847/ns/net /var/run/netns/test</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">测试：</pre></td></tr></table>
+</div>
+</div>
+<h1 id="ip-netns-list">ip netns list</h1>
+
+<p>test</p>
+
+<p>[root@dev-86-208 ~]# ip netns exec test1 ip link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+253: eth0@if254: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+```</p>
+
+<h3 id="bridge实现源码解析">bridge实现源码解析</h3>
+
+<h4 id="docker0网桥的建立">docker0网桥的建立</h4>
+
+<h4 id="创建容器时宿主机上的网络操作">创建容器时宿主机上的网络操作</h4>
+
+<h4 id="创建容器时容器内部的网络操作">创建容器时容器内部的网络操作</h4>
+
+<h3 id="overlay网络代表flannel原理">overlay网络代表flannel原理</h3>
+
+<h1 id="公众号">公众号：</h1>
+
+<p><img src="https://sealyun.com/kubernetes-qrcode.jpg" alt="sealyun" /></p>
+
+<h3 id="微信群">微信群：</h3>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2016-07-11
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/event/">event</a>
+          <a href="/tags/dotscale/">dotScale</a>
+          <a href="/tags/sketchnote/">sketchnote</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/docker-ovs/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">ovs对接容器网络</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/iptables/">
+            <span class="next-text nav-default">iptables教程</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2016-07-11 10:54:24 \x2b0200 \x2b0200',
+        title: '容器网络概述',
+        link: decodeURI(location.href),
+        desc: '网络概述 端口映射： 1 $ docker run -p 8080:80 nginx:latest 如果没有这个-p，会发现启动了nginx但是无法通过宿主机访问到web服务，而使用了-p参数后就可以通过访问',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="http://localhost:1313" class="iconfont icon-facebook" title="facebook"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-weibo" title="weibo"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-douban" title="douban"></a>
+      <a href="http://localhost:1313" class="iconfont icon-pocket" title="pocket"></a>
+      <a href="http://localhost:1313" class="iconfont icon-tumblr" title="tumblr"></a>
+      <a href="http://localhost:1313" class="iconfont icon-instagram" title="instagram"></a>
+      <a href="http://localhost:1313" class="iconfont icon-gitlab" title="gitlab"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

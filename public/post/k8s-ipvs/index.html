@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>kubernetes启用ipvs - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="fanux" /><meta name="description" content="广告 | kubernetes各版本离线安装包 1.11.1版本已经修复此bug，如在centos下使用ipvs模式建议升级到v1.11.1,包地" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/k8s-ipvs/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="kubernetes启用ipvs" />
+<meta property="og:description" content="广告 | kubernetes各版本离线安装包 1.11.1版本已经修复此bug，如在centos下使用ipvs模式建议升级到v1.11.1,包地" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/k8s-ipvs/" />
+<meta property="article:published_time" content="2018-05-29T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2018-05-29T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="kubernetes启用ipvs">
+<meta itemprop="description" content="广告 | kubernetes各版本离线安装包 1.11.1版本已经修复此bug，如在centos下使用ipvs模式建议升级到v1.11.1,包地">
+
+
+<meta itemprop="datePublished" content="2018-05-29T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2018-05-29T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="1063">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes启用ipvs"/>
+<meta name="twitter:description" content="广告 | kubernetes各版本离线安装包 1.11.1版本已经修复此bug，如在centos下使用ipvs模式建议升级到v1.11.1,包地"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">kubernetes启用ipvs</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-05-29 </span>
+        
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#1-11-1版本已经修复此bug-如在centos下使用ipvs模式建议升级到-v1-11-1-包地址-http-sealyun-com-pro-products">1.11.1版本已经修复此bug，如在centos下使用ipvs模式建议升级到<a href="http://sealyun.com/pro/products/">v1.11.1,包地址</a></a></li>
+<li><a href="#1-11-0版本ipset-bug说明">1.11.0版本ipset bug说明</a>
+<ul>
+<li><a href="#升级内核">升级内核</a></li>
+<li><a href="#ipset-安装过程">ipset 安装过程</a></li>
+</ul></li>
+<li><a href="#kubernetes启用ipvs">kubernetes启用ipvs</a></li>
+<li><a href="#公众号">公众号：</a>
+<ul>
+<li>
+<ul>
+<li><a href="#微信群">微信群：</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<blockquote>
+<p>广告 | <a href="http://sealyun.com/pro/products/">kubernetes各版本离线安装包</a></p>
+</blockquote>
+
+<h1 id="1-11-1版本已经修复此bug-如在centos下使用ipvs模式建议升级到-v1-11-1-包地址-http-sealyun-com-pro-products">1.11.1版本已经修复此bug，如在centos下使用ipvs模式建议升级到<a href="http://sealyun.com/pro/products/">v1.11.1,包地址</a></h1>
+
+<h1 id="1-11-0版本ipset-bug说明">1.11.0版本ipset bug说明</h1>
+
+<p>1.11.0版本centos下使用ipvs模式会出问题 <a href="https://github.com/kubernetes/kubernetes/issues/65461">65461</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Jun 25 20:50:00 VM_3_4_centos kube-proxy[3828]: E0625 20:50:00.312569    3828 ipset.go:156] Failed to make sure ip set: &amp;{{KUBE-LOOP-BACK hash:ip,port,ip inet 1024 65536 0-65535 Kubernetes endpoints dst ip:port, source ip for solving hairpin purpose} map[] 0xc42073e1d0} exist, error: error creating ipset KUBE-LOOP-BACK, error: exit status 2</pre></td></tr></table>
+</div>
+</div>
+<p>主要是ipset不支持comment:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@compute063 ~]# ipset create foo hash:ip comment
+ipset v6.19: Unknown argument: `comment&#39;
+Try `ipset help&#39; for more information.</pre></td></tr></table>
+</div>
+</div>
+<p>尝试升级ipset问题依然没解决</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@izrj9auny05eigffvcosvbz ipset-6.38]# ipset create foo hash:ip comment
+ipset v6.38: Argument `comment&#39; is supported in the kernel module of the set type hash:ip starting from the revision 2 and you have installed revision 1 only. Your kernel is behind your ipset utility.
+Try `ipset help&#39; for more information.</pre></td></tr></table>
+</div>
+</div>
+<p>在不改kubernetes情况下可以通过升级内核和ipset解决</p>
+
+<h2 id="升级内核">升级内核</h2>
+
+<p><a href="https://github.com/sealyun/kernel/releases/tag/v4.14.49">rpm地址</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">rpm -ivh kernel-4.14.49-1.x86_64.rpm
+rpm -ivh kernel-devel-4.14.49-1.x86_64.rpm</pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">修改grub配置，默认启动新内核
+ vi /etc/default/grub
+修改成 GRUB_DEFAULT=0
+grub2-mkconfig -o /boot/grub2/grub.cfg </pre></td></tr></table>
+</div>
+</div>
+<h2 id="ipset-安装过程">ipset 安装过程</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">yum install -y kernel-devel
+
+yum install -y bzip2
+
+wget http://ipset.netfilter.org/ipset-6.38.tar.bz2
+
+cd ipset-6.38
+
+bzip2 -d ipset-6.38.tar.bz2
+
+tar xvf ipset-6.38.tar
+
+cd /lib/modules/3.10.0-693.2.2.el7.x86_64
+ln -s /usr/src/kernels/3.10.0-862.3.3.el7.x86_64 build
+
+./configure &amp;&amp; make &amp;&amp; make install</pre></td></tr></table>
+</div>
+</div>
+<h1 id="kubernetes启用ipvs">kubernetes启用ipvs</h1>
+
+<p>确保内核开启了ipvs模块</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@k8s ~]# lsmod|grep ip_vs
+ip_vs_sh               12688  0
+ip_vs_wrr              12697  0
+ip_vs_rr               12600  16
+ip_vs                 141092  23 ip_vs_rr,ip_vs_sh,xt_ipvs,ip_vs_wrr
+nf_conntrack          133387  9 ip_vs,nf_nat,nf_nat_ipv4,nf_nat_ipv6,xt_conntrack,nf_nat_masquerade_ipv4,nf_conntrack_netlink,nf_conntrack_ipv4,nf_conntrack_ipv6
+libcrc32c              12644  3 ip_vs,nf_nat,nf_conntrack</pre></td></tr></table>
+</div>
+</div>
+<p>没开启加载方式:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">modprobe -- ip_vs
+modprobe -- ip_vs_rr
+modprobe -- ip_vs_wrr
+modprobe -- ip_vs_sh
+modprobe -- nf_conntrack_ipv4</pre></td></tr></table>
+</div>
+</div>
+<p>1.10以上版本,使用kubeadm安装的，直接修改kube-proxy configmap即可</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">kubectl edit configmap kube-proxy -n kube-system</pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">    ipvs:
+      minSyncPeriod: 0s
+      scheduler: &#34;&#34;
+      syncPeriod: 30s
+    kind: KubeProxyConfiguration
+    metricsBindAddress: 127.0.0.1:10249
+    mode: &#34;ipvs&#34;                          # 加上这个
+    nodePortAddresses: null</pre></td></tr></table>
+</div>
+</div>
+<p>看到pod如下信息表明成功</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@k8s ~]# kubectl logs kube-proxy-72lg9 -n kube-system
+I0530 03:38:11.455609       1 feature_gate.go:226] feature gates: &amp;{{} map[]}
+I0530 03:38:11.490470       1 server_others.go:183] Using ipvs Proxier.
+W0530 03:38:11.503868       1 proxier.go:304] IPVS scheduler not specified, use rr by default
+I0530 03:38:11.504109       1 server_others.go:209] Tearing down inactive rules.
+I0530 03:38:11.552587       1 server.go:444] Version: v1.10.3</pre></td></tr></table>
+</div>
+</div>
+<p>安装ipvsadm工具</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">yum install -y ipvsadm</pre></td></tr></table>
+</div>
+</div>
+<p>检查service ipvs配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@k8s ~]# ipvsadm -ln
+IP Virtual Server version 1.2.1 (size=4096)
+Prot LocalAddress:Port Scheduler Flags
+  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn
+TCP  172.31.244.239:32000 rr
+  -&gt; 192.168.77.9:8443            Masq    1      0          0
+TCP  172.31.244.239:32001 rr
+  -&gt; 192.168.77.8:3000            Masq    1      0          0
+TCP  10.96.0.1:443 rr persistent 10800
+  -&gt; 172.31.244.239:6443          Masq    1      0          0
+TCP  10.96.0.10:53 rr
+  -&gt; 192.168.77.7:53              Masq    1      0          0
+  -&gt; 192.168.77.10:53             Masq    1      0          0
+TCP  10.96.82.0:80 rr
+  -&gt; 192.168.77.8:3000            Masq    1      0          0
+TCP  10.96.152.25:8086 rr
+  -&gt; 192.168.77.12:8086           Masq    1      0          0
+TCP  10.96.232.136:6666 rr</pre></td></tr></table>
+</div>
+</div>
+<p>可以看到我们的dashboard dns什么的都已经配置了，可以验证一下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@k8s ~]# wget https://172.31.244.239:32000 --no-check-certificate
+--2018-05-30 16:17:15--  https://172.31.244.239:32000/
+正在连接 172.31.244.239:32000... 已连接。
+警告: 无法验证 172.31.244.239 的由 “/CN=.” 颁发的证书:
+  出现了自己签名的证书。
+    警告: 证书通用名 “.” 与所要求的主机名 “172.31.244.239” 不符。
+已发出 HTTP 请求，正在等待回应... 200 OK
+长度：990 [text/html]
+正在保存至: “index.html”
+
+100%[=======================================================================================================================================================&gt;] 990         --.-K/s 用时 0s
+
+2018-05-30 16:17:15 (16.3 MB/s) - 已保存 “index.html” [990/990])</pre></td></tr></table>
+</div>
+</div>
+<p>是通的，完全ok</p>
+
+<p>这里十分推荐大家使用ipvs模式，iptables出了问题不好调试，而且规则一多性能显著下降，我们甚至出现规则丢失的情况，ipvs稳定很多。</p>
+
+<h1 id="公众号">公众号：</h1>
+
+<p><img src="https://sealyun.com/kubernetes-qrcode.jpg" alt="sealyun" /></p>
+
+<h3 id="微信群">微信群：</h3>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2018-05-29
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/event/">event</a>
+          <a href="/tags/dotscale/">dotScale</a>
+          <a href="/tags/sketchnote/">sketchnote</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/kube-proxy-src/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">kube-proxy源码解析</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/kubeadm-source/">
+            <span class="next-text nav-default">kubeadm源码分析</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2018-05-29 10:54:24 \x2b0200 \x2b0200',
+        title: 'kubernetes启用ipvs',
+        link: decodeURI(location.href),
+        desc: '广告 | kubernetes各版本离线安装包 1.11.1版本已经修复此bug，如在centos下使用ipvs模式建议升级到v1.11.1,包地',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="http://localhost:1313" class="iconfont icon-facebook" title="facebook"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-weibo" title="weibo"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-douban" title="douban"></a>
+      <a href="http://localhost:1313" class="iconfont icon-pocket" title="pocket"></a>
+      <a href="http://localhost:1313" class="iconfont icon-tumblr" title="tumblr"></a>
+      <a href="http://localhost:1313" class="iconfont icon-instagram" title="instagram"></a>
+      <a href="http://localhost:1313" class="iconfont icon-gitlab" title="gitlab"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

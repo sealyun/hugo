@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用prometheus operator监控envoy - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="fanux" /><meta name="description" content="kubernetes集群三步安装 概述 prometheus operator应当是使用监控系统的最佳实践了，首先它一键构建整个监控系统，通过一些无侵入的手段去配置" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/prometheus-operator-envoy/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="使用prometheus operator监控envoy" />
+<meta property="og:description" content="kubernetes集群三步安装 概述 prometheus operator应当是使用监控系统的最佳实践了，首先它一键构建整个监控系统，通过一些无侵入的手段去配置" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/prometheus-operator-envoy/" />
+<meta property="article:published_time" content="2019-01-01T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2019-01-01T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="使用prometheus operator监控envoy">
+<meta itemprop="description" content="kubernetes集群三步安装 概述 prometheus operator应当是使用监控系统的最佳实践了，首先它一键构建整个监控系统，通过一些无侵入的手段去配置">
+
+
+<meta itemprop="datePublished" content="2019-01-01T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2019-01-01T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="1634">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用prometheus operator监控envoy"/>
+<meta name="twitter:description" content="kubernetes集群三步安装 概述 prometheus operator应当是使用监控系统的最佳实践了，首先它一键构建整个监控系统，通过一些无侵入的手段去配置"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用prometheus operator监控envoy</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-01-01 </span>
+        
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#kubernetes集群三步安装-https-sealyun-com-pro-products"><a href="https://sealyun.com/pro/products/">kubernetes集群三步安装</a></a></li>
+<li><a href="#概述">概述</a></li>
+<li><a href="#prometheus-operator安装">prometheus operator安装</a></li>
+<li><a href="#配置监控数据源">配置监控数据源</a>
+<ul>
+<li><a href="#启动envoy">启动envoy</a></li>
+<li><a href="#使用servicemonitor">使用ServiceMonitor</a></li>
+</ul></li>
+<li><a href="#告警配置">告警配置</a>
+<ul>
+<li><a href="#alert-manager配置">alert manager配置</a></li>
+<li><a href="#邮箱配置-以qq邮箱为例">邮箱配置，以QQ邮箱为例</a></li>
+<li><a href="#告警规则配置">告警规则配置</a></li>
+</ul></li>
+<li><a href="#公众号">公众号：</a>
+<ul>
+<li>
+<ul>
+<li><a href="#微信群">微信群：</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="kubernetes集群三步安装-https-sealyun-com-pro-products"><a href="https://sealyun.com/pro/products/">kubernetes集群三步安装</a></h1>
+
+<h1 id="概述">概述</h1>
+
+<p>prometheus operator应当是使用监控系统的最佳实践了，首先它一键构建整个监控系统，通过一些无侵入的手段去配置如监控数据源等
+故障自动恢复，高可用的告警等。。</p>
+
+<p>不过对于新手使用上还是有一丢丢小门槛，本文就结合如何给envoy做监控这个例子来分享使用prometheus operator的正确姿势</p>
+
+<p>至于如何写告警规则，如何配置prometheus查询语句不是本文探讨的重点，会在后续文章中给大家分享，本文着重探讨如何使用prometheus operator</p>
+
+<h1 id="prometheus-operator安装">prometheus operator安装</h1>
+
+<p><a href="https://sealyun.com/pro/products/">sealyun离线安装包</a>内已经包含prometheus operator,安装完直接使用即可</p>
+
+<h1 id="配置监控数据源">配置监控数据源</h1>
+
+<p>原理：通过operator的CRD发现监控数据源service
+<img src="/prometheus/operator-arch.png" alt="" /></p>
+
+<h2 id="启动envoy">启动envoy</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy
+  labels:
+    app: envoy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: envoy
+  template:
+    metadata:
+      labels:
+        app: envoy
+    spec:
+      volumes:
+      - hostPath:   # 为了配置方便把envory配置文件挂载出来了
+          path: /root/envoy
+          type: DirectoryOrCreate
+        name: envoy
+      containers:
+      - name: envoy
+        volumeMounts:
+        - mountPath: /etc/envoy
+          name: envoy
+          readOnly: true
+        image: envoyproxy/envoy:latest
+        ports:
+        - containerPort: 10000 # 数据端口
+        - containerPort: 9901  # 管理端口，metric是通过此端口暴露
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: envoy
+  labels:
+    app: envoy  # 给service贴上标签，operator会去找这个service
+spec:
+  selector:
+    app: envoy
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 10000
+    name: user
+  - protocol: TCP   # service暴露metric的端口
+    port: 81
+    targetPort: 9901
+    name: metrics   # 名字很重要，ServiceMonitor 会找端口名</pre></td></tr></table>
+</div>
+</div>
+<p>envoy配置文件：
+监听的地址一定需要修改成0.0.0.0，否则通过service获取不到metric
+/root/envoy/envoy.yaml</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">admin:
+  access_log_path: /tmp/admin_access.log
+  address:
+    socket_address:
+      protocol: TCP
+      address: 0.0.0.0   # 这里一定要改成0.0.0.0，而不能是127.0.0.1
+      port_value: 9901
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 10000
+    filter_chains:
+    - filters:
+      - name: envoy.http_connection_manager
+        config:
+          stat_prefix: ingress_http
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: [&#34;*&#34;]
+              routes:
+              - match:
+                  prefix: &#34;/&#34;
+                route:
+                  host_rewrite: sealyun.com
+                  cluster: service_google
+          http_filters:
+          - name: envoy.router
+  clusters:
+  - name: service_sealyun
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    # Comment out the following line to test on v6 networks
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    hosts:
+      - socket_address:
+          address: sealyun.com
+          port_value: 443
+    tls_context: { sni: sealyun.com }</pre></td></tr></table>
+</div>
+</div>
+<h2 id="使用servicemonitor">使用ServiceMonitor</h2>
+
+<p>envoyServiceMonitor.yaml:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: envoy
+  name: envoy
+  namespace: monitoring  # 这个可以与service不在一个namespace中
+spec:
+  endpoints:
+  - interval: 15s
+    port: metrics        # envoy service的端口名
+    path: /stats/prometheus # 数据源path
+  namespaceSelector:
+    matchNames:        # envoy service所在namespace
+    - default
+  selector:
+    matchLabels:
+      app: envoy       # 选择envoy service</pre></td></tr></table>
+</div>
+</div>
+<p>create成功后我们就可以看到envoy的数据源了：
+<img src="/prometheus/envoy-target.png" alt="" /></p>
+
+<p>然后就可以看到metric了：
+<img src="/prometheus/envoy-metric.png" alt="" /></p>
+
+<p>然后就可以在grafana上进行一些配置了，promethues相关使用不是本文讨论的对象</p>
+
+<h1 id="告警配置">告警配置</h1>
+
+<h2 id="alert-manager配置">alert manager配置</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@dev-86-201 envoy]# kubectl get secret -n monitoring
+NAME                              TYPE                                  DATA   AGE
+alertmanager-main                 Opaque                                1      27d</pre></td></tr></table>
+</div>
+</div>
+<p>我们可以看到这个secrect，看下里面具体内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@dev-86-201 envoy]# kubectl get secret  alertmanager-main -o yaml -n monitoring
+apiVersion: v1
+data:
+  alertmanager.yaml: Imdsb2JhbCI6IAogICJyZXNvbHZlX3RpbWVvdXQiOiAiNW0iCiJyZWNlaXZlcnMiOiAKLSAibmFtZSI6ICJudWxsIgoicm91dGUiOiAKICAiZ3JvdXBfYnkiOiAKICAtICJqb2IiCiAgImdyb3VwX2ludGVydmFsIjogIjVtIgogICJncm91cF93YWl0IjogIjMwcyIKICAicmVjZWl2ZXIiOiAibnVsbCIKICAicmVwZWF0X2ludGVydmFsIjogIjEyaCIKICAicm91dGVzIjogCiAgLSAibWF0Y2giOiAKICAgICAgImFsZXJ0bmFtZSI6ICJEZWFkTWFuc1N3aXRjaCIKICAgICJyZWNlaXZlciI6ICJudWxsIg==
+kind: Secret</pre></td></tr></table>
+</div>
+</div>
+<p>base64解码一下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&#34;global&#34;:
+  &#34;resolve_timeout&#34;: &#34;5m&#34;
+&#34;receivers&#34;:
+- &#34;name&#34;: &#34;null&#34;
+&#34;route&#34;:
+  &#34;group_by&#34;:
+  - &#34;job&#34;
+  &#34;group_interval&#34;: &#34;5m&#34;
+  &#34;group_wait&#34;: &#34;30s&#34;
+  &#34;receiver&#34;: &#34;null&#34;
+  &#34;repeat_interval&#34;: &#34;12h&#34;
+  &#34;routes&#34;:
+  - &#34;match&#34;:
+      &#34;alertname&#34;: &#34;DeadMansSwitch&#34;
+    &#34;receiver&#34;: &#34;null&#34;</pre></td></tr></table>
+</div>
+</div>
+<p>所以配置alertmanager就非常简单了，就是创建一个secrect即可
+如alertmanager.yaml:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">global:
+  smtp_smarthost: &#39;smtp.qq.com:465&#39;
+  smtp_from: &#39;5153@qq.com&#39;
+  smtp_auth_username: &#39;5153@qq.com&#39;
+  smtp_auth_password: &#39;xxx&#39;       # 这个密码是开启smtp授权后生成的,下文有说怎么配置
+  smtp_require_tls: false
+route:
+  group_by: [&#39;alertmanager&#39;,&#39;cluster&#39;,&#39;service&#39;]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+  receiver: &#39;fanux&#39;
+  routes:
+  - receiver: &#39;fanux&#39;
+receivers:
+- name: &#39;fanux&#39;
+  email_configs:
+  - to: &#39;5153@qq.com&#39;
+    send_resolved: true</pre></td></tr></table>
+</div>
+</div>
+<p>delete掉老的secret，根据自己的配置重新生成secret即可</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">kubectl delete secret alertmanager-main -n monitoring
+kubectl create secret generic alertmanager-main --from-file=alertmanager.yaml -n monitoring</pre></td></tr></table>
+</div>
+</div>
+<h2 id="邮箱配置-以qq邮箱为例">邮箱配置，以QQ邮箱为例</h2>
+
+<p>开启smtp pop3服务
+<img src="/prometheus/email-setting.png" alt="" />
+<img src="/prometheus/email-setting2.png" alt="" /> 照着操作即可，后面会弹框一个授权码，配置到上面的配置文件中
+然后就可以收到告警了：
+<img src="/prometheus/alert-email.png" alt="" /></p>
+
+<h2 id="告警规则配置">告警规则配置</h2>
+
+<p>prometheus operator自定义PrometheusRule crd去描述告警规则</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@dev-86-202 shell]# kubectl get PrometheusRule -n monitoring
+NAME                   AGE
+prometheus-k8s-rules   6m</pre></td></tr></table>
+</div>
+</div>
+<p>直接edit这个rule即可，也可以再自己去创建个PrometheusRule</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">kubectl edit PrometheusRule prometheus-k8s-rules -n monitoring</pre></td></tr></table>
+</div>
+</div>
+<p>如我们在group里加一个告警：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">spec:
+  groups:
+  - name: ./example.rules
+    rules:
+    - alert: ExampleAlert
+      expr: vector(1)
+  - name: k8s.rules
+    rules:</pre></td></tr></table>
+</div>
+</div>
+<p>重启prometheuspod:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">kubectl delete pod prometheus-k8s-0 prometheus-k8s-1 -n monitoring</pre></td></tr></table>
+</div>
+</div>
+<p>然后在界面上就可以看到新加的规则：
+<img src="prometheus/prometheus-rule.png" alt="" /></p>
+
+<p>探讨可加QQ群：98488045</p>
+
+<h1 id="公众号">公众号：</h1>
+
+<p><img src="https://sealyun.com/kubernetes-qrcode.jpg" alt="sealyun" /></p>
+
+<h3 id="微信群">微信群：</h3>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-01-01
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/event/">event</a>
+          <a href="/tags/dotscale/">dotScale</a>
+          <a href="/tags/sketchnote/">sketchnote</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/referrer/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">关于sealyun营销系统</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/kube-batch/">
+            <span class="next-text nav-default">kube-scheduler定制，支持深度学习批处理任务调度</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2019-01-01 10:54:24 \x2b0200 \x2b0200',
+        title: '使用prometheus operator监控envoy',
+        link: decodeURI(location.href),
+        desc: 'kubernetes集群三步安装 概述 prometheus operator应当是使用监控系统的最佳实践了，首先它一键构建整个监控系统，通过一些无侵入的手段去配置',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="http://localhost:1313" class="iconfont icon-facebook" title="facebook"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-weibo" title="weibo"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-douban" title="douban"></a>
+      <a href="http://localhost:1313" class="iconfont icon-pocket" title="pocket"></a>
+      <a href="http://localhost:1313" class="iconfont icon-tumblr" title="tumblr"></a>
+      <a href="http://localhost:1313" class="iconfont icon-instagram" title="instagram"></a>
+      <a href="http://localhost:1313" class="iconfont icon-gitlab" title="gitlab"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

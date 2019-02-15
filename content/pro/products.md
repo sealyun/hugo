@@ -10,6 +10,7 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
+<<<<<<< HEAD
 > kubernetes安装全网最简单，没有之一，支持高可用安装，监控，dashboard等, 组件齐全，版本齐全,完全离线,优质售后服务
 
 # 购买方式
@@ -19,6 +20,16 @@ menu = ""           # set "main" to add this content to the main menu
 OR 
 
 [阿里云市场](https://shop929htt07.market.aliyun.com/page/productlist.html?cId=53366009)
+=======
+# 安装包获取方式 
+
+官方销售市场：http://store.lameleg.com/  
+[kubernetes安装包store](http://store.lameleg.com/) 
+
+or 
+
+[阿里云市场](https://shop929htt07.market.aliyun.com/page/productlist.htm)
+>>>>>>> 4c5adc38a416b8dba2ee442f298e8011d2a5db35
 
 # kubernetes离线包安装教程：
 安装包中不包含docker，如没装docker 请先安装之`yum install -y docker`
@@ -28,6 +39,8 @@ OR
 2. node上：cd shell && sh init.sh
 3. 在node上执行master输出的join命令即可 (命令忘记了可以用这个查看，kubeadm token create --print-join-command)
 ```
+就没有然后了，全网最简单，没有之一
+
 > dashboard地址 https://masterip:32000
 
 卸载：`kubeadm reset`
@@ -159,6 +172,17 @@ KUBELET_CGROUP_ARGS=–cgroup-driver=cgroupfs #这个配置与docker改成一致
 
 # 微信群：
 ![](/wechatgroup1.png)
+
+# sealyun公众号
+这里你能看到
+
+* kubernetes一些深入的分析如各块的源码解析
+* 我们遇到的坑,大规模实践k8s时一些小细节 版本选择，各版本的坑，内核如何选择，存储与网络虚拟化方案等
+* 短文介绍一些小知识,如一些偏门小命令，又如集群证书更新，kubeadm如何配置，scheduler如何做一些扩展等
+
+![](/kubernetes-qrcode.jpg)
+
+
 
 ## master 节点 (录屏加载较慢，别焦躁。。。)
 <script data-speed="3" src="https://asciinema.org/a/RZ3a74x8qE6DZy7jSjaDrLvYM.js" id="asciicast-RZ3a74x8qE6DZy7jSjaDrLvYM" async></script>
