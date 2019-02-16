@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>离线使用kubeadm安装安全高可用kubernetes集群 - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="fanux" /><meta name="description" content="使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。 单个master流程：" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/k8s-offline-install-ha/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="离线使用kubeadm安装安全高可用kubernetes集群" />
+<meta property="og:description" content="使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。 单个master流程：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/k8s-offline-install-ha/" />
+<meta property="article:published_time" content="2014-07-11T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2014-07-11T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="离线使用kubeadm安装安全高可用kubernetes集群">
+<meta itemprop="description" content="使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。 单个master流程：">
+
+
+<meta itemprop="datePublished" content="2014-07-11T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2014-07-11T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="4311">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="离线使用kubeadm安装安全高可用kubernetes集群"/>
+<meta name="twitter:description" content="使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。 单个master流程："/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">离线使用kubeadm安装安全高可用kubernetes集群</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2014-07-11 </span>
+        
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#使用kubeadm安装安全高可用kubernetes集群">使用kubeadm安装安全高可用kubernetes集群</a>
+<ul>
+<li><a href="#提前准备">提前准备</a></li>
+<li><a href="#安装包介绍">安装包介绍</a></li>
+<li><a href="#初始化节点">初始化节点</a></li>
+<li><a href="#起动etcd集群">起动etcd集群</a></li>
+<li><a href="#kubeadm配置">kubeadm配置</a></li>
+<li><a href="#启动calico等">启动calico等</a></li>
+<li><a href="#启动多个master">启动多个master</a></li>
+<li><a href="#启动loadbalance">启动loadbalance</a></li>
+<li><a href="#修改kubeproxy配置">修改kubeproxy配置</a></li>
+<li><a href="#join-node节点">join node节点</a></li>
+<li><a href="#修改node节点kubelet配置">修改node节点kubelet配置</a></li>
+<li><a href="#kubectl配置">kubectl配置</a>
+<ul>
+<li><a href="#启动多dns副本">启动多DNS副本</a></li>
+<li><a href="#验证与测试">验证与测试</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#公众号">公众号：</a>
+<ul>
+<li>
+<ul>
+<li><a href="#微信群">微信群：</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="使用kubeadm安装安全高可用kubernetes集群">使用kubeadm安装安全高可用kubernetes集群</h1>
+
+<p><a href="https://market.aliyun.com/products/57742013/cmxz025618.html?spm=5176.730005.0.0.TFKV5K#sku=yuncode1961800000">安装包地址</a> 如非高可用安装请忽略此教程，直接看产品页的三步安装。</p>
+
+<blockquote>
+<p><strong>单个master流程：</strong></p>
+</blockquote>
+
+<ol>
+<li>解压后在master 上 cd shell  &amp;&amp; sh init.sh ,然后sh master.sh（注意因为脚本用的相对路径所以不再当前目录会找不到文件）</li>
+<li>在node上 cd shell &amp;&amp; sh init.sh  。然后在node上执行master输出的join命令即可</li>
+</ol>
+
+<blockquote>
+<p><strong>高可用如下</strong></p>
+</blockquote>
+
+<h2 id="提前准备">提前准备</h2>
+
+<p>假设构建一个3master+2node的k8s集群，需要5台节点共同的条件如下：</p>
+
+<ol>
+<li>（<code>yum install -y docker是1.12.6版本需要改cg</code>）
+17.06安装教程：
+```bash
+#0.删除老旧的
+$ yum remove -y docker*  #如果默认之前yum安装的1.12版本,可以这样删没装可以跳过此步
+#1.安装需要的包
+$ yum install -y yum-utils <br />
+ device-mapper-persistent-data <br />
+ lvm2
+<br /></li>
+</ol>
+
+<p>#2.添加源,不然默认的找不到
+   $ yum-config-manager <br />
+       &ndash;add-repo <br />
+       <a href="https://download.docker.com/linux/centos/docker-ce.repo">https://download.docker.com/linux/centos/docker-ce.repo</a></p>
+
+<p>#3.根据实际查找当前版本 (可选)
+   $ yum list docker-ce &ndash;showduplicates | sort -r
+   #4.如果确定了版本,直接安装,如果要装17。03直接修改下面数字即可
+   $ yum install  docker-ce-17.06.1.ce  # 主意版本填写包名的格式.
+   #5.开启docker服务,和开机启动
+   $ systemctl start docker &amp;&amp; systemctl enable docker</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">2. 建议二进制方法提前部署好docker-compose，步骤参考后文
+
+3. 建议永久关闭selinux和swap以免后续问题
+
+4. 建议停止并关闭firewalld/iptables等防火墙
+
+5. 新的节点启动后记得改网络名 `hostnamectl set-hostname masterX` 
+
+6. 节点之间要能互通内网环境稳定
+
+7. 安装中出了问题要看日志journalctl -n 10 ,运行中的日志查看`tail -f 10 /var/log/messages` 
+
+## 系统架构图
+
+```bash
+          kubectl dashboard
+                 |
+                 V 
+     +------------------------+ join
+     | LB  10.1.245.94        | &lt;--- Nodes
+     +------------------------+
+     |                                                   
+     |--master1 manager1 schedule1   10.1.245.93                                                
+     |--master2 manager2 schedule2   10.1.245.95    =============&gt;  etcd cluster  http://10.1.245.93:2379,http://10.1.245.94:2379,http://10.1.245.95:2379
+     |--master3 manager3 schedule3   10.1.245.94                                              </pre></td></tr></table>
+</div>
+</div>
+<h2 id="安装包介绍">安装包介绍</h2>
+
+<p>解压完之后看到如下目录：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">├── bin          所需要的k8s相关的bin文件
+│   ├── kubeadm
+│   ├── kubectl
+│   └── kubelet
+├── image        依赖的所有镜像包
+│   └── images.tar
+├── out          所有的配置文件
+│   ├── dashboard  dashboard相关配置
+│   │   ├── dashboard-admin.yaml
+│   │   └── kubernetes-dashboard.yaml
+│   ├── etcd  etcd相关配置
+│   │   ├── etcd-docker-compose-0.yml
+│   │   ├── etcd-docker-compose-1.yml
+│   │   └── etcd-docker-compose-2.yml
+│   ├── haproxy  haproxy相关配置
+│   │   └── haproxy.cfg
+│   ├── heapster   heapster相关yaml配置
+│   │   ├── influxdb
+│   │   │   ├── grafana.yaml
+│   │   │   ├── heapster.yaml
+│   │   │   └── influxdb.yaml
+│   │   └── rbac
+│   │       └── heapster-rbac.yaml
+│   ├── kube    k8s自身配置
+│   │   ├── 10-kubeadm.conf
+│   │   ├── config    kubeadm配置
+│   │   └── kubelet.service
+│   ├── kubeinit.json  忽略
+│   └── net  网络相关配置
+│       ├── calico.yaml
+│       └── calicoctl.yaml
+└── shell    初始化脚本
+    ├── init.sh   初始化节点,安装bin文件，systemd配置等
+    └── master.sh  执行kubeadm init和其它组件</pre></td></tr></table>
+</div>
+</div>
+<h2 id="初始化节点">初始化节点</h2>
+
+<p>因为解压后包,然后<code>scp -r xxx root@ip:/root</code> 的方式分发解压后的包到其他节点</p>
+
+<p><strong>集群中所有节点都需要执行<code>cd shell &amp;&amp; sh init.sh</code> （如果只跑单个master那么还需要执行 <code>sh master.sh</code></strong> ，多master勿跑 ）</p>
+
+<blockquote>
+<p>有以下需要注意的事项：<br />
+1. 修改init.sh脚本在后面添加,如果二进制程序没可执行权限<code>chmod +x  /usr/bin/kube*</code>
+2. cgroups驱动需要选择docker17.0x版本，就不需要去调整了，如果是1.1x版本的docker需要<strong>手动修改</strong>kubelet的启动文件里面的cgroups配置为<code>systemd</code>   （修改位置<code>/etc/systemd/system/kubelet.service.d</code>）   与 docker info|grep Cg一致
+3. 提前修改默认的init 或者手动执行<code>sysctl  -w net.ipv4.ip_forward=1</code> 不然第七行报错</p>
+</blockquote>
+
+<p><strong>执行完成后通过命令查看<code>kubectl get pod -n kube-system</code> ,状态全为Running正常</strong></p>
+
+<h2 id="起动etcd集群">起动etcd集群</h2>
+
+<p>etcd集群安装使用docker-compose方式部署</p>
+
+<p>A.使用docker-compose启动，如果没装：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ pip install docker-compose</code></pre></td></tr></table>
+</div>
+</div>
+<p>B.使用二进制包启动docker-compose（离线可选）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ wget https://github.com/docker/compose/releases/download/1.18.0/docker-compose-Linux-x86_64  <span class="c1">#官方推荐是用curl,不建议</span>
+$ mv docker-compose-Linux-x86_64 /usr/local/bin/docker-compose <span class="o">&amp;&amp;</span> chmod a+x /usr/local/bin/docker-compose  <span class="c1">#也有写+x的.</span>
+<span class="c1">#这样就完成了,测试</span>
+$ docker-compose version  <span class="c1">#下面是正常输出</span>
+docker-compose version <span class="m">1</span>.18.0, build 8dd22a9
+docker-py version: <span class="m">2</span>.6.1
+CPython version: <span class="m">2</span>.7.13
+OpenSSL version: OpenSSL <span class="m">1</span>.0.1t  <span class="m">3</span> May <span class="m">2016</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在out/etcd目录下有相关模板<code>etcd-docker-compose-x.yam</code>，启动多个节点时修改成自己的ip地址 其它两个节点照抄，修改ip即可, image那行 应改为  <code>gcr.io/google_containers/etcd-amd64:3.1.11</code> ，实际就是版本号改一下即可。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c">#需要修改所有含有ip的地方，下面的9，10，11，12行改为当前节点ip，15行三个ip顺序改为etcd集群部署的三台节点ip</span><span class="w">
+</span><span class="w"></span>version<span class="p">:</span><span class="w"> </span><span class="s1">&#39;2.1&#39;</span><span class="w">
+</span><span class="w"></span>services<span class="p">:</span><span class="w">
+</span><span class="w">    </span>etcd0<span class="p">:</span><span class="w">
+</span><span class="w">        </span>container_name<span class="p">:</span><span class="w"> </span>etcd_infra0<span class="w">
+</span><span class="w">        </span>image<span class="p">:</span><span class="w"> </span>gcr.io/google_containers/etcd-amd64<span class="p">:</span><span class="m">3.0</span>.<span class="m">17</span><span class="w">  </span><span class="c">#这里最后改为3.1.11</span><span class="w">
+</span><span class="w">        </span>command<span class="p">:</span><span class="w"> </span><span class="sd">|
+</span><span class="sd">                etcd --name infra0</span><span class="w">
+</span><span class="w">                </span>--initial-advertisie-peer-urls<span class="w"> </span>http<span class="p">:</span>//<span class="m">10.230</span>.<span class="m">204.160</span><span class="p">:</span><span class="m">2380</span><span class="w">
+</span><span class="w">                </span>--listen-peer-urls<span class="w"> </span>http<span class="p">:</span>//<span class="m">10.230</span>.<span class="m">204.160</span><span class="p">:</span><span class="m">2380</span><span class="w">
+</span><span class="w">                </span>--listen-client-urls<span class="w"> </span>http<span class="p">:</span>//<span class="m">10.230</span>.<span class="m">204.160</span><span class="p">:</span><span class="m">2379</span><span class="p">,</span>http<span class="p">:</span>//<span class="m">127.0</span>.<span class="m">0.1</span><span class="p">:</span><span class="m">2379</span><span class="w">
+</span><span class="w">                </span>--advertise-client-urls<span class="w"> </span>http<span class="p">:</span>//<span class="m">10.230</span>.<span class="m">204.160</span><span class="p">:</span><span class="m">2379</span><span class="w">
+</span><span class="w">                </span>--data-dir<span class="w"> </span>/etcd-data.etcd<span class="w">
+</span><span class="w">                </span>--initial-cluster-token<span class="w"> </span>etcd-cluster-<span class="m">1</span><span class="w">
+</span><span class="w">                </span>--initial-cluster<span class="w"> </span>infra0=http<span class="p">:</span>//<span class="m">10.230</span>.<span class="m">204.160</span><span class="p">:</span><span class="m">2380</span><span class="p">,</span>infra1=http<span class="p">:</span>//<span class="m">10.230</span>.<span class="m">204.165</span><span class="p">:</span><span class="m">2380</span><span class="p">,</span>infra2=http<span class="p">:</span>//<span class="m">10.230</span>.<span class="m">204.151</span><span class="p">:</span><span class="m">2380</span><span class="w">
+</span><span class="w">                </span>--initial-cluster-state<span class="w"> </span>new<span class="w">
+</span><span class="w">        </span>restart<span class="p">:</span><span class="w"> </span>always<span class="w">
+</span><span class="w">        </span>volumes<span class="p">:</span><span class="w">
+</span><span class="w">           </span>-<span class="w"> </span>/data/etcd-data.etcd<span class="p">:</span>/etcd-data.etcd<span class="w">
+</span><span class="w">        </span>network_mode<span class="p">:</span><span class="w"> </span><span class="s2">&#34;host&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>三个节点分别启动：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ docker-compose -f out/etcd/etcd-docker-compose-x.yml up -d  
+<span class="c1">#正常输出Creating etcd_infrax ... done  x为每个etcd编号</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>检查是不是安装成功:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ docker <span class="nb">exec</span> etcd_infra0 etcdctl member list  <span class="c1">#master1上可能运行报错容易提示容器正在重启。。原因暂时未知，其他master上可以</span>
+<span class="c1">#成功应该是类似显示</span>
+5ded6dd284b89d31: <span class="nv">name</span><span class="o">=</span>infra1 <span class="nv">peerURLs</span><span class="o">=</span>http://10.230.204.153:2380 <span class="nv">clientURLs</span><span class="o">=</span>http://10.230.204.153:2379 <span class="nv">isLeader</span><span class="o">=</span><span class="nb">true</span>
+6d4b5eee32c1497a: <span class="nv">name</span><span class="o">=</span>infra0 <span class="nv">peerURLs</span><span class="o">=</span>http://10.230.204.150:2380 <span class="nv">clientURLs</span><span class="o">=</span>http://10.230.204.150:2379 <span class="nv">isLeader</span><span class="o">=</span><span class="nb">false</span>
+729d9cd56debb1a1: <span class="nv">name</span><span class="o">=</span>infra2 <span class="nv">peerURLs</span><span class="o">=</span>http://10.230.204.154:2380 <span class="nv">clientURLs</span><span class="o">=</span>http://10.230.204.154:2379 <span class="nv">isLeader</span><span class="o">=</span><span class="nb">false</span>
+
+<span class="c1">#如果出现有peerURL不显示说明没有成功，尝试remove重新创建</span>
+$ docker-compose -f  out/etcd/etcd-docker-compose-x.yml down -v</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="kubeadm配置">kubeadm配置</h2>
+
+<p>修改配置 <code>out/kube/config</code>文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">apiVersion<span class="p">:</span><span class="w"> </span>kubeadm.k8s.io/v1alpha1<span class="w">
+</span><span class="w"></span>kind<span class="p">:</span><span class="w"> </span>MasterConfiguration<span class="w">
+</span><span class="w"></span>apiServerCertSANs<span class="p">:</span><span class="w">    </span><span class="c">#此处填所有的masterip和lbip和其它你可能需要通过它访问apiserver的地址和域名或者主机名等，如阿里fip，证书中会允许这些ip</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span><span class="m">172.31</span>.<span class="m">244.231</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span><span class="m">172.31</span>.<span class="m">244.232</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span><span class="m">172.31</span>.<span class="m">244.233</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span><span class="m">172.31</span>.<span class="m">244.234</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span>master1<span class="w">
+</span><span class="w"></span>-<span class="w"> </span>master2<span class="w">
+</span><span class="w"></span>-<span class="w"> </span>master3<span class="w">
+</span><span class="w"></span>-<span class="w"> </span>node1<span class="w">
+</span><span class="w"></span>-<span class="w"> </span><span class="m">47.75</span>.<span class="m">1.72</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span>etcd<span class="p">:</span><span class="w">
+</span><span class="w">  </span>endpoints<span class="p">:</span><span class="w">   </span><span class="c">#这里填之前安装的etcd集群地址列表，修改IP地址</span><span class="w">
+</span><span class="w">  </span>-<span class="w"> </span>http<span class="p">:</span>//<span class="m">172.31</span>.<span class="m">244.232</span><span class="p">:</span><span class="m">2379</span><span class="w">
+</span><span class="w">  </span>-<span class="w"> </span>http<span class="p">:</span>//<span class="m">172.31</span>.<span class="m">244.233</span><span class="p">:</span><span class="m">2379</span><span class="w">
+</span><span class="w">  </span>-<span class="w"> </span>http<span class="p">:</span>//<span class="m">172.31</span>.<span class="m">244.234</span><span class="p">:</span><span class="m">2379</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span>apiServerExtraArgs<span class="p">:</span><span class="w">
+</span><span class="w">  </span>endpoint-reconciler-type<span class="p">:</span><span class="w"> </span>lease<span class="w">
+</span><span class="w">
+</span><span class="w"></span>networking<span class="p">:</span><span class="w">
+</span><span class="w">  </span>podSubnet<span class="p">:</span><span class="w"> </span><span class="m">192.168</span>.<span class="m">0.0</span>/<span class="m">16</span><span class="w">  </span><span class="c">#不用改</span><span class="w">
+</span><span class="w"></span>kubernetesVersion<span class="p">:</span><span class="w"> </span>v1.<span class="m">9.2</span><span class="w">  </span><span class="c">#不用改</span><span class="w">
+</span><span class="w"></span>featureGates<span class="p">:</span><span class="w">  </span><span class="c">#不用改</span><span class="w">
+</span><span class="w">   </span>CoreDNS<span class="p">:</span><span class="w"> </span><span class="kc">true</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>然后执行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ kubeadm init --config out/kube/config</code></pre></td></tr></table>
+</div>
+</div>
+<p>把成功后的kubeadm join命令存在文件里，那东西不能丢了</p>
+
+<h2 id="启动calico等">启动calico等</h2>
+
+<p><code>mkdir ~/.kube &amp;&amp; cp /etc/kubernetes/admin.conf ~/.kube/config</code> （如果已经存在请校验一下是否相同,不确定建议删掉重新cp过去）</p>
+
+<p>修改calico配置，把etcd地址换成你安装好的集群地址：
+out/net/calico.yaml:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: calico-config
+  namespace: kube-system
+data:
+  # The location of your etcd cluster.  This uses the Service clusterIP
+  # defined below.
+  etcd_endpoints: &#34;http://10.96.232.136:6666&#34; # 这里改成etcd集群地址如 &#34;http://172.31.244.232:2379,http://172.31.244.233:2379,http://172.31.244.234:2379&#34;</pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ kubectl apply -f out/net/calico.yaml
+$ kubectl apply -f out/heapster/influxdb
+$ kubectl apply -f out/heapster/rbac
+$ kubectl apply -f out/dashboard
+<span class="c1">#上面命令可整合为</span>
+$ kubectl apply -f out/net/calico.yaml -f out/heapster/influxdb -f out/heapster/rbac -f out/dashboard</code></pre></td></tr></table>
+</div>
+</div>
+<ol>
+<li>然后访问<a href="https://master1IP:32000端口即可，在chrome下无法进入提示证书有误，更换firefox可以，提示说证书日期不对（待修复）">https://master1IP:32000端口即可，在chrome下无法进入提示证书有误，更换firefox可以，提示说证书日期不对（待修复）</a></li>
+</ol>
+
+<h2 id="启动多个master">启动多个master</h2>
+
+<p>第一个master我们称之为master0 (假设其他master已经init.sh过)，现在把第一个master的/etc/kubernetes/pki目录拷贝到别的master节点上</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ mkdir -p /etc/kubernetes
+$ scp -r /etc/kubernetes/pki root@10.1.245.93:/etc/kubernetes/pki</code></pre></td></tr></table>
+</div>
+</div>
+<p>删除pki目录下的apiserver.crt 和 apiserver.key文件<code>rm -rf apiserver.crt apiserver.key</code>，注意如果<strong>不删除会只能看到一个master，是不正常的。</strong></p>
+
+<p>同样使用master0上的out/kube/config文件，复制内容，拷贝到master1上，<code>scp out/kube/config  root@10.230.204.151:/root/</code> 执行<code>kubeadm init --config ~/config</code></p>
+
+<p>master2节点同master1</p>
+
+<h2 id="启动loadbalance">启动loadbalance</h2>
+
+<p>我比较推荐使用四层代理 HAproxy配置out/haproxy目录:</p>
+
+<p><code>vi out/haproxy/haproxy.cfg</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">global
+  daemon
+  log <span class="m">127</span>.0.0.1 local0
+  log <span class="m">127</span>.0.0.1 local1 notice
+  maxconn <span class="m">4096</span>
+
+defaults
+  log               global
+  retries           <span class="m">3</span>
+  maxconn           <span class="m">2000</span>
+  timeout connect   5s
+  timeout client    50s
+  timeout server    50s
+
+frontend k8s
+  <span class="nb">bind</span> *:6444
+  mode tcp
+  default_backend k8s-backend
+
+backend k8s-backend
+  balance roundrobin
+  mode tcp
+  <span class="c1">#下面三个ip替换成三个你自己master的地址</span>
+  server k8s-1 <span class="m">10</span>.1.245.93:6443 check 
+  server k8s-1 <span class="m">10</span>.1.245.94:6443 check
+  server k8s-2 <span class="m">10</span>.1.245.95:6443 check</code></pre></td></tr></table>
+</div>
+</div>
+<p>先<code>mkdir /etc/haproxy</code> 然后把这个文件拷贝在<code>cp out/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run --net<span class="o">=</span>host -v /etc/haproxy:/usr/local/etc/haproxy --name ha -d haproxy:1.7</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="修改kubeproxy配置">修改kubeproxy配置</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ kubectl -n kube-system edit configmap kube-proxy</code></pre></td></tr></table>
+</div>
+</div>
+<p>找到master地址，修改成LB地址，6444端口  （这里关键在于怎么知道LB的地址到底是哪一个呀？上面配置之后三个masterIP 轮询并不知道哪个是LB地址）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c">#找到文件的这一块，第七行server 有个ip地址</span><span class="w">
+</span><span class="w"></span>apiVersion<span class="p">:</span><span class="w"> </span>v1<span class="w">
+</span><span class="w">    </span>kind<span class="p">:</span><span class="w"> </span>Config<span class="w">
+</span><span class="w">    </span>clusters<span class="p">:</span><span class="w">
+</span><span class="w">    </span>-<span class="w"> </span>cluster<span class="p">:</span><span class="w">
+</span><span class="w">        </span>certificate-authority<span class="p">:</span><span class="w"> </span>/var/run/secrets/kubernetes.io/serviceaccount/ca.crt<span class="w">
+</span><span class="w">        </span>server<span class="p">:</span><span class="w"> </span>https<span class="p">:</span>//<span class="m">10.230</span>.<span class="m">204.151</span><span class="p">:</span><span class="m">6443</span><span class="w"> </span><span class="c">#修改为 LoadBalanceIP:6444</span><span class="w">
+</span><span class="w">      </span>name<span class="p">:</span><span class="w"> </span>default<span class="w">
+</span><span class="w">    </span>contexts<span class="p">:</span><span class="w">
+</span><span class="w">    </span>-<span class="w"> </span>context<span class="p">:</span><span class="w">
+</span><span class="w">        </span>cluster<span class="p">:</span><span class="w"> </span>default<span class="w">
+</span><span class="w">        </span>namespace<span class="p">:</span><span class="w"> </span>default<span class="w">
+</span><span class="w">        </span>user<span class="p">:</span><span class="w"> </span>default<span class="w">
+</span><span class="w">      </span>name<span class="p">:</span><span class="w"> </span>default<span class="w">
+</span><span class="w">    </span>current-context<span class="p">:</span><span class="w"> </span>default<span class="w">
+</span><span class="w">    </span>users<span class="p">:</span><span class="w">
+</span><span class="w">    </span>-<span class="w"> </span>name<span class="p">:</span><span class="w"> </span>default<span class="w">
+</span><span class="w">      </span>user<span class="p">:</span><span class="w">
+</span><span class="w">        </span>tokenFile<span class="p">:</span><span class="w"> </span>/var/run/secrets/kubernetes.io/serviceaccount/token</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="join-node节点">join node节点</h2>
+
+<p>还是在node节点执行第一个master输出的命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ kubeadm join --token &lt;token&gt; <span class="m">10</span>.1.245.94:6443 --discovery-token-ca-cert-hash sha256:&lt;hash&gt;</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="修改node节点kubelet配置">修改node节点kubelet配置</h2>
+
+<p><code>vi /etc/kubernetes/kubelet.conf</code> 同样把地址修改成LB地址,如：<code>10.1.245.94:6444</code> ，修改如下第五行（展示的例子已经修改过）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">apiVersion<span class="p">:</span><span class="w"> </span>v1<span class="w">
+</span><span class="w"></span>clusters<span class="p">:</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span>cluster<span class="p">:</span><span class="w">
+</span><span class="w">    </span>certificate-authority-data<span class="p">:</span><span class="w"> </span>xxxxxx<span class="w"> </span><span class="c">#此处省略几百字符</span><span class="w">
+</span><span class="w">    </span>server<span class="p">:</span><span class="w"> </span>https<span class="p">:</span>//<span class="m">10.230</span>.<span class="m">204.160</span><span class="p">:</span><span class="m">6444</span><span class="w"> </span><span class="c">#修改这里为LB:6444，原本是另外的ip:6443</span><span class="w">
+</span><span class="w">  </span>name<span class="p">:</span><span class="w"> </span>default-cluster<span class="w">
+</span><span class="w"></span>contexts<span class="p">:</span><span class="w">
+</span><span class="w"></span>-<span class="w"> </span>context<span class="p">:</span><span class="w">
+</span><span class="w">    </span>cluster<span class="p">:</span><span class="w"> </span>default-cluster<span class="w">
+</span><span class="w">    </span>namespace<span class="p">:</span><span class="w"> </span>default<span class="w">
+</span><span class="w">    </span>user<span class="p">:</span><span class="w"> </span>default-auth<span class="w">
+</span><span class="w">  </span>name<span class="p">:</span><span class="w"> </span>default-context<span class="w">
+</span><span class="w"></span>current-context<span class="p">:</span><span class="w"> </span>default-context</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="kubectl配置">kubectl配置</h2>
+
+<p>修改<code>~/.kube/config</code>文件,server的ip改成LB的ip <code>10.1.245.94:6444</code></p>
+
+<p>或者通过命令修改：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ kubectl config set-cluster kubernetes --server<span class="o">=</span>https://47.52.227.242:6444 --kubeconfig<span class="o">=</span><span class="nv">$HOME</span>/.kube/config</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="启动多dns副本">启动多DNS副本</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ kubectl edit deploy coredns -n kube-system</code></pre></td></tr></table>
+</div>
+</div>
+<p>replicas: 3</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@master1 ~<span class="o">]</span>$ kubectl get pod -n kube-system -o wide<span class="p">|</span>grep core
+coredns-65dcdb4cf-4j5s8                  <span class="m">1</span>/1       Running   <span class="m">0</span>          39m       <span class="m">192</span>.168.137.65    master1
+coredns-65dcdb4cf-ngx4h                  <span class="m">1</span>/1       Running   <span class="m">0</span>          38s       <span class="m">192</span>.168.180.1     master2
+coredns-65dcdb4cf-qbsr6                  <span class="m">1</span>/1       Running   <span class="m">0</span>          38s       <span class="m">192</span>.168.166.132   node1</code></pre></td></tr></table>
+</div>
+</div>
+<p>这样，启动了三个dns</p>
+
+<h3 id="验证与测试">验证与测试</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ kubectl run <span class="nb">test</span> --image busybox sleep <span class="m">10000</span>
+$ kubectl <span class="nb">exec</span> your-busybox-pod-name nslookup kubernetes</code></pre></td></tr></table>
+</div>
+</div>
+<p>杀非LB的master，多次测试看创建pod与dns是否正常，还可以telnet 10.96.0.1 443 去验证clusterip是否正常</p>
+
+<h1 id="公众号">公众号：</h1>
+
+<p><img src="https://sealyun.com/kubernetes-qrcode.jpg" alt="sealyun" /></p>
+
+<h3 id="微信群">微信群：</h3>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2014-07-11
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/event/">event</a>
+          <a href="/tags/dotscale/">dotScale</a>
+          <a href="/tags/sketchnote/">sketchnote</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/offline-install/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">安装包列表</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/keep_containers_alive_deamon_downtme/">
+            <span class="next-text nav-default">配置docker engine使engine挂掉时容器继续运行</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2014-07-11 10:54:24 \x2b0200 \x2b0200',
+        title: '离线使用kubeadm安装安全高可用kubernetes集群',
+        link: decodeURI(location.href),
+        desc: '使用kubeadm安装安全高可用kubernetes集群 安装包地址 如非高可用安装请忽略此教程，直接看产品页的三步安装。 单个master流程：',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="http://localhost:1313" class="iconfont icon-facebook" title="facebook"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-weibo" title="weibo"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-douban" title="douban"></a>
+      <a href="http://localhost:1313" class="iconfont icon-pocket" title="pocket"></a>
+      <a href="http://localhost:1313" class="iconfont icon-tumblr" title="tumblr"></a>
+      <a href="http://localhost:1313" class="iconfont icon-instagram" title="instagram"></a>
+      <a href="http://localhost:1313" class="iconfont icon-gitlab" title="gitlab"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

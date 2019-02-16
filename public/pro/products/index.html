@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>kubernetes离线包安装教程 - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="fanux" /><meta name="description" content="kubernetes安装全网最简单，没有之一，支持高可用安装，监控，dashboard等, 组件齐全，版本齐全,完全离线,优质售后服务 购买方式" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/pro/products/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="kubernetes离线包安装教程" />
+<meta property="og:description" content="kubernetes安装全网最简单，没有之一，支持高可用安装，监控，dashboard等, 组件齐全，版本齐全,完全离线,优质售后服务 购买方式" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/pro/products/" />
+<meta property="article:published_time" content="2014-07-11T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2014-07-11T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="kubernetes离线包安装教程">
+<meta itemprop="description" content="kubernetes安装全网最简单，没有之一，支持高可用安装，监控，dashboard等, 组件齐全，版本齐全,完全离线,优质售后服务 购买方式">
+
+
+<meta itemprop="datePublished" content="2014-07-11T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2014-07-11T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="2206">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes离线包安装教程"/>
+<meta name="twitter:description" content="kubernetes安装全网最简单，没有之一，支持高可用安装，监控，dashboard等, 组件齐全，版本齐全,完全离线,优质售后服务 购买方式"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+  <div class="post-content">
+    
+
+<blockquote>
+<p>kubernetes安装全网最简单，没有之一，支持高可用安装，监控，dashboard等, 组件齐全，版本齐全,完全离线,优质售后服务</p>
+</blockquote>
+
+<h1 id="购买方式">购买方式</h1>
+
+<p><a href="http://store.lameleg.com/">官方市场 (荐)</a></p>
+
+<p>OR</p>
+
+<p><a href="https://shop929htt07.market.aliyun.com/page/productlist.html?cId=53366009">阿里云市场</a></p>
+
+<h1 id="kubernetes离线包安装教程">kubernetes离线包安装教程：</h1>
+
+<p>安装包中不包含docker，如没装docker 请先安装之<code>yum install -y docker</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">1. master上： cd shell &amp;&amp; sh init.sh &amp;&amp; sh master.sh
+2. node上：cd shell &amp;&amp; sh init.sh
+3. 在node上执行master输出的join命令即可 (命令忘记了可以用这个查看，kubeadm token create --print-join-command)</pre></td></tr></table>
+</div>
+</div>
+<p>就没有然后了，全网最简单，没有之一</p>
+
+<blockquote>
+<p>dashboard地址 <a href="https://masterip:32000">https://masterip:32000</a></p>
+</blockquote>
+
+<p>卸载：<code>kubeadm reset</code></p>
+
+<p>清理：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">kubeadm reset -f
+modprobe -r ipip
+lsmod
+rm -rf ~/.kube/
+rm -rf /etc/kubernetes/
+rm -rf /etc/systemd/system/kubelet.service.d
+rm -rf /etc/systemd/system/kubelet.service
+rm -rf /usr/bin/kube*
+rm -rf /etc/cni
+rm -rf /opt/cni
+rm -rf /var/lib/etcd
+rm -rf /var/etcd</pre></td></tr></table>
+</div>
+</div>
+<h1 id="安装包列表">安装包列表</h1>
+
+<h2 id="kubernetes1-13-0离线安装包-https-market-aliyun-com-products-57742013-cmxz031803-html-spm-5176-730005-productlist-d-cmxz031803-4d763524rknzgg-innersource-search-kubernetes1-13-0-sku-yuncode2580300001-售价-50元"><a href="https://market.aliyun.com/products/57742013/cmxz031803.html?spm=5176.730005.productlist.d_cmxz031803.4d763524RknZgg&amp;innerSource=search_kubernetes1.13.0#sku=yuncode2580300001">kubernetes1.13.0离线安装包</a> | 售价 50元</h2>
+
+<p>推荐指数：⭐️ ⭐️ ⭐️ ⭐️ ⭐️</p>
+
+<ul>
+<li>修改kubeadm证书过期时间到99年，默认证书是1年过期</li>
+<li>集成promethus监控系统！ grafana地址 <a href="http://ip:30000">http://ip:30000</a>  管理账户密码 admin/admin
+
+<ul>
+<li>高可用的promethus</li>
+<li>高可用的alertmanager告警</li>
+<li>node-exporter kube-state-metrics grafana, 用operator实现</li>
+</ul></li>
+<li>官方kubeadm GA, CSI GA 修复<a href="https://github.com/kubernetes/kubernetes/issues/71411">重大安全漏洞</a></li>
+</ul>
+
+<h2 id="kubernetes1-12-3离线安装包-sealyun-com-阿里云审核中-售价-50元"><a href="sealyun.com">kubernetes1.12.3离线安装包</a> 阿里云审核中 | 售价 50元</h2>
+
+<h1 id="以下版本均-存在安全漏洞-https-github-com-kubernetes-kubernetes-issues-71411-不推荐在生产环境中使用-特别是apiserver暴露到公网的场景">以下版本均<a href="https://github.com/kubernetes/kubernetes/issues/71411">存在安全漏洞</a> 不推荐在生产环境中使用，特别是APIserver暴露到公网的场景</h1>
+
+<h2 id="kubernetes1-12-2离线安装包-https-market-aliyun-com-products-57742013-cmxz031371-html-sku-yuncode2537100001-售价-50元"><a href="https://market.aliyun.com/products/57742013/cmxz031371.html#sku=yuncode2537100001">kubernetes1.12.2离线安装包</a> | 售价 50元</h2>
+
+<p>推荐指数：⭐️ 不推荐线上使用</p>
+
+<p>此版本kube-proxy有<a href="https://github.com/kubernetes/kubernetes/pull/71413">重大bug</a> 官方1.12.3版本修复
+我们在压力测试时发现这一问题，官方在高版本进行了修复，sealyun也会尽快发布1.12.3版本</p>
+
+<ul>
+<li>ipvs支持优雅关闭, 以及官方其它新特性与bug修复</li>
+<li>修复1.12.0版本heapster无法获取到metric的bug</li>
+<li>修复1.12.0版本/var/kubelet目录未创建bug</li>
+<li>kubernetes1.12.2<a href="https://sealyun.com/post/sealos/">HA安装教程</a></li>
+</ul>
+
+<h2 id="kubernetes1-12-0离线安装包-https-market-aliyun-com-products-57742013-cmxz030981-html-sku-yuncode2498100001-售价-50元"><a href="https://market.aliyun.com/products/57742013/cmxz030981.html#sku=yuncode2498100001">kubernetes1.12.0离线安装包</a> | 售价 50元</h2>
+
+<p>推荐指数：⭐️ ⭐️ ⭐️ ⭐️ ⭐️</p>
+
+<ul>
+<li>v1.12.0大版本更新了不少有用的东西，如kubeadm证书更新，把node变成控制节点等特性</li>
+<li>RuntimeClass可以让node上运行多种不同的运行时</li>
+<li>调度器性能的优化，DaemonSet调度规则优化，具备镜像的节点具有更高的调度优先级等特性</li>
+<li>CSI存储快照与恢复接口开放，等等</li>
+<li>特性比较多不一一列举，对新特性无需求的可不升级此版本</li>
+</ul>
+
+<p>已知问题：<code>/var/lib/kubelet/config.yaml: No such file or directory</code> 解决：<code>mkdir /var/lib/kubelet &amp;&amp; sh init.sh</code></p>
+
+<h2 id="kubernetes1-11-3离线安装包-https-market-aliyun-com-products-57742013-cmxz030730-html-售价-55元"><a href="https://market.aliyun.com/products/57742013/cmxz030730.html">kubernetes1.11.3离线安装包</a> | 售价 55元</h2>
+
+<p>推荐指数：⭐️ ⭐️ ⭐️ ⭐️ ⭐️</p>
+
+<ul>
+<li>v1.11.3版本是1.11中最稳定的一个，修复了很多bug,对PVC有更好支持</li>
+<li>本包升级了calico到3.2.1版本，低版本calico我们在线上跑出出现过假死，高版本解决了这一bug,且高可用时此版本对证书安全支持更好</li>
+<li>dashboard升级到当前最新版本v1.10，主要也是修复dashboard的一些bug</li>
+</ul>
+
+<h2 id="kubernetes1-11-1离线安装包-https-market-aliyun-com-products-57742013-cmxz029676-html-sku-yuncode2367600001-售价-50元"><a href="https://market.aliyun.com/products/57742013/cmxz029676.html#sku=yuncode2367600001">kubernetes1.11.1离线安装包</a>  |  售价 50元</h2>
+
+<p>推荐指数：⭐️ ⭐️ ⭐️ ⭐️ ⭐️</p>
+
+<ul>
+<li>kubernetesv1.11.1离线包全网最快发布,修改calico ip段，再也不会地址冲突</li>
+<li>修复kubernetes 1.11.0版本centos下ipvs ipset comment 的bug, kubernetes<a href="https://github.com/kubernetes/kubernetes/issues/65461">65461</a></li>
+<li>将ipvs设置成默认的service模式,无需用户修改任何配置即可开启ipvs之旅</li>
+</ul>
+
+<h2 id="kubernetes1-11-0离线安装包-https-market-aliyun-com-products-57742013-cmxz029129-html-推荐使用v1-11-1版本-售价-50元"><a href="https://market.aliyun.com/products/57742013/cmxz029129.html">kubernetes1.11.0离线安装包</a> 推荐使用v1.11.1版本 |  售价 50元</h2>
+
+<p>推荐指数：⭐️ ⭐️</p>
+
+<ul>
+<li>此版本ipvs在centos下有<a href="sealyun.com/post/k8s-ipvs/">bug 65461</a>，请谨慎选择使用</li>
+<li>全网最快发布的kubernetes1.11.0离线包</li>
+<li>coreDNS ipvs走起，ipvs性能甩iptables好多条街，赶快行动吧</li>
+<li>增加crictl cri命令行工具</li>
+</ul>
+
+<h2 id="kubernetes1-10-3离线安装包-https-market-aliyun-com-products-57742013-cmxz028521-html-sku-yuncode2252100000-55元"><a href="https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000">kubernetes1.10.3离线安装包</a> | 55元</h2>
+
+<p>推荐指数：⭐️ ⭐️ ⭐️ ⭐️ ⭐️</p>
+
+<ul>
+<li>强力推荐，1.10.3版本k8s优化了很多东西，如存储，大内存页等，比如你要对接ceph等，那一定不要用1.10以下版本的</li>
+<li>全部使用当前最新版本组建</li>
+<li>Cgroup driver自动检测，99%以上一键安装成功，遇到任何问题远程协助解决</li>
+<li>优化dashboard grafana等yaml配置</li>
+<li>DNS双副本高可用</li>
+<li>1.10.3的功能我们进行过一个月的稳定性测试，大家可以放心使用</li>
+</ul>
+
+<h2 id="kubernetes1-9-2离线安装包-https-market-aliyun-com-products-57742013-cmxz025618-html-spm-5176-730005-productlist-dcmxz025618-r9c1j1-sku-yuncode1961800000-售价-50元"><a href="https://market.aliyun.com/products/57742013/cmxz025618.html?spm=5176.730005.productlist.dcmxz025618.r9c1J1#sku=yuncode1961800000">kubernetes1.9.2离线安装包</a>  |  售价 50元</h2>
+
+<p>推荐指数：⭐️ ⭐️</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">1.9.2以及以下版本，kubelet服务启动不了？ 1.10.3 加了检测没此问题
+cgroup driver配置要相同
+查看docker cgroup driver:
+docker info|grep Cgroup
+有systemd和cgroupfs两种，把kubelet service配置改成与docker一致
+vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+KUBELET_CGROUP_ARGS=–cgroup-driver=cgroupfs #这个配置与docker改成一致</pre></td></tr></table>
+</div>
+</div>
+<h2 id="kubernetes1-8-1离线安装包-https-market-aliyun-com-products-56014009-cmxz022571-html-spm-5176-730005-productlist-dcmxz022571-r9c1j1-sku-yuncode1657100000-推荐使用1-9-2以上版本-售价-50元"><a href="https://market.aliyun.com/products/56014009/cmxz022571.html?spm=5176.730005.productlist.dcmxz022571.r9c1J1#sku=yuncode1657100000">kubernetes1.8.1离线安装包</a> 推荐使用1.9.2以上版本  |  售价 50元</h2>
+
+<p>推荐指数：⭐️</p>
+
+<h1 id="sealyun公众号">sealyun公众号</h1>
+
+<p>这里你能看到</p>
+
+<ul>
+<li>kubernetes一些深入的分析如各块的源码解析</li>
+<li>我们遇到的坑,大规模实践k8s时一些小细节 版本选择，各版本的坑，内核如何选择，存储与网络虚拟化方案等</li>
+<li>短文介绍一些小知识,如一些偏门小命令，又如集群证书更新，kubeadm如何配置，scheduler如何做一些扩展等</li>
+</ul>
+
+<p><img src="/kubernetes-qrcode.jpg" alt="" /></p>
+
+<h1 id="qq群-98488045">QQ群：98488045</h1>
+
+<h1 id="微信群">微信群：</h1>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+  </div>
+</article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2014-07-11 10:54:24 \x2b0200 \x2b0200',
+        title: 'kubernetes离线包安装教程',
+        link: decodeURI(location.href),
+        desc: 'kubernetes安装全网最简单，没有之一，支持高可用安装，监控，dashboard等, 组件齐全，版本齐全,完全离线,优质售后服务 购买方式',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="http://localhost:1313" class="iconfont icon-facebook" title="facebook"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-weibo" title="weibo"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-douban" title="douban"></a>
+      <a href="http://localhost:1313" class="iconfont icon-pocket" title="pocket"></a>
+      <a href="http://localhost:1313" class="iconfont icon-tumblr" title="tumblr"></a>
+      <a href="http://localhost:1313" class="iconfont icon-instagram" title="instagram"></a>
+      <a href="http://localhost:1313" class="iconfont icon-gitlab" title="gitlab"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
