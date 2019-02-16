@@ -92,7 +92,7 @@ rm -rf /var/etcd
 已知问题：`/var/lib/kubelet/config.yaml: No such file or directory` 解决：`mkdir /var/lib/kubelet && sh init.sh`
 
 
-## [kubernetes1.11.3离线安装包](https://market.aliyun.com/products/57742013/cmxz030730.html) | 售价 1元 
+## [kubernetes1.11.3离线安装包](https://market.aliyun.com/products/57742013/cmxz030730.html) | 售价 55元 
 
 推荐指数：:star: :star: :star: :star: :star:
 
@@ -118,7 +118,7 @@ rm -rf /var/etcd
 * coreDNS ipvs走起，ipvs性能甩iptables好多条街，赶快行动吧
 * 增加crictl cri命令行工具
 
-## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000) | 1元
+## [kubernetes1.10.3离线安装包](https://market.aliyun.com/products/57742013/cmxz028521.html#sku=yuncode2252100000) | 55元
 
 推荐指数：:star: :star: :star: :star: :star:
 
@@ -161,22 +161,3 @@ KUBELET_CGROUP_ARGS=–cgroup-driver=cgroupfs #这个配置与docker改成一致
 
 # 微信群：
 ![](/wechatgroup1.png)
-
-# sealyun公众号
-这里你能看到
-
-* kubernetes一些深入的分析如各块的源码解析
-* 我们遇到的坑,大规模实践k8s时一些小细节 版本选择，各版本的坑，内核如何选择，存储与网络虚拟化方案等
-* 短文介绍一些小知识,如一些偏门小命令，又如集群证书更新，kubeadm如何配置，scheduler如何做一些扩展等
-
-![](/kubernetes-qrcode.jpg)
-
-
-
-## master 节点 (录屏加载较慢，别焦躁。。。)
-<script data-speed="3" src="https://asciinema.org/a/RZ3a74x8qE6DZy7jSjaDrLvYM.js" id="asciicast-RZ3a74x8qE6DZy7jSjaDrLvYM" async></script>
-
-## node 节点
-<script data-speed="3" src="https://asciinema.org/a/HwrKtAEJpguMfYMNEU7LDeFbQ.js?speed=40" id="asciicast-HwrKtAEJpguMfYMNEU7LDeFbQ" async></script>
-
-
