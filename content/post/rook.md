@@ -450,8 +450,7 @@ storage:
     devices:
     - name: "vdf"
 ```
-<<<<<<< HEAD
-=======
+
 bluestore模式能显著提升ceph性能，我这边测试随机读写性能提升了8%左右
 ```
 Rand_Write_Testing: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=128
@@ -501,7 +500,6 @@ Run status group 0 (all jobs):
 Disk stats (read/write):
   rbd0: ios=400921/401817, merge=0/50, ticks=4341605/7883816, in_queue=12217335, util=99.96%
 ```
->>>>>>> 4c5adc38a416b8dba2ee442f298e8011d2a5db35
 
 # 总结
 分布式存储在容器集群中充当非常重要的角色，使用容器集群一个非常重要的理念就是把集群当成一个整体使用，如果你在使用中还关心单个主机，比如调度到某个节点，
