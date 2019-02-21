@@ -34,47 +34,52 @@ kubernetes server account的token很容易获取，但是User的token非常麻�
       name: kubernetes-dashboard
       namespace: kube-system
     ```
+
   第二：要理解kubeconfig里是解析证书把CN作为用户名的，这时service account即便与CN一样那还是两个账户，绑定角色时还需要绑定两次，有点像把service account给"人"用, 所以把service account的token扔给某个开发人员去用往往不合适，service account token更多时候是给程序用的。
 
 2. 想直接调用https的，没有token就会：
-```
-[root@iZj6cegflzze2l7fpcqoerZ ssl]# curl https://172.31.12.61:6443/api/v1/namespaces/default/pods --insecure
-{
-  "kind": "Status",
-  "apiVersion": "v1",
-  "metadata": {
 
-  },
-  "status": "Failure",
-  "message": "pods is forbidden: User \"system:anonymous\" cannot list resource \"pods\" in API group \"\" in the namespace \"default\"",
-  "reason": "Forbidden",
-  "details": {
-    "kind": "pods"
-  },
-  "code": 403
-}
-```
-因为没有任何认证信息，所以匿名（anonymous）用户没有任何权限
+    ```
+    [root@iZj6cegflzze2l7fpcqoerZ ssl]# curl https://172.31.12.61:6443/api/v1/namespaces/default/pods --insecure
+    {
+      "kind": "Status",
+      "apiVersion": "v1",
+      "metadata": {
+
+      },
+      "status": "Failure",
+      "message": "pods is forbidden: User \"system:anonymous\" cannot list resource \"pods\" in API group \"\" in the namespace \"default\"",
+      "reason": "Forbidden",
+      "details": {
+        "kind": "pods"
+      },
+      "code": 403
+    }
+    ```
+
+   因为没有任何认证信息，所以匿名（anonymous）用户没有任何权限
 
 加了token是这样的：
-```
-[root@iZj6cegflzze2l7fpcqoerZ ssl]# curl -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkNnYzRPVEV5TlRVM0VnWm5hWFJvZFdJIn0.eyJpc3MiOiJodHRwczovL2RleC5leGFtcGxlLmNvbTo4MDgwIiwic3ViIjoiQ2djNE9URXlOVFUzRWdabmFYUm9kV0kiLCJhdWQiOiJleGFtcGxlLWFwcCIsImV4cCI6MTU1MTA5NzkwNiwiaWF0IjoxNTUwNzM3OTA2LCJlbWFpbCI6ImZodGpvYkBob3RtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJncm91cHMiOlsiZGV2Il0sIm5hbWUiOiJmYW51eCJ9.ZqKn461UW0aGtyjyqu2Dc5tiUzC-6eYLag542d3AvklUdZuw8i9XwyaUg_f1OAj0ZsEcOybOe9_PeGMaUYzU0OvlKPY-q2zbQVC-m6u6sQw6ZXx8pi0W8k4wQSJnMaOLddCfurlYufmr8kScDBQlnKapSR0F9mJzvpKkHD-XNshQKWhX3n03g7OfFgb4RuhLjKDNQnoGn7DfBNntibHlF9sPo0jC5JjqTZaGvoGmiRE4PAXwxA-RJifsWDNf_jW8lrDiY4NSO_3O081cia4N1GKht51q9W3eaNMvFDD9hje7abDdZoz9KPi2vc3zvgH7cNv0ExVHKaA0-dwAZgTx4g" -k https://172.31.12.61:6443/api/v1/namespaces/default/pods
-{
-  "kind": "Status",
-  "apiVersion": "v1",
-  "metadata": {
 
-  },
-  "status": "Failure",
-  "message": "pods is forbidden: User \"https://dex.example.com:8080#fanux\" cannot list resource \"pods\" in API group \"\" in the namespace \"default\"",
-  "reason": "Forbidden",
-  "details": {
-    "kind": "pods"
-  },
-  "code": 403
-}
-```
-看，虽然还是403 但是已经有了用户信息，只要给该用户授权就可正常访问了，如何授权下文介绍
+    ```
+    [root@iZj6cegflzze2l7fpcqoerZ ssl]# curl -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkNnYzRPVEV5TlRVM0VnWm5hWFJvZFdJIn0.eyJpc3MiOiJodHRwczovL2RleC5leGFtcGxlLmNvbTo4MDgwIiwic3ViIjoiQ2djNE9URXlOVFUzRWdabmFYUm9kV0kiLCJhdWQiOiJleGFtcGxlLWFwcCIsImV4cCI6MTU1MTA5NzkwNiwiaWF0IjoxNTUwNzM3OTA2LCJlbWFpbCI6ImZodGpvYkBob3RtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJncm91cHMiOlsiZGV2Il0sIm5hbWUiOiJmYW51eCJ9.ZqKn461UW0aGtyjyqu2Dc5tiUzC-6eYLag542d3AvklUdZuw8i9XwyaUg_f1OAj0ZsEcOybOe9_PeGMaUYzU0OvlKPY-q2zbQVC-m6u6sQw6ZXx8pi0W8k4wQSJnMaOLddCfurlYufmr8kScDBQlnKapSR0F9mJzvpKkHD-XNshQKWhX3n03g7OfFgb4RuhLjKDNQnoGn7DfBNntibHlF9sPo0jC5JjqTZaGvoGmiRE4PAXwxA-RJifsWDNf_jW8lrDiY4NSO_3O081cia4N1GKht51q9W3eaNMvFDD9hje7abDdZoz9KPi2vc3zvgH7cNv0ExVHKaA0-dwAZgTx4g" -k https://172.31.12.61:6443/api/v1/namespaces/default/pods
+    {
+      "kind": "Status",
+      "apiVersion": "v1",
+      "metadata": {
+
+      },
+      "status": "Failure",
+      "message": "pods is forbidden: User \"https://dex.example.com:8080#fanux\" cannot list resource \"pods\" in API group \"\" in the namespace \"default\"",
+      "reason": "Forbidden",
+      "details": {
+        "kind": "pods"
+      },
+      "code": 403
+    }
+    ```
+
+   看，虽然还是403 但是已经有了用户信息，只要给该用户授权就可正常访问了，如何授权下文介绍
 
 ## token种类介绍
 token的生成方式有很多，主要分成三种：
