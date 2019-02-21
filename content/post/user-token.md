@@ -15,8 +15,8 @@ menu = ""           # set "main" to add this content to the main menu
 kubernetes server account的token很容易获取，但是User的token非常麻烦，本文给出一个极简的User token生成方式，让用户可以一个http请求就能获取到。
 
 ## token主要用来干啥
-1. 官方dashboard登录时需要。 如果通过使用kubeconfig文件登录而文件中又没有token的话会失败，现在大部分文章都介绍使用service account的token来登录dashboard，能通，不过有问题：
-   第一：绑定角色时要指定类型是service account:
+官方dashboard登录时需要。 如果通过使用kubeconfig文件登录而文件中又没有token的话会失败，现在大部分文章都介绍使用service account的token来登录dashboard，能通，不过有问题：
+第一：绑定角色时要指定类型是service account:
 
     ```
     apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -35,9 +35,9 @@ kubernetes server account的token很容易获取，但是User的token非常麻�
       namespace: kube-system
     ```
 
-  第二：要理解kubeconfig里是解析证书把CN作为用户名的，这时service account即便与CN一样那还是两个账户，绑定角色时还需要绑定两次，有点像把service account给"人"用, 所以把service account的token扔给某个开发人员去用往往不合适，service account token更多时候是给程序用的。
+第二：要理解kubeconfig里是解析证书把CN作为用户名的，这时service account即便与CN一样那还是两个账户，绑定角色时还需要绑定两次，有点像把service account给"人"用, 所以把service account的token扔给某个开发人员去用往往不合适，service account token更多时候是给程序用的。
 
-2. 想直接调用https的，没有token就会：
+想直接调用https的，没有token就会：
 
     ```
     [root@iZj6cegflzze2l7fpcqoerZ ssl]# curl https://172.31.12.61:6443/api/v1/namespaces/default/pods --insecure
