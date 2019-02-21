@@ -17,22 +17,23 @@ kubernetes server account的token很容易获取，但是User的token非常麻�
 ## token主要用来干啥
 1. 官方dashboard登录时需要。 如果通过使用kubeconfig文件登录而文件中又没有token的话会失败，现在大部分文章都介绍使用service account的token来登录dashboard，能通，不过有问题：
    第一：绑定角色时要指定类型是service account:
-```
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
-metadata:
-  name: kubernetes-dashboard
-  labels:
-    k8s-app: kubernetes-dashboard
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount   # 这里不是User类型
-  name: kubernetes-dashboard
-  namespace: kube-system
-```
+
+    ```
+    apiVersion: rbac.authorization.k8s.io/v1beta1
+    kind: ClusterRoleBinding
+    metadata:
+      name: kubernetes-dashboard
+      labels:
+        k8s-app: kubernetes-dashboard
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+    subjects:
+    - kind: ServiceAccount   # 这里不是User类型
+      name: kubernetes-dashboard
+      namespace: kube-system
+    ```
   第二：要理解kubeconfig里是解析证书把CN作为用户名的，这时service account即便与CN一样那还是两个账户，绑定角色时还需要绑定两次，有点像把service account给"人"用, 所以把service account的token扔给某个开发人员去用往往不合适，service account token更多时候是给程序用的。
 
 2. 想直接调用https的，没有token就会：
