@@ -23,8 +23,6 @@ menu = ""           # set "main" to add this content to the main menu
 
 ![](/vim.png)
 
-再不总结下下次我又忘记了
-
 # 安装macvim
 主要是YouCompleteMe mac系统上需要依赖这个[地址](https://github.com/macvim-dev/macvim/releases)
 
