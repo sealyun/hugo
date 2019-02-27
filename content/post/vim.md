@@ -170,6 +170,7 @@ cd ~/.vim/bundle/YouCompleteMe
 git clone https://github.com/tomasr/molokai ~/.vim
 mv ~/.vim/molokai/colors ~/.vim
 ```
+
 # 常用快捷键
 Ctrl n 文件目录
 , t 函数列表
