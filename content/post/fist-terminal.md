@@ -17,8 +17,6 @@ menu = ""           # set "main" to add this content to the main menu
 # terminal功能安装
 [安装地址](https://github.com/fanux/fist/blob/master/terminal/README.md)
 
-[体验地址](http://47.52.202.240:30514/)
-
 # 集成kubectl
 terminal中可直接使用kubectl，用户就不需要登录到机器上或者自己装kubectl远程访问集群，当然这是基本功能
 
