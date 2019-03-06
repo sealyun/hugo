@@ -12,7 +12,7 @@ menu = ""           # set "main" to add this content to the main menu
 > [kubernetes集群三步安装](https://sealyun.com/pro/products/)
 
 # 介绍
-fist是sealyun开发的精致的k8s管理工具，所有功能切入要害，而不追求多与重，接下来的介绍我相信有节操的k8s管理员一定会喜欢它。
+[fist](https://github.com/fanux/fist)是sealyun开发的精致的k8s管理工具，所有功能切入要害，而不追求多与重，接下来的介绍我相信有节操的k8s管理员一定会喜欢它。
 
 # terminal功能安装
 [安装地址](https://github.com/fanux/fist/blob/master/terminal/README.md)
