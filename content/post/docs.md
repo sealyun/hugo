@@ -69,13 +69,9 @@ rm -rf /var/lib/etcd
 rm -rf /var/etcd
 ```
 
-> master 节点 (录屏加载较慢，别焦躁。。。)
-
-<script data-speed="3" src="https://asciinema.org/a/RZ3a74x8qE6DZy7jSjaDrLvYM.js" id="asciicast-RZ3a74x8qE6DZy7jSjaDrLvYM" async></script>
-
-> node 节点
-
-<script data-speed="3" src="https://asciinema.org/a/HwrKtAEJpguMfYMNEU7LDeFbQ.js?speed=40" id="asciicast-HwrKtAEJpguMfYMNEU7LDeFbQ" async></script>
+# 证书延长版
+kubernets默认证书一年过期，这里编译了一个99年证书的kubeadm，下载下来替换离线安装包里的即可
+[kubeadm](https://github.com/fanux/kube/releases/tag/certv1.13.4)
 
 # kubernetes高可用安装
 基本此安装包我们开发了[sealos](https://github.com/fanux/sealos)用于构建生产环境高可用的kubernetes集群，[文档地址](https://sealyun.com/post/sealos/)
