@@ -37,7 +37,7 @@ menu = ""           # set "main" to add this content to the main menu
 
   ![](/kubelet.png)
 
- ## 概述
+## 概述
 
 由于docker嵌入了太多自身内容,为了减轻容器负担。此次选用containerd作为kubernetes的容器实现方案。本文将带大家讲述如何搭建一个集成了containerd的k8s集群。
 
