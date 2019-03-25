@@ -27,6 +27,9 @@ menu = ""           # set "main" to add this content to the main menu
 
 我们这里提供了一个免费的[内核rpm包](https://github.com/sealyun/kernel/releases/tag/v4.14.49) 这个在我们生产环境跑了将近一年没出任何问题
 
+## 监控
+overlay2如果不做一些特殊操作，cadvisor是监控不到容器内实际使用多少磁盘的，经过xfs和配额配置才能正常监控到
+
 # 使用xfs文件系统
 不使用xfs就无法做到给每个容器限制10G的大小，就可能出现一个容器的误操作导致把机器盘全占完
 
