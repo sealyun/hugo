@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2019-03-28T10:54:24+02:00"
+date = "2019-03-27T10:54:24+02:00"
 draft = false
 title = "tektoncd pipeline教程 - kubernetes原生pipeline"
 tags = ["event","dotScale","sketchnote"]
