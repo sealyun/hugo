@@ -26,6 +26,15 @@ sealyun定制超级版kubeadm通过ipvs代理多个master，优雅解决k8s高�
 | apiserver.cluster.local | apiserver解析名|
 
 ## 下载超级[kubeadm](https://github.com/fanux/kube/releases/tag/v0.0.30-kubeadm-lvscare)
+## 下载[kubernetes1.14.0+离线包](http://store.lameleg.com)
+在每个节点上初始化
+```
+tar zxvf kube1.14.0.tar.gz && cd kube/shell && sh init.sh
+```
+用下载的kubeadm替换掉包内的kubeadm:
+```
+cp kubeadm /usr/bin/kubeadm
+```
 
 ## kubeadm配置文件 
 cat kubeadm-config.yaml :
