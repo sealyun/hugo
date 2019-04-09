@@ -29,7 +29,8 @@ sealyun定制超级版kubeadm通过ipvs代理多个master，优雅解决k8s高�
 
 ## kubeadm配置文件 
 cat kubeadm-config.yaml :
-``
+
+```
 apiVersion: kubeadm.k8s.io/v1beta1
 kind: ClusterConfiguration
 kubernetesVersion: v1.14.0
