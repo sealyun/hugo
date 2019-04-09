@@ -2,7 +2,7 @@
 author = "fanux"
 date = "2019-04-01T10:54:24+02:00"
 draft = false
-title = "Sealos 2.0发布，k8s高要用一个kubeadm搞定"
+title = "k8s高可用一个kubeadm搞定,无依赖keepalived haproxy ansible"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
