@@ -2,7 +2,7 @@
 author = "fanux"
 date = "2019-05-01T10:54:24+02:00"
 draft = false
-title = "kubernetes开发教程"
+title = "kubernetes开发流程"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
