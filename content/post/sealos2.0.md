@@ -15,6 +15,7 @@ menu = ""           # set "main" to add this content to the main menu
 本文教你如何用一条命令构建k8s高可用集群且不依赖haproxy和keepalived，也无需ansible。通过内核ipvs对apiserver进行负载均衡，并且带apiserver健康检测。
 
 # 快速入门
+[sealos项目地址](https://github.com/fanux/sealos) 
 ## 准备条件
 * 装好docker并启动docker
 * 把[离线安装包](http://store.lameleg.com) 下载好拷贝到所有节点的/root目录下, 不需要解压，如果有文件服务器更好，sealos支持从一个服务器上wget到所有节点上
