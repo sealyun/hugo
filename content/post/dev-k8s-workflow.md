@@ -59,7 +59,7 @@ git push                  # push 到origin
 # CI编译与发布
    笔者比较喜欢drone，所以编译与发布都是用的drone，安利个[drone免费公有服务](https://cloud.drone.io/)非常好用
 
-    ![](/build-k8s.png)
+![](/build-k8s.png)
 
     由于k8s各个版本可能需要的golang版本都不太一样，所以最方便的还是在容器中进行构建，但并不是随便一个golang的镜像都可以进行构建，因为k8s还需要拷贝代码，生成代码等依赖了一些小工具，我这里提供了一个官方的编译镜像：fanux/kube-build:v1.12.1-2
 
