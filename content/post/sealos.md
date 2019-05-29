@@ -11,6 +11,8 @@ menu = ""           # set "main" to add this content to the main menu
 
 # [kubernetes集群三步安装](https://sealyun.com/pro/products/)
 
+# k8s 1.14以上版本请直接参考[sealos readme](https://github.com/fanux/sealos)
+
 sealos是一个轻量级kubernetes HA安装项目，重点关注功能的收敛而非庞大复杂厚重，旨在容易定制。除kubelet意外其它任何组件均在容器中运行
 这样做的好处有几点：
 
