@@ -41,7 +41,7 @@ menu = ""           # set "main" to add this content to the main menu
 ceph监控，依赖rook,包内暂时不包含
 ![](/show/moni-ceph.png)
 
-# kubernetes安装文档
+# kubernetes安装文档 单master
 安装包中不包含docker，如没装docker 请先安装之`yum install -y docker`
 
 ```
@@ -89,7 +89,6 @@ kubernets默认证书一年过期，这里编译了一个99年证书的kubeadm�
 ![](/kubernetes-qrcode.jpg)
 
 QQ群：98488045
-
 
 ### 微信群：
 ![](/wechatgroup1.png)
