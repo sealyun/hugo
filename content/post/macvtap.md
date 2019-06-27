@@ -275,6 +275,30 @@ Last login: Thu Jun 27 08:38:00 2019
 3. macvtap0是可以理解成挂在网桥端口上的，这样就把包发给macvtap0了（因为mac地址一样,不一样就不会发给macvtap了）
 4. macvtap0就把包丢给qemu应用进程（最终到虚拟机eth0）
 
+## 裸用qemu
+以上是通过libvirt进行使用的，这样屏蔽了很多底层的细节，如果是直接使用qemu命令需要如下操作：
+
+创建macvtap设备：
+
+```
+ip link add link eth0 name macvtap0 type macvtap mode bridge
+ip link set macvtap0 address 1a:46:0b:ca:bc:7b up
+bash-4.2# cat /sys/class/net/macvtap0/ifindex  # 对应下面命令的/dev/tap2
+2
+bash-4.2# cat /sys/class/net/macvtap0/address # 与qemu mac地址配置一致
+1a:46:0b:ca:bc:7b
+```
+
+启动qemu,然后虚拟机里面的地址配置同libvirt，可以通过vnc客户端（vnc viewer）进入虚拟机配置，不在赘述:
+
+```
+bash-4.2# qemu-system-x86_64 -enable-kvm /root/CentOS-7-x86_64-GenericCloud.qcow2\
+-netdev tap,fd=30,id=hostnet0,vhost=on,vhostfd=4 30<>/dev/tap2 4<>/dev/vhost-net \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=1a:46:0b:ca:bc:7b   \
+-monitor telnet:127.0.0.1:5801,server,nowait
+VNC server running on ::1:5900
+```
+
 ## 常见问题
 
 > Inappropriate ioctl for device
