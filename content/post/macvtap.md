@@ -9,6 +9,11 @@ share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
 
+# 概述
+macvtap是虚拟机网络虚拟化常用的一种技术，当然容器也可以用。MACVTAP 的实现基于传统的 MACVLAN。和 TAP 设备一样，每一个 MACVTAP 设备拥有一个对应的 Linux 字符设备，并拥有和 TAP 设备一样的 IOCTL 接口，因此能直接被 KVM/Qemu使用，方便地完成网络数据交换工作。引入 MACVTAP 设备的目标是：简化虚拟化环境中的交换网络，代替传统的 Linux TAP 设备加 Bridge 设备组合，同时支持新的虚拟化网络技术，如 802.1 Qbg。
+
+如kata的虚拟化网络就用了这个技术，以下实践完就会对kata的网络原理比较清楚了，建议对照教程动手实践.
+
 # 实验环境介绍
 ![](/macvtap.jpg)
 此图非常重要，读整篇文章最好脑海里都有
