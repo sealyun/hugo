@@ -14,17 +14,17 @@ menu = ""           # set "main" to add this content to the main menu
 强隔离容器的那些事
 
 原创： sealnux  sealyun  今天
-| 为什么需要强隔离容器
+> 为什么需要强隔离容器
 
       我们在生产环境中运行容器已久，第一次对强隔离容器诉求是java类应用引起的，如果不配置jvm参数，java虚拟机会根据系统资源信息进行内存gc线程数等配置，在不给容器配额的情况下问题不大，一旦配额了。。。
 
      普通的容器在容器中看到的资源还是宿主机的资源，那么假设宿主机128G而你给容器配额2G，此时堆内存按照128G去分，可想而知后果，同理还有gc线程数等
 
-| 给jvm配置参数就行了呗
+> 给jvm配置参数就行了呗
 
    我们很难改变用户行为，让用户都去改动参数不太现实。
 
-| lxcfs一定程度上解决了这个问题
+> lxcfs一定程度上解决了这个问题
 
 ![](/lxcfs.jpg)
 
@@ -33,7 +33,7 @@ menu = ""           # set "main" to add this content to the main menu
 ![](/lxcfs1.jpg)
 
 
-| 然鹅，lxcfs的缺陷
+> 然鹅，lxcfs的缺陷
 
 第一，支持lxcfs的运行时甚少
 第二，用户使用时不透明，需要自行挂载很多文件不友好
@@ -75,7 +75,7 @@ menu = ""           # set "main" to add this content to the main menu
 
     因为kata能支持firecracker和qemu，所以针对kata这个技术来做个具体点的介绍
 
-| 进程模型
+> 进程模型
 
 ![](/kata2.jpg)
 
@@ -86,7 +86,7 @@ menu = ""           # set "main" to add this content to the main menu
 
       containerd会与kata的shim进程通信，shim与agent通信，agent在虚拟机里面做一些事情，如配置网卡，启动容器等。
 
-| 虚拟化方式
+> 虚拟化方式
 
 ![](/kata4.jpg)
 
@@ -94,7 +94,7 @@ menu = ""           # set "main" to add this content to the main menu
  1.  网络任然在一个ns中，下文会讲
  2.  kata agent依然会在虚拟机中启动容器
 
-| kata网络
+> kata网络
 
 ![](/kata-net.jpg)
 
@@ -148,7 +148,7 @@ func createMacvtapFds(linkIndex int, queues int) ([]*os.File, error) {
 
      网络其它的部分就是兼容CNI标准了，本文不做过多介绍了。
 
-| 文件系统DAX(Direct Access filesystem) 
+> 文件系统DAX(Direct Access filesystem) 
       内核DAX功能有效地将一些主机端文件映射到来宾VM空间。特别是Kata Containers使用QEMU NVDIMM功能提供内存映射的虚拟设备，可用于将虚拟机的根文件系统DAX映射到guest内存地址空间。
 
 ![](/DAX.jpg)
@@ -157,18 +157,18 @@ func createMacvtapFds(linkIndex int, queues int) ([]*os.File, error) {
 QEMU配置了NVDIMM内存设备，内存文件后端在主机端文件中映射到虚拟NVDIMM空间。
 guest虚拟机内核命令行安装此NVDIMM设备并启用DAX功能，允许直接页面映射和访问，从而绕过guest虚拟机页面缓存。这样虚拟机的根文件系统就来了。
 
-| 内核文件
+> 内核文件
 kata kernel 此连接有详细介绍
 1. kata对内核做了一些patch,如内存热插拔，9pfs缓存优化，arm架构的更好支持等
 2. patch完了后把编译好的内核放到kata指定的目录
 make -j $(nproc) ARCH="${arch_target}"
 
-| docker镜像转化成虚拟机镜像
+> docker镜像转化成虚拟机镜像
      osbuilder项目专门去做这个事情，这里要解释的一个概念是initrd（或“initramfs”）压缩cpio(1)归档，由rootfs创建，加载到内存中并用作Linux启动过程的一部分。在启动期间，内核将其解压缩到一个特殊的实例中，该实例tmpfs将成为初始的根文件系统。
  
         使用方法也比较简单，这里不再赘述。
 
-| firecracker简介
+> firecracker简介
 
 ![](/firecracker.jpg)
 
@@ -200,10 +200,10 @@ ip addr add 172.16.0.2/24 dev eth0
 ip route add default via 172.16.0.1 dev eth0
 清清楚楚，干干净净
 
-| 轻量级虚拟机其它
+> 轻量级虚拟机其它
      现在轻量级虚拟机还是有些问题没解决，比如监控，就不能像cadvisor那样去监控容器了，所以这块kubelet采集的地方就需要定制。
 
-| kubevirt简介
+> kubevirt简介
        以上都是轻量级虚拟机，然而对于亡openstack之心不死的人还是希望搞出个能管理重量级虚拟机的东西，kubevirt应运而生。 
 
        我们如果去基本kata去管理有状态的重量级虚拟机其实还是有很多事要去做的：
@@ -222,7 +222,7 @@ kubevirt正是因为这个问题所以采用了这样的架构：
 
      不过每个虚拟机都会去起一个libvirtd进程的做法我觉得还是有待商榷。
 
-| 总结
+> 总结
       本文虽然扯了很多，但是虚拟机还是远比容器复杂，本文也只能提个冰山一角，希望大家读完能有个整体的认识。我是希望能用一个统一的技术栈搞定容器，虚拟机，轻量级虚拟机，这样能极大的节省企业的成本，尤其是人力维护成本。 
 
 # 公众号：
