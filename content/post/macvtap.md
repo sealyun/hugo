@@ -1,8 +1,8 @@
 +++
 author = "fanux"
-date = "2019-01-23T10:54:24+02:00"
+date = "2019-06-23T10:54:24+02:00"
 draft = false
-title = "rook使用教程，快速编排ceph"
+title = "macvtap实践教程"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
