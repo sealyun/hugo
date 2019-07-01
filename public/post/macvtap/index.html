@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>macvtap实践教程 - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<meta name="author" content="fanux" /><meta name="description" content="概述 macvtap是虚拟机网络虚拟化常用的一种技术，当然容器也可以用。MACVTAP 的实现基于传统的 MACVLAN。和 TAP 设备一样，每一个 MACVTAP 设" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/macvtap/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="macvtap实践教程" />
+<meta property="og:description" content="概述 macvtap是虚拟机网络虚拟化常用的一种技术，当然容器也可以用。MACVTAP 的实现基于传统的 MACVLAN。和 TAP 设备一样，每一个 MACVTAP 设" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/macvtap/" />
+<meta property="article:published_time" content="2019-06-23T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2019-06-23T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="macvtap实践教程">
+<meta itemprop="description" content="概述 macvtap是虚拟机网络虚拟化常用的一种技术，当然容器也可以用。MACVTAP 的实现基于传统的 MACVLAN。和 TAP 设备一样，每一个 MACVTAP 设">
+
+
+<meta itemprop="datePublished" content="2019-06-23T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2019-06-23T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="2808">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="macvtap实践教程"/>
+<meta name="twitter:description" content="概述 macvtap是虚拟机网络虚拟化常用的一种技术，当然容器也可以用。MACVTAP 的实现基于传统的 MACVLAN。和 TAP 设备一样，每一个 MACVTAP 设"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">macvtap实践教程</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-06-23 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#概述">概述</a></li>
+<li><a href="#实验环境介绍">实验环境介绍</a></li>
+<li><a href="#初始化环境">初始化环境</a>
+<ul>
+<li><a href="#qemu-libvirt环境">qemu libvirt环境</a></li>
+<li><a href="#虚拟机镜像">虚拟机镜像</a></li>
+<li><a href="#启动虚拟机">启动虚拟机</a>
+<ul>
+<li><a href="#编写libvirt配置">编写libvirt配置</a></li>
+<li><a href="#启动虚拟机-1">启动虚拟机</a></li>
+<li><a href="#配置虚拟机ip">配置虚拟机IP</a>
+<ul>
+<li><a href="#修改dns配置">修改DNS配置</a></li>
+<li><a href="#修改sshd配置">修改sshd配置</a></li>
+<li><a href="#启动ssh客户端容器">启动ssh客户端容器</a></li>
+<li><a href="#修改虚拟机mac地址">修改虚拟机mac地址</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#裸用qemu">裸用qemu</a></li>
+<li><a href="#常见问题">常见问题</a></li>
+</ul></li>
+<li><a href="#公众号">公众号：</a>
+<ul>
+<li>
+<ul>
+<li><a href="#微信群">微信群：</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="概述">概述</h1>
+
+<p>macvtap是虚拟机网络虚拟化常用的一种技术，当然容器也可以用。MACVTAP 的实现基于传统的 MACVLAN。和 TAP 设备一样，每一个 MACVTAP 设备拥有一个对应的 Linux 字符设备，并拥有和 TAP 设备一样的 IOCTL 接口，因此能直接被 KVM/Qemu使用，方便地完成网络数据交换工作。引入 MACVTAP 设备的目标是：简化虚拟化环境中的交换网络，代替传统的 Linux TAP 设备加 Bridge 设备组合，同时支持新的虚拟化网络技术，如 802.1 Qbg。</p>
+
+<p>如kata的虚拟化网络就用了这个技术，以下实践完就会对kata的网络原理比较清楚了，建议对照教程动手实践.</p>
+
+<h1 id="实验环境介绍">实验环境介绍</h1>
+
+<p><img src="/macvtap.jpg" alt="" />
+此图非常重要，读整篇文章最好脑海里都有</p>
+
+<h1 id="初始化环境">初始化环境</h1>
+
+<h2 id="qemu-libvirt环境">qemu libvirt环境</h2>
+
+<p>我已经做好了qemu libvirt的镜像，大家可以直接使用：
+在容器中有非常多的好处，环境如果乱了可以快速恢复干净的环境。
+使用设备对也可减少对宿主机网络的影响。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">docker run -d --privileged -v /dev:/dev -v /home/fanux:/root --name qemu-vm fanux/libvirt:latest init</pre></td></tr></table>
+</div>
+</div>
+<p>注意：
+1. 网络等操作需要容器有特权模式
+2. tap网络需要挂载/dev目录
+3. /home/fanux可以作为工作目录，镜像自己编写的libvirt配置等放在里面防止删除容器后丢失
+4. 由于libvirt需要systemd所以我们在容器中启动init进程</p>
+
+<p>也可自己构建镜像，我提供了一个Dockerfile, -j参数根据你机器CPU来设置编译时的线程数:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">FROM centos:7.6.1810
+RUN yum install -y wget &amp;&amp; wget https://download.qemu.org/qemu-4.0.0.tar.xz &amp;&amp; \
+    tar xvJf qemu-4.0.0.tar.xz  \
+    &amp;&amp; yum install -y automake gcc-c++ gcc make autoconf libtool gtk2-devel \
+    &amp;&amp; cd qemu-4.0.0 \
+    &amp;&amp; ./configure \
+    &amp;&amp; make -j 72 &amp;&amp; make install \
+    &amp;&amp; yum install -y bridge-utils &amp;&amp; yum install -y net-tools tunctl iproute &amp;&amp; yum -y install openssh-clients \
+    cd .. &amp;&amp; rm qemu-4.0.0.tar.xz &amp;&amp; rm -rf qemu-4.0.0
+RUN yum install -y libvirt virt-manager gustfish openssh-clients</pre></td></tr></table>
+</div>
+</div>
+<h2 id="虚拟机镜像">虚拟机镜像</h2>
+
+<p>进入容器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@compute84 libvirt]# docker exec -it qemu-vm bash
+bash-4.2# cd
+bash-4.2# ls
+CentOS-7-x86_64-GenericCloud.qcow2     centos.qcow2	    image    nohup.out	start.sh  vm3.xml
+CentOS-7-x86_64-Minimal-1810.iso       cloud-init-start.sh  kernel   qemu	vm.xml
+Fedora-Cloud-Base-30-1.2.x86_64.qcow2  destroy.sh	    libvirt  run.sh	vm2.xml</pre></td></tr></table>
+</div>
+</div>
+<p>下载虚拟机镜像：</p>
+
+<p>openstack已经提供很多已经装过cloud-init的镜像，地址：
+<a href="https://docs.openstack.org/image-guide/obtain-images.html">https://docs.openstack.org/image-guide/obtain-images.html</a></p>
+
+<p>我用的一个比较新的centos的qcow2格式镜像：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">wget http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud-1905.qcow2</pre></td></tr></table>
+</div>
+</div>
+<p>修改虚拟机root密码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">virt-customize -a CentOS-7-x86_64-GenericCloud.qcow2 --root-password password:coolpass</pre></td></tr></table>
+</div>
+</div>
+<h2 id="启动虚拟机">启动虚拟机</h2>
+
+<p>查看容器网络信息：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">bash-4.2# systemctl start libvirtd
+bash-4.2# ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: virbr0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default qlen 1000
+    link/ether 52:54:00:c6:59:47 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.122.1/24 brd 192.168.122.255 scope global virbr0
+       valid_lft forever preferred_lft forever
+3: virbr0-nic: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast master virbr0 state DOWN group default qlen 1000
+    link/ether 52:54:00:c6:59:47 brd ff:ff:ff:ff:ff:ff
+1310: eth0@if1311: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default 
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 172.17.0.2/16 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:acff:fe11:2/64 scope link 
+       valid_lft forever preferred_lft forever</pre></td></tr></table>
+</div>
+</div>
+<p>1,2,3是libvirt创建的可以忽略，最主要是eth0</p>
+
+<h3 id="编写libvirt配置">编写libvirt配置</h3>
+
+<p>vm3.xml:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&lt;domain type=&#39;kvm&#39;&gt;
+  &lt;name&gt;vm3&lt;/name&gt;
+  &lt;memory unit=&#39;MiB&#39;&gt;2048&lt;/memory&gt;
+  &lt;currentMemory unit=&#39;MiB&#39;&gt;2048&lt;/currentMemory&gt;
+  &lt;os&gt;
+    &lt;type arch=&#39;x86_64&#39;&gt;hvm&lt;/type&gt;
+    &lt;boot dev=&#39;hd&#39;/&gt;
+  &lt;/os&gt;
+  &lt;clock offset=&#39;utc&#39;/&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;destroy&lt;/on_crash&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/local/bin/qemu-system-x86_64&lt;/emulator&gt;
+  &lt;disk type=&#39;file&#39; device=&#39;disk&#39;&gt;
+       &lt;driver name=&#39;qemu&#39; type=&#39;qcow2&#39;/&gt;
+       &lt;source file=&#39;/root/CentOS-7-x86_64-GenericCloud.qcow2&#39;/&gt;
+       &lt;target dev=&#39;vda&#39; bus=&#39;virtio&#39;/&gt;
+  &lt;/disk&gt;
+  &lt;interface type=&#39;direct&#39;&gt; 
+    &lt;source dev=&#39;eth0&#39; mode=&#39;bridge&#39; /&gt; 
+    &lt;model type=&#39;virtio&#39; /&gt;    
+    &lt;driver name=&#39;vhost&#39; /&gt; 
+  &lt;/interface&gt;
+  &lt;serial type=&#39;pty&#39;&gt;
+    &lt;target port=&#39;0&#39;/&gt;
+  &lt;/serial&gt;
+  &lt;console type=&#39;pty&#39;&gt;
+    &lt;target type=&#39;serial&#39; port=&#39;0&#39;/&gt;
+  &lt;/console&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre></td></tr></table>
+</div>
+</div>
+<p>这里配置正确镜像地址，interface的地方是macvtap相关的配置。</p>
+
+<h3 id="启动虚拟机-1">启动虚拟机</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">bash-4.2# virsh define vm3.xml 
+Domain vm3 defined from vm3.xml
+bash-4.2# virsh start vm3     
+Domain vm3 started</pre></td></tr></table>
+</div>
+</div>
+<p>启动完后就可以看到macvtap设备被创建出来了</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">bash-4.2# ip addr
+7: macvtap0@eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 500
+    link/ether 52:54:00:56:e4:20 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::5054:ff:fe56:e420/64 scope link 
+       valid_lft forever preferred_lft forever</pre></td></tr></table>
+</div>
+</div>
+<p>进入到虚拟机：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">virsh console vm3</pre></td></tr></table>
+</div>
+</div>
+<p>如果卡在这一步：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">A start job is running for LSB: Bri... networking
+cloud-init[2253]: 2019-06-27 08:37:09,971 - url_helper.py[WARNING]: Calling &#39;http://192.168.122.1/latest/meta-data/instance-id&#39; failed [87/120s]: request error</pre></td></tr></table>
+</div>
+</div>
+<p>等它超时就好，因为macvtap时我们需要进入虚拟机去配置网络。
+然后就可以进入虚拟机了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">CentOS Linux 7 (Core)
+Kernel 3.10.0-957.1.3.el7.x86_64 on an x86_64
+
+localhost login: root
+Password: 
+Last login: Thu Jun 27 07:19:32 from gateway</pre></td></tr></table>
+</div>
+</div>
+<p>密码是我们上面设置的镜像密码：coolpass</p>
+
+<h3 id="配置虚拟机ip">配置虚拟机IP</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@localhost ~]# ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 52:54:00:56:e4:20 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::5054:ff:fe56:e420/64 scope link 
+       valid_lft forever preferred_lft forever</pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@localhost ~]# ip addr add 172.17.0.2/16 dev eth0
+[root@localhost ~]# ip route add default via 172.17.0.1 dev eth0
+[root@localhost ~]# ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 52:54:00:56:e4:20 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.2/16 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe56:e420/64 scope link 
+       valid_lft forever preferred_lft forever
+[root@localhost ~]# ip route 
+default via 172.17.0.1 dev eth0 
+172.17.0.0/16 dev eth0 proto kernel scope link src 172.17.0.2 
+[root@localhost ~]# ping 172.17.0.1
+PING 172.17.0.1 (172.17.0.1) 56(84) bytes of data.
+64 bytes from 172.17.0.1: icmp_seq=1 ttl=64 time=0.622 ms
+64 bytes from 172.17.0.1: icmp_seq=2 ttl=64 time=0.194 ms</pre></td></tr></table>
+</div>
+</div>
+<p>配置完后就可以ping通网关了。</p>
+
+<h4 id="修改dns配置">修改DNS配置</h4>
+
+<p>这个不改可能会导致ssh时非常慢：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@localhost ~]# cat /etc/resolv.conf 
+; Created by cloud-init on instance boot automatically, do not edit.
+;
+; generated by /usr/sbin/dhclient-script
+nameserver 114.114.114.114</pre></td></tr></table>
+</div>
+</div>
+<h4 id="修改sshd配置">修改sshd配置</h4>
+
+<p>修改/etc/ssh/sshd-config文件，将其中的PermitRootLogin no修改为yes，PubkeyAuthentication yes修改为no，AuthorizedKeysFile .ssh/authorized_keys前面加上#屏蔽掉，PasswordAuthentication no修改为yes就可以了。</p>
+
+<h4 id="启动ssh客户端容器">启动ssh客户端容器</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">docker run --rm -it fanux/libvirt bash
+[root@ee18547e9ed2 /]# ssh root@172.17.0.2
+ssh: connect to host 172.17.0.2 port 22: Connection refused</pre></td></tr></table>
+</div>
+</div>
+<p>会发现不通, 这是因为容器里的eth0和虚拟机里的eth0都配置了相同的地址导致，只需要把容器里的eth0地址删掉即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">bash-4.2# ip addr del 172.17.0.2/16 dev eth0</pre></td></tr></table>
+</div>
+</div>
+<p>再次ssh即可进入虚拟机：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@ee18547e9ed2 /]# ssh root@172.17.0.2
+The authenticity of host &#39;172.17.0.2 (172.17.0.2)&#39; can&#39;t be established.
+ECDSA key fingerprint is SHA256:kTk3yy8588WQHNtwpzS+h6u0W3RELWC8hJQwIwLOkdc.
+ECDSA key fingerprint is MD5:0c:f3:b5:69:c6:08:05:14:f8:da:42:2f:85:29:51:d0.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added &#39;172.17.0.2&#39; (ECDSA) to the list of known hosts.
+root@172.17.0.2&#39;s password: 
+Last login: Thu Jun 27 08:38:00 2019
+[root@localhost ~]# ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 52:54:00:56:e4:20 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.2/16 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe56:e420/64 scope link 
+       valid_lft forever preferred_lft forever</pre></td></tr></table>
+</div>
+</div>
+<h4 id="修改虚拟机mac地址">修改虚拟机mac地址</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@localhost ~]# ip link set eth0 address 52:54:00:56:e4:23</pre></td></tr></table>
+</div>
+</div>
+<p>会发现就连不上虚拟机了</p>
+
+<p>改回：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@localhost ~]# ip link set eth0 address 52:54:00:56:e4:20</pre></td></tr></table>
+</div>
+</div>
+<p>又可正常连接了，为啥？</p>
+
+<p>这是因为虚拟机的eth0的mac地址是必须与macvtap0的mac地址保持一样，原理很简单</p>
+
+<ol>
+<li>ARP时问IP地址是172.17.0.2的机器mac地址是什么</li>
+<li>虚拟机回了一个52:54:00:56:e4:20</li>
+<li>macvtap0是可以理解成挂在网桥端口上的，这样就把包发给macvtap0了（因为mac地址一样,不一样就不会发给macvtap了）</li>
+<li>macvtap0就把包丢给qemu应用进程（最终到虚拟机eth0）</li>
+</ol>
+
+<h2 id="裸用qemu">裸用qemu</h2>
+
+<p>以上是通过libvirt进行使用的，这样屏蔽了很多底层的细节，如果是直接使用qemu命令需要如下操作：</p>
+
+<p>创建macvtap设备：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ip link add link eth0 name macvtap0 type macvtap mode bridge
+ip link set macvtap0 address 1a:46:0b:ca:bc:7b up
+bash-4.2# cat /sys/class/net/macvtap0/ifindex  # 对应下面命令的/dev/tap2
+2
+bash-4.2# cat /sys/class/net/macvtap0/address # 与qemu mac地址配置一致
+1a:46:0b:ca:bc:7b</pre></td></tr></table>
+</div>
+</div>
+<p>启动qemu,然后虚拟机里面的地址配置同libvirt，可以通过vnc客户端（vnc viewer）进入虚拟机配置，不在赘述:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">bash-4.2# qemu-system-x86_64 -enable-kvm /root/CentOS-7-x86_64-GenericCloud.qcow2\
+-netdev tap,fd=30,id=hostnet0,vhost=on,vhostfd=4 30&lt;&gt;/dev/tap2 4&lt;&gt;/dev/vhost-net \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=1a:46:0b:ca:bc:7b   \
+-monitor telnet:127.0.0.1:5801,server,nowait
+VNC server running on ::1:5900</pre></td></tr></table>
+</div>
+</div>
+<h2 id="常见问题">常见问题</h2>
+
+<blockquote>
+<p>Inappropriate ioctl for device</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">qemu-system-x86_64: -net tap,fd=5: TUNGETIFF ioctl() failed: Inappropriate ioctl for device
+TUNSETOFFLOAD ioctl() failed: Inappropriate ioctl for device</pre></td></tr></table>
+</div>
+</div>
+<p>因为容器没有挂载/dev目录</p>
+
+<blockquote>
+<p>KVM bios被禁</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@helix105 ~]# docker run busybox uname -a
+Could not access KVM kernel module: No such file or directory
+qemu-lite-system-x86_64: failed to initialize KVM: No such file or directory
+
+/usr/bin/docker-current: Error response from daemon: oci runtime error: Unable to launch /usr/bin/qemu-lite-system-x86_64: exit status 1.
+ERRO[0001] error getting events from daemon: net/http: request canceled 
+[root@helix105 ~]# lsmod |grep kvm
+kvm                   598016  0 
+irqbypass              16384  1 kvm
+[root@helix105 ~]# modprobe kvm-intel
+modprobe: ERROR: could not insert &#39;kvm_intel&#39;: Operation not supported
+You have mail in /var/spool/mail/root
+[root@helix105 ~]# dmesg |grep kvm
+[    8.239309] kvm: disabled by bios</pre></td></tr></table>
+</div>
+</div>
+<p>这个要进bios打开</p>
+
+<blockquote>
+<p>KVM: Permission denied</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">bash-4.2# virsh start vm_name1
+error: Failed to start domain vm_name1
+error: internal error: qemu unexpectedly closed the monitor: Could not access KVM kernel module: Permission denied
+2019-06-20T07:26:33.304320Z qemu-system-x86_64: failed to initialize KVM: Permission denied</pre></td></tr></table>
+</div>
+</div>
+<p>解决办法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">#chown root:kvm /dev/kvm
+修改/etc/libvirt/qemu.conf，
+#user=&#34;root&#34;
+user=&#34;root&#34;
+#group=&#34;root&#34;
+group=&#34;root&#34;
+重启服务
+#service libvirtd restart，问题解决了</pre></td></tr></table>
+</div>
+</div>
+<p>探讨可加QQ群：98488045</p>
+
+<h1 id="公众号">公众号：</h1>
+
+<p><img src="https://sealyun.com/kubernetes-qrcode.jpg" alt="sealyun" /></p>
+
+<h3 id="微信群">微信群：</h3>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-06-23
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/event/">event</a>
+          <a href="/tags/dotscale/">dotScale</a>
+          <a href="/tags/sketchnote/">sketchnote</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/kubernetes-vm/">
+            <span class="next-text nav-default">强隔离容器那些事</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2019-06-23 10:54:24 \x2b0200 \x2b0200',
+        title: 'macvtap实践教程',
+        link: decodeURI(location.href),
+        desc: '概述 macvtap是虚拟机网络虚拟化常用的一种技术，当然容器也可以用。MACVTAP 的实现基于传统的 MACVLAN。和 TAP 设备一样，每一个 MACVTAP 设',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="fhtjob@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/fanux" class="iconfont icon-github" title="github"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> 本站总访问量 <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次 </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> 本站总访客数 <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 人 </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

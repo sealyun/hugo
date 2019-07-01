@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>强隔离容器那些事 - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<meta name="author" content="fanux" /><meta name="description" content="探讨可加QQ群：98488045 强隔离容器的那些事 为什么需要强隔离容器 我们在生产环境中运行容器已久，第一次对强隔离容器诉求是java类应用引" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/kubernetes-vm/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="强隔离容器那些事" />
+<meta property="og:description" content="探讨可加QQ群：98488045 强隔离容器的那些事 为什么需要强隔离容器 我们在生产环境中运行容器已久，第一次对强隔离容器诉求是java类应用引" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/kubernetes-vm/" />
+<meta property="article:published_time" content="2019-06-22T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2019-06-22T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="强隔离容器那些事">
+<meta itemprop="description" content="探讨可加QQ群：98488045 强隔离容器的那些事 为什么需要强隔离容器 我们在生产环境中运行容器已久，第一次对强隔离容器诉求是java类应用引">
+
+
+<meta itemprop="datePublished" content="2019-06-22T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2019-06-22T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="3895">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="强隔离容器那些事"/>
+<meta name="twitter:description" content="探讨可加QQ群：98488045 强隔离容器的那些事 为什么需要强隔离容器 我们在生产环境中运行容器已久，第一次对强隔离容器诉求是java类应用引"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">强隔离容器那些事</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-06-22 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#公众号">公众号：</a>
+<ul>
+<li>
+<ul>
+<li><a href="#微信群">微信群：</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<p>探讨可加QQ群：98488045</p>
+
+<p>强隔离容器的那些事</p>
+
+<blockquote>
+<p>为什么需要强隔离容器</p>
+</blockquote>
+
+<p>我们在生产环境中运行容器已久，第一次对强隔离容器诉求是java类应用引起的，如果不配置jvm参数，java虚拟机会根据系统资源信息进行内存gc线程数等配置，在不给容器配额的情况下问题不大，一旦配额了。。。</p>
+
+<p>普通的容器在容器中看到的资源还是宿主机的资源，那么假设宿主机128G而你给容器配额2G，此时堆内存按照128G去分，可想而知后果，同理还有gc线程数等</p>
+
+<blockquote>
+<p>给jvm配置参数就行了呗</p>
+</blockquote>
+
+<p>我们很难改变用户行为，让用户都去改动参数不太现实。</p>
+
+<blockquote>
+<p>lxcfs一定程度上解决了这个问题</p>
+</blockquote>
+
+<p><img src="/lxcfs.jpg" alt="" /></p>
+
+<p>lxcfs可以让容器有更好的资源可视性，如内存，cpuset等，原理也非常简单，就是把proc下的一些文件还在给容器，容器内进程读取资源信息时系统调用会被lxcfs拦截，然后到cgroup下去查该进程资源配额信息进行计算，大部分场景可以通过这个方式修修补补</p>
+
+<p><img src="/lxcfs1.jpg" alt="" /></p>
+
+<blockquote>
+<p>然鹅，lxcfs的缺陷</p>
+</blockquote>
+
+<p>第一，支持lxcfs的运行时甚少
+第二，用户使用时不透明，需要自行挂载很多文件不友好
+第三，由于第二点，你就得去开发一些特性去支持它，主流方式有几种
+    1.k8s上监听一些对象的创建，进行修改
+    2.修改kubelet，在volume里默认加上，我们就是这样做的，正在把这个特性PR给社区
+    3.修改runtime，或者直接选择支持这个特性的运行时，如pouch
+第四，cpushare的方式，我们也正在把这个特性pr给社区，通过计算占比把计算后的cpu核数上报给进程
+第五，很多应用从system下面去读取资源信息，而非proc，这样又是一大波定制需求。。。还有remout等等问题</p>
+
+<p>总体来说都是修修补补，不能从彻底上解决问题</p>
+
+<p>这让我越来越看好轻量级虚拟化技术</p>
+
+<p>kata runv等技术的出现真的是把虚拟机容器的优势强强结合，容器的调度编排管理生态，镜像标准，再加上虚拟机的强隔离</p>
+
+<p><img src="/kata.jpg" alt="" /></p>
+
+<p>下面开始一大波名词解释以及他们之间的关系</p>
+
+<p>containerd地位难以撼动，真正管理容器的守护进程，k8s和docker都可以通过unix socket去调用它，然后每起一个容器containerd会去调用runc runv kata等</p>
+
+<p>kata runv qemu firecracker rust-vmm都是啥关系</p>
+
+<p>kata和runv都是可以被containerd调用然后调用qemu命令去启动虚拟机</p>
+
+<p>qemu 和firecracker是一个级别，真正去启动虚拟机的，和张磊大佬交流时这里引用大佬一句话:qemu是在一大坨功能上做减法，firecracker是在非常核心简单的功能上做加法。</p>
+
+<p>那么我们到底因该选qemu还是firecracker呢，那肯定是与场景相关了，比如我们希望用重量级虚拟机，有状态，需要迁移，需要systemd sshd等，那么肯定还是走qemu libvirt， 如果我们走轻量级虚拟机firecracker是个非常不错的选择，而且潜力巨大，毕竟是来跑亚马逊函数计算的，不是盖的。看下firecracker api就发现真简单，再去看qemu文档。。。。什么**鸟玩意儿。。。</p>
+
+<p>qemu大神别喷我，我承认其强大，但是很多时候遇到问题有点无从下手，很多使用方法我也是从源码中摸索出来的，个人还是喜欢更轻量级的东西。不过我依然还是对学习qemu有很大热情。</p>
+
+<p>顺便提一下libvirt，既然重，那不如再重一点，libvirt能让你更方便的管理qemu虚拟机和qemu开发，细节不赘述了</p>
+
+<p>rust-vmm是个更底层的一系列组件，大佬说是政治产物，自己如果对写hypervisor有兴趣可以抱着学习态度去开发玩，生产中直接firecracker就好了，所以rust的潜力还是巨大的，为了写虚拟机为了写操作系统，和我一起学rust🤪🤪</p>
+
+<p>铺垫的差不多了，下面正式开始:</p>
+
+<p>因为kata能支持firecracker和qemu，所以针对kata这个技术来做个具体点的介绍</p>
+
+<blockquote>
+<p>进程模型</p>
+</blockquote>
+
+<p><img src="/kata2.jpg" alt="" /></p>
+
+<p>所以kata runtime替代掉的是runc部分的东西，因为中间有containerd，所以上层如docker k8s感知不到运行时的变化。</p>
+
+<p><img src="/kata3.jpg" alt="" /></p>
+
+<p>containerd会与kata的shim进程通信，shim与agent通信，agent在虚拟机里面做一些事情，如配置网卡，启动容器等。</p>
+
+<blockquote>
+<p>虚拟化方式</p>
+</blockquote>
+
+<p><img src="/kata4.jpg" alt="" /></p>
+
+<p>这个图虚线左边不用看，本质就是调用qemu命令创建虚拟机，右边实际上kata是把k8s pod这个壳本来是容器，换成了虚拟机，但是有很多细节：
+ 1.  网络任然在一个ns中，下文会讲
+ 2.  kata agent依然会在虚拟机中启动容器</p>
+
+<blockquote>
+<p>kata网络</p>
+</blockquote>
+
+<p><img src="/kata-net.jpg" alt="" /></p>
+
+<p>熟悉docker默认网络模式的亲都比较清楚设备对还没变，设备对的另外一端与虚拟机连接是由kata负责，用的技术叫macvtap，它可以让一个接口拥有多个mac地址。</p>
+
+<p>创建macvtap设备：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ip link add link eth0 name macvtap0 type macvtap mode bridge
+ip link set macvtap0 address 1a:46:0b:ca:bc:7b up
+cat /sys/class/net/macvtap0/ifindex
+cat /sys/class/net/macvtap0/address
+通过qemu启动：
+qemu-system-x86_64 -enable-kvm centos.qcow2 \
+ -cdrom CentOS-7-x86_64-Minimal-1810.iso \
+ -netdev tap,fd=30,id=hostnet0,vhost=on,vhostfd=4 30&lt;&gt;/dev/tap2 4&lt;&gt;/dev/vhost-net \
+ -device virtio-net-pci,netdev=hostnet0,id=net0,mac=1a:46:0b:ca:bc:7b   \
+ -monitor telnet:127.0.0.1:5801,server,nowait
+VNC server running on ::1:5900</pre></td></tr></table>
+</div>
+</div>
+<p>注意网络参数，这块很少资料介绍的比较清楚都是啥含义，我也是通过学习kata源码问了很多大牛才彻底理解的。
+/dev/tap2 这个2 是通过上面的 /sys/class/net/macvtap0/ifindex 差得的。
+vhost是虚拟机网络虚拟化的一种模式，性能比较高，我们需要把vhost的fd传入给qemu</p>
+
+<p>对应kata的代码，本质就是打开了这两文件，把fd传入：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func createMacvtapFds(linkIndex int, queues int) ([]*os.File, error) {
+  tapDev := fmt.Sprintf(&#34;/dev/tap%d&#34;, linkIndex)
+  return createFds(tapDev, queues)
+}
+
+  fds := make([]*os.File, numFds)
+  for i := 0; i &lt; numFds; i++ {
+    f, err := os.OpenFile(device, os.O_RDWR, defaultFilePerms)
+    if err != nil {
+      utils.CleanupFds(fds, i)
+      return nil, err
+    }
+    fds[i] = f
+  }
+  return fds, nil</pre></td></tr></table>
+</div>
+</div>
+<p>事情还没结束，进入虚拟机会发现网卡没有地址：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@localhost ~]# ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 52:54:00:59:ee:01 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::5054:ff:fe59:ee01/64 scope link 
+       valid_lft forever preferred_lft forever</pre></td></tr></table>
+</div>
+</div>
+<p>因为虚拟机的eth0的地址是kata-agent去配置的，所以这里需要自己在虚拟机配置一下，ip一定要与设备对另一端的eth0一样。</p>
+
+<p>网络其它的部分就是兼容CNI标准了，本文不做过多介绍了。</p>
+
+<blockquote>
+<p>文件系统DAX(Direct Access filesystem)
+内核DAX功能有效地将一些主机端文件映射到来宾VM空间。特别是Kata Containers使用QEMU NVDIMM功能提供内存映射的虚拟设备，可用于将虚拟机的根文件系统DAX映射到guest内存地址空间。</p>
+</blockquote>
+
+<p><img src="/DAX.jpg" alt="" /></p>
+
+<p>看rootfs是这样过去的
+QEMU配置了NVDIMM内存设备，内存文件后端在主机端文件中映射到虚拟NVDIMM空间。
+guest虚拟机内核命令行安装此NVDIMM设备并启用DAX功能，允许直接页面映射和访问，从而绕过guest虚拟机页面缓存。这样虚拟机的根文件系统就来了。</p>
+
+<blockquote>
+<p>内核文件
+kata kernel 此连接有详细介绍
+1. kata对内核做了一些patch,如内存热插拔，9pfs缓存优化，arm架构的更好支持等
+2. patch完了后把编译好的内核放到kata指定的目录
+make -j $(nproc) ARCH=&ldquo;${arch_target}&rdquo;</p>
+
+<p>docker镜像转化成虚拟机镜像
+osbuilder项目专门去做这个事情，这里要解释的一个概念是initrd（或“initramfs”）压缩cpio(1)归档，由rootfs创建，加载到内存中并用作Linux启动过程的一部分。在启动期间，内核将其解压缩到一个特殊的实例中，该实例tmpfs将成为初始的根文件系统。</p>
+</blockquote>
+
+<p>使用方法也比较简单，这里不再赘述。</p>
+
+<blockquote>
+<p>firecracker简介</p>
+</blockquote>
+
+<p><img src="/firecracker.jpg" alt="" /></p>
+
+<p>为什么我这么喜欢firecracker，因为你们一看它API就知道的，简单到让你怀疑人生：
+以下是个网络的例子：</p>
+
+<ol>
+<li>宿主机上创建tap设备</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo ip tuntap add tap0 mode tap
+sudo ip addr add 172.16.0.1/24 dev tap0
+sudo ip link set tap0 up
+sudo sh -c &#34;echo 1 &gt; /proc/sys/net/ipv4/ip_forward&#34;
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+sudo iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i tap0 -o eth0 -j ACCEPT</pre></td></tr></table>
+</div>
+</div>
+<ol>
+<li>调用API创建虚拟机网卡</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">curl -X PUT \
+  --unix-socket /tmp/firecracker.socket \
+  http://localhost/network-interfaces/eth0 \
+  -H accept:application/json \
+  -H content-type:application/json \
+  -d &#39;{
+      &#34;iface_id&#34;: &#34;eth0&#34;,
+      &#34;guest_mac&#34;: &#34;AA:FC:00:00:00:01&#34;,
+      &#34;host_dev_name&#34;: &#34;tap0&#34;
+    }&#39;</pre></td></tr></table>
+</div>
+</div>
+<ol>
+<li>配置虚拟机网卡</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ip addr add 172.16.0.2/24 dev eth0
+ip route add default via 172.16.0.1 dev eth0</pre></td></tr></table>
+</div>
+</div>
+<p>清清楚楚，干干净净</p>
+
+<blockquote>
+<p>轻量级虚拟机其它
+现在轻量级虚拟机还是有些问题没解决，比如监控，就不能像cadvisor那样去监控容器了，所以这块kubelet采集的地方就需要定制。</p>
+
+<p>kubevirt简介
+以上都是轻量级虚拟机，然而对于亡openstack之心不死的人还是希望搞出个能管理重量级虚拟机的东西，kubevirt应运而生。</p>
+</blockquote>
+
+<p>我们如果去基本kata去管理有状态的重量级虚拟机其实还是有很多事要去做的：
+生命周期管理，k8s可没有启动停止容器这些概念，所以想要支持虚拟机的启动重启就得自己去定义CRD，然后还不够，因为kubelet不会去调用CRI的启动停止的接口，所以还得修改kubelet&hellip;
+网络，一般的CNI是满足不了IP漂移以及VPC这种需求的，所以你需要ovn CNI之类的东西
+虚拟机的系统盘数据盘放本地是不行了，改。。。
+兼容openstack那些系统镜像，改。。。</p>
+
+<p>kubevirt正是因为这个问题所以采用了这样的架构：</p>
+
+<p><img src="/kubevirt.jpg" alt="" /></p>
+
+<p>仅资源调度时走k8s，虚拟机的生命周期管理基本已经与CRI没关系了，全走自己的agent管理，这样上面的那些问题都可以在virt-handler virt-laucher上解决，不用再去对k8s组件动刀。</p>
+
+<p>本质就是在容器里起了个虚拟机，不过启动方式与kata有所不同，它使用了libvirt，qemu更上层的一个封装，当然玩重量级虚拟机有这个还是方便很多的，很多时候我们需要调试，或者找错误，libvirt给了一系列的工具集，同时也对编程友好。</p>
+
+<p>不过每个虚拟机都会去起一个libvirtd进程的做法我觉得还是有待商榷。</p>
+
+<blockquote>
+<p>总结
+本文虽然扯了很多，但是虚拟机还是远比容器复杂，本文也只能提个冰山一角，希望大家读完能有个整体的认识。我是希望能用一个统一的技术栈搞定容器，虚拟机，轻量级虚拟机，这样能极大的节省企业的成本，尤其是人力维护成本。</p>
+</blockquote>
+
+<h1 id="公众号">公众号：</h1>
+
+<p><img src="https://sealyun.com/kubernetes-qrcode.jpg" alt="sealyun" /></p>
+
+<h3 id="微信群">微信群：</h3>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-06-22
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/event/">event</a>
+          <a href="/tags/dotscale/">dotScale</a>
+          <a href="/tags/sketchnote/">sketchnote</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/macvtap/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">macvtap实践教程</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/kube-admin-control/">
+            <span class="next-text nav-default">kubernetes Admission Controller原理介绍</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2019-06-22 10:54:24 \x2b0200 \x2b0200',
+        title: '强隔离容器那些事',
+        link: decodeURI(location.href),
+        desc: '探讨可加QQ群：98488045 强隔离容器的那些事 为什么需要强隔离容器 我们在生产环境中运行容器已久，第一次对强隔离容器诉求是java类应用引',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="fhtjob@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/fanux" class="iconfont icon-github" title="github"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> 本站总访问量 <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次 </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> 本站总访客数 <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 人 </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

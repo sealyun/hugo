@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>containerd与kubernetes集成 - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<meta name="author" content="cuisongliu" /><meta name="description" content="kubernetes集群三步安装 概念介绍 cri (Container runtime interface) cri is a containerd plugin implementation of Kubernetes container runtime interface (CRI). cri是 kubernetes的容器运行时接口的容器插件实现。 containerd containerd is an" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/containerd/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="containerd与kubernetes集成" />
+<meta property="og:description" content="kubernetes集群三步安装 概念介绍 cri (Container runtime interface) cri is a containerd plugin implementation of Kubernetes container runtime interface (CRI). cri是 kubernetes的容器运行时接口的容器插件实现。 containerd containerd is an" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/containerd/" />
+<meta property="article:published_time" content="2019-03-11T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2019-03-11T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="containerd与kubernetes集成">
+<meta itemprop="description" content="kubernetes集群三步安装 概念介绍 cri (Container runtime interface) cri is a containerd plugin implementation of Kubernetes container runtime interface (CRI). cri是 kubernetes的容器运行时接口的容器插件实现。 containerd containerd is an">
+
+
+<meta itemprop="datePublished" content="2019-03-11T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2019-03-11T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="1518">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="containerd与kubernetes集成"/>
+<meta name="twitter:description" content="kubernetes集群三步安装 概念介绍 cri (Container runtime interface) cri is a containerd plugin implementation of Kubernetes container runtime interface (CRI). cri是 kubernetes的容器运行时接口的容器插件实现。 containerd containerd is an"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">containerd与kubernetes集成</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-03-11 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#概念介绍">概念介绍</a></li>
+<li><a href="#概述">概述</a></li>
+<li><a href="#环境准备">环境准备</a></li>
+<li><a href="#安装">安装</a>
+<ul>
+<li><a href="#安装containerd">安装containerd</a></li>
+<li><a href="#使用crictl连接containerd">使用crictl连接containerd</a></li>
+<li><a href="#导入kubenetes离线镜像包">导入kubenetes离线镜像包</a></li>
+<li><a href="#修改kubelet配置和kubeadm安装时配置">修改kubelet配置和kubeadm安装时配置</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#公众号">公众号：</a>
+<ul>
+<li>
+<ul>
+<li><a href="#微信群">微信群：</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<blockquote>
+<p><a href="https://sealyun.com/pro/products/">kubernetes集群三步安装</a></p>
+</blockquote>
+
+<h2 id="概念介绍">概念介绍</h2>
+
+<ul>
+<li>cri (Container runtime interface)
+
+<ul>
+<li><code>cri</code> is a <a href="https://containerd.io/">containerd</a> plugin implementation of Kubernetes <a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/apis/cri/runtime/v1alpha2/api.proto">container runtime interface (CRI)</a>.</li>
+<li>cri是 kubernetes的容器运行时接口的容器插件实现。</li>
+<li><img src="/cri.jpg" alt="CRI" /></li>
+</ul></li>
+
+<li><p>containerd</p>
+
+<ul>
+<li>containerd is an industry-standard container runtime with an emphasis on simplicity, robustness and portability.</li>
+<li>containerd完全支持运行容器的的CRI运行时规范。</li>
+<li>cri在containerd1.1以上的版本的原生插件。它内置于containerd并默认启用。</li>
+<li><img src="/containerd.png" alt="containerd" /></li>
+</ul></li>
+
+<li><p>cri-o</p>
+
+<ul>
+<li>OCI-based implementation of Kubernetes Container Runtime Interface.</li>
+<li>kubernetes为了兼容cri和oci孵化了项目cri-o。为了架设在cri和oci之间的一座桥梁。由此cri-o既兼容cri插件实现又兼容oci的容器运行时标准。</li>
+</ul></li>
+
+<li><p>oci (Open Container Initiative)</p>
+
+<ul>
+<li><a href="https://www.opencontainers.org/about/oci-scope-table">https://www.opencontainers.org/about/oci-scope-table</a></li>
+<li>oci是由多家公司成立的项目,并由linux基金会进行管理,致力于container runtime 的标准的制定和runc的开发等工作。</li>
+</ul></li>
+
+<li><p>runc</p>
+
+<ul>
+<li><code>runc</code> is a CLI tool for spawning and running containers according to the OCI specification.</li>
+<li>runc，是对于OCI标准的一个参考实现，是一个可以用于创建和运行容器的CLI(command-line interface)工具。</li>
+</ul></li>
+</ul>
+
+<p><img src="/kubelet.png" alt="" /></p>
+
+<h2 id="概述">概述</h2>
+
+<p>由于docker嵌入了太多自身内容,为了减轻容器负担。此次选用containerd作为kubernetes的容器实现方案。本文将带大家讲述如何搭建一个集成了containerd的k8s集群。</p>
+
+<h2 id="环境准备">环境准备</h2>
+
+<p>下载containerd二进制包。我这里已经编译并打包了好了，内含containerd、runc、crictl、ctr等。</p>
+
+<p>下载链接：<a href="https://github.com/cuisongliu/containerd-dist/releases/download/v1.2.4/containerd-v1.2.4.tar.gz">https://github.com/cuisongliu/containerd-dist/releases/download/v1.2.4/containerd-v1.2.4.tar.gz</a></p>
+
+<ul>
+<li>runc版本：  1.0.1-dev</li>
+<li>containerd版本： v1.2.4</li>
+</ul>
+
+<h2 id="安装">安装</h2>
+
+<h3 id="安装containerd">安装containerd</h3>
+
+<ul>
+<li>解压二进制包并生成默认文件</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">  tar -C /usr/local/bin -xzf containerd-v1.2.4.tar.gz
+  chmod a+x /usr/local/bin/*
+  containerd config default &gt; /etc/containerd/config.toml</code></pre></td></tr></table>
+</div>
+</div>
+<p>生成的默认配置文件注意  <code>[grpc]</code> 的 <code>address</code>  字段默认为 <code>/run/containerd/containerd.sock</code></p>
+
+<p>配置文件其他参数含义参照github地址： <a href="https://github.com/containerd/containerd/blob/master/docs/man/containerd-config.toml.5.md">https://github.com/containerd/containerd/blob/master/docs/man/containerd-config.toml.5.md</a></p>
+
+<ul>
+<li>在  <code>/etc/systemd/system</code> 目录下编写文件  <code>containerd.service</code>内容如下</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">  [Unit]
+  Description=containerd container runtime
+  Documentation=https://containerd.io
+  After=network.target
+  
+  [Service]
+  ExecStartPre=/sbin/modprobe overlay
+  ExecStart=/usr/local/bin/containerd
+  Restart=always
+  RestartSec=5
+  Delegate=yes
+  KillMode=process
+  OOMScoreAdjust=-999
+  LimitNOFILE=1048576
+  # Having non-zero Limit*s causes performance problems due to accounting overhead
+  # in the kernel. We recommend using cgroups to do container-local accounting.
+  LimitNPROC=infinity
+  LimitCORE=infinity
+  
+  [Install]
+  WantedBy=multi-user.target</pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>启动containerd</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">  systemctl <span class="nb">enable</span> containerd
+  systemctl restart containerd
+  systemctl status containerd</code></pre></td></tr></table>
+</div>
+</div>
+<p>看containerd启动状态如果是running就没有问题。下面我们测试拉取一下hub的镜像。</p>
+
+<ul>
+<li>测试containerd</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">  ctr images pull docker.io/library/nginx:alpine</pre></td></tr></table>
+</div>
+</div>
+<p>看到输出done，说明containerd运行一切正常。</p>
+
+<h3 id="使用crictl连接containerd">使用crictl连接containerd</h3>
+
+<p>下一步我们使用crictl连接containerd。</p>
+
+<ul>
+<li>修改crictl的配置文件,在  <code>/etc/crictl.yaml</code> 写入以下内容：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">  runtime-endpoint: unix:///run/containerd/containerd.sock
+  image-endpoint: unix:///run/containerd/containerd.sock
+  timeout: <span class="m">10</span>
+  debug: false</code></pre></td></tr></table>
+</div>
+</div>
+<p>这里注意runtime-endpoint 和image-endpoint 必须与/etc/containerd/config.toml中配置保持一致。</p>
+
+<ul>
+<li>验证一下cri插件是否可用</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">  crictl  pull nginx:alpine
+  crictl  rmi  nginx:alpine
+  crictl  images</code></pre></td></tr></table>
+</div>
+</div>
+<p>其中   <code>crictl  images</code>  会列出所有的cri容器镜像。</p>
+
+<p>到此我们的cri + containerd已经完成整合了。下一步我们需要修改kubeadm配置进行安装。</p>
+
+<h3 id="导入kubenetes离线镜像包">导入kubenetes离线镜像包</h3>
+
+<p>这里我们就需要导入k8s的离线镜像包了。<strong>这里需要注意一下，kubernetes是调用的cri接口,所以导入时也需要从cri插件导入镜像。</strong></p>
+
+<ul>
+<li>cri导入镜像命令(cri导入镜像)：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">   ctr cri load  images.tar</code></pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>containerd导入镜像命令(containerd导入镜像)：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">   ctr images import images.tar </pre></td></tr></table>
+</div>
+</div>
+<h3 id="修改kubelet配置和kubeadm安装时配置">修改kubelet配置和kubeadm安装时配置</h3>
+
+<ul>
+<li>在 kubelet配置文件 10-kubeadm.conf 的<code>[Service]</code> 结点加入以下配置：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">  Environment=&#34;KUBELET_EXTRA_ARGS=--container-runtime=remote --runtime-request-timeout=15m --container-runtime-endpoint=unix:///run/containerd/containerd.sock&#34;</pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>在kubeadm配置文件 kubeadm.yaml 中加入</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span>apiVersion<span class="p">:</span><span class="w"> </span>kubeadm.k8s.io/v1beta1<span class="w">
+</span><span class="w">  </span>kind<span class="p">:</span><span class="w"> </span>InitConfiguration<span class="w">
+</span><span class="w">  </span>nodeRegistration<span class="p">:</span><span class="w">
+</span><span class="w">    </span>criSocket<span class="p">:</span><span class="w"> </span>/run/containerd/containerd.sock<span class="w">
+</span><span class="w">    </span>name<span class="p">:</span><span class="w"> </span>containerd</code></pre></td></tr></table>
+</div>
+</div>
+<p>到此containerd和kubernetes的集成就完成了。下面可以直接安装即可。</p>
+
+<p>探讨可加QQ群：98488045</p>
+
+<h1 id="公众号">公众号：</h1>
+
+<p><img src="https://sealyun.com/kubernetes-qrcode.jpg" alt="sealyun" /></p>
+
+<h3 id="微信群">微信群：</h3>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">cuisongliu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-03-11
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/event/">event</a>
+          <a href="/tags/dotscale/">dotScale</a>
+          <a href="/tags/sketchnote/">sketchnote</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/docker-oerlay2/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">关于overlay2存储驱动的磁盘配额问题</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/user-token/">
+            <span class="next-text nav-default">kubernetes 用户token教程</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2019-03-11 10:54:24 \x2b0200 \x2b0200',
+        title: 'containerd与kubernetes集成',
+        link: decodeURI(location.href),
+        desc: 'kubernetes集群三步安装 概念介绍 cri (Container runtime interface) cri is a containerd plugin implementation of Kubernetes container runtime interface (CRI). cri是 kubernetes的容器运行时接口的容器插件实现。 containerd containerd is an',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="fhtjob@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/fanux" class="iconfont icon-github" title="github"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> 本站总访问量 <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次 </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> 本站总访客数 <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 人 </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

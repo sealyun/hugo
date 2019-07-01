@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>kubernetes 用户token教程 - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<meta name="author" content="fanux" /><meta name="description" content="kubernetes集群三步安装 概述 kubernetes server account的token很容易获取，但是User的token非常麻烦，本文给出一个极简的User t" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/user-token/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="kubernetes 用户token教程" />
+<meta property="og:description" content="kubernetes集群三步安装 概述 kubernetes server account的token很容易获取，但是User的token非常麻烦，本文给出一个极简的User t" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/user-token/" />
+<meta property="article:published_time" content="2019-02-20T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2019-02-20T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="kubernetes 用户token教程">
+<meta itemprop="description" content="kubernetes集群三步安装 概述 kubernetes server account的token很容易获取，但是User的token非常麻烦，本文给出一个极简的User t">
+
+
+<meta itemprop="datePublished" content="2019-02-20T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2019-02-20T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="2273">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes 用户token教程"/>
+<meta name="twitter:description" content="kubernetes集群三步安装 概述 kubernetes server account的token很容易获取，但是User的token非常麻烦，本文给出一个极简的User t"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">kubernetes 用户token教程</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-02-20 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#概述">概述</a>
+<ul>
+<li><a href="#token主要用来干啥">token主要用来干啥</a></li>
+<li><a href="#token种类介绍">token种类介绍</a></li>
+</ul></li>
+<li><a href="#sealyun-fist介绍">sealyun fist介绍</a></li>
+<li><a href="#sealyun-fist-auth-使用教程">sealyun fist/auth 使用教程</a>
+<ul>
+<li><a href="#安装部署">安装部署</a></li>
+<li><a href="#获取及使用-token">获取及使用 token</a></li>
+</ul></li>
+<li><a href="#原理介绍">原理介绍</a>
+<ul>
+<li><a href="#jwt原理">jwt原理</a></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<blockquote>
+<p><a href="https://sealyun.com/pro/products/">kubernetes集群三步安装</a></p>
+</blockquote>
+
+<h1 id="概述">概述</h1>
+
+<p>kubernetes server account的token很容易获取，但是User的token非常麻烦，本文给出一个极简的User token生成方式，让用户可以一个http请求就能获取到。</p>
+
+<h2 id="token主要用来干啥">token主要用来干啥</h2>
+
+<p>官方dashboard登录时需要。 如果通过使用kubeconfig文件登录而文件中又没有token的话会失败，现在大部分文章都介绍使用service account的token来登录dashboard，能通，不过有问题：
+第一：绑定角色时要指定类型是service account:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-dashboard
+  labels:
+    k8s-app: kubernetes-dashboard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount   # 这里不是User类型
+  name: kubernetes-dashboard
+  namespace: kube-system</pre></td></tr></table>
+</div>
+</div>
+<p>第二：要理解kubeconfig里是解析证书把CN作为用户名的，这时service account即便与CN一样那还是两个账户，绑定角色时还需要绑定两次，有点像把service account给&rdquo;人&rdquo;用, 所以把service account的token扔给某个开发人员去用往往不合适，service account token更多时候是给程序用的。</p>
+
+<p>想直接调用https的，没有token就会：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@iZj6cegflzze2l7fpcqoerZ ssl]# curl https://172.31.12.61:6443/api/v1/namespaces/default/pods --insecure
+{
+  &#34;kind&#34;: &#34;Status&#34;,
+  &#34;apiVersion&#34;: &#34;v1&#34;,
+  &#34;metadata&#34;: {
+
+  },
+  &#34;status&#34;: &#34;Failure&#34;,
+  &#34;message&#34;: &#34;pods is forbidden: User \&#34;system:anonymous\&#34; cannot list resource \&#34;pods\&#34; in API group \&#34;\&#34; in the namespace \&#34;default\&#34;&#34;,
+  &#34;reason&#34;: &#34;Forbidden&#34;,
+  &#34;details&#34;: {
+    &#34;kind&#34;: &#34;pods&#34;
+  },
+  &#34;code&#34;: 403
+}</pre></td></tr></table>
+</div>
+</div>
+<p>因为没有任何认证信息，所以匿名（anonymous）用户没有任何权限</p>
+
+<p>加了token是这样的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@iZj6cegflzze2l7fpcqoerZ ssl]# curl -H &#34;Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkNnYzRPVEV5TlRVM0VnWm5hWFJvZFdJIn0.eyJpc3MiOiJodHRwczovL2RleC5leGFtcGxlLmNvbTo4MDgwIiwic3ViIjoiQ2djNE9URXlOVFUzRWdabmFYUm9kV0kiLCJhdWQiOiJleGFtcGxlLWFwcCIsImV4cCI6MTU1MTA5NzkwNiwiaWF0IjoxNTUwNzM3OTA2LCJlbWFpbCI6ImZodGpvYkBob3RtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJncm91cHMiOlsiZGV2Il0sIm5hbWUiOiJmYW51eCJ9.ZqKn461UW0aGtyjyqu2Dc5tiUzC-6eYLag542d3AvklUdZuw8i9XwyaUg_f1OAj0ZsEcOybOe9_PeGMaUYzU0OvlKPY-q2zbQVC-m6u6sQw6ZXx8pi0W8k4wQSJnMaOLddCfurlYufmr8kScDBQlnKapSR0F9mJzvpKkHD-XNshQKWhX3n03g7OfFgb4RuhLjKDNQnoGn7DfBNntibHlF9sPo0jC5JjqTZaGvoGmiRE4PAXwxA-RJifsWDNf_jW8lrDiY4NSO_3O081cia4N1GKht51q9W3eaNMvFDD9hje7abDdZoz9KPi2vc3zvgH7cNv0ExVHKaA0-dwAZgTx4g&#34; -k https://172.31.12.61:6443/api/v1/namespaces/default/pods
+{
+  &#34;kind&#34;: &#34;Status&#34;,
+  &#34;apiVersion&#34;: &#34;v1&#34;,
+  &#34;metadata&#34;: {
+
+  },
+  &#34;status&#34;: &#34;Failure&#34;,
+  &#34;message&#34;: &#34;pods is forbidden: User \&#34;https://dex.example.com:8080#fanux\&#34; cannot list resource \&#34;pods\&#34; in API group \&#34;\&#34; in the namespace \&#34;default\&#34;&#34;,
+  &#34;reason&#34;: &#34;Forbidden&#34;,
+  &#34;details&#34;: {
+    &#34;kind&#34;: &#34;pods&#34;
+  },
+  &#34;code&#34;: 403
+}</pre></td></tr></table>
+</div>
+</div>
+<p>看，虽然还是403 但是已经有了用户信息，只要给该用户授权就可正常访问了，如何授权下文介绍</p>
+
+<h2 id="token种类介绍">token种类介绍</h2>
+
+<p>token的生成方式有很多，主要分成三种：
+1. service account token 这个创建service account就有，存在secret里 获取比较简单，但是要区分好 <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#users-in-kubernetes">User 和 service account区别</a>
+2. 普通的token，这种token就是个普通的字符串，一般是自己写一个认证的web hook, k8s认证时调用这个hook 查询token是否有效，比较low
+3. 基于openid的jwt(josn web token) 这种token，认证中心把用户信息放在json里，用私钥加密，k8s拿到token后用公钥解密，只要解密成功token就是合法的而且能拿到用户信息，不需要再像认证中心请求</p>
+
+<p>基于openid的jwt是本文介绍的重点。</p>
+
+<p>社区用的比较多的就是<a href="https://github.com/coreos/dex">dex</a>,是一个比较完整的实现，但是对于不熟悉该技术的朋友来说还是有点门槛的，容易绕进去。 而且还存在一些使用不方便的问题。
+如依赖复杂，首先得需要一个真正的用户管理程序，如ldap 或者一个auth2服务端，这还可以接受，关键是认证时可能需要依赖浏览器进行跳转授权，这在十分多的场景里就变的十分尴尬，就比如我们的场景压根没有
+界面，这样生成token就成了一个大问题。  其次集成到别的系统中时往往用户已经登录过了，所以需要一个二次授权的过程才能拿到token，依赖过重导致系统难以设计。
+然而如果不是集成到别的系统中，比如从0开发一个完成的PaaS平台那使用dex还是一个完美的方案。</p>
+
+<p>所以我们实现了一个简单粗暴的方案，完全解放了这个过程, 只care最核心的东西。</p>
+
+<h1 id="sealyun-fist介绍">sealyun fist介绍</h1>
+
+<p>我们想要啥?</p>
+
+<p>input:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+    &#34;User&#34;: &#34;fanux&#34;,
+    &#34;Group&#34;: [&#34;sealyun&#34;, &#34;develop&#34;]
+}</pre></td></tr></table>
+</div>
+</div>
+<p>output:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">eyJhbGciOiJSUzI1NiIsImtpZCI6IkNnYzRPVEV5TlRVM0VnWm5hWFJvZFdJIn0.eyJpc3MiOiJodHRwczovL2RleC5leGFtcGxlLmNvbTo4MDgwIiwic3ViIjoiQ2djNE9URXlOVFUzRWdabmFYUm9kV0kiLCJhdWQiOiJleGFtcGxlLWFwcCIsImV4cCI6MTU1MTA5NzkwNiwiaWF0IjoxNTUwNzM3OTA2LCJlbWFpbCI6ImZodGpvYkBob3RtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJncm91cHMiOlsiZGV2Il0sIm5hbWUiOiJmYW51eCJ9.ZqKn461UW0aGtyjyqu2Dc5tiUzC-6eYLag542d3AvklUdZuw8i9XwyaUg_f1OAj0ZsEcOybOe9_PeGMaUYzU0OvlKPY-q2zbQVC-m6u6sQw6ZXx8pi0W8k4wQSJnMaOLddCfurlYufmr8kScDBQlnKapSR0F9mJzvpKkHD-XNshQKWhX3n03g7OfFgb4RuhLjKDNQnoGn7DfBNntibHlF9sPo0jC5JjqTZaGvoGmiRE4PAXwxA-RJifsWDNf_jW8lrDiY4NSO_3O081cia4N1GKht51q9W3eaNMvFDD9hje7abDdZoz9KPi2vc3zvgH7cNv0ExVHKaA0-dwAZgTx4g</pre></td></tr></table>
+</div>
+</div>
+<p>结束,多简单，别整那么多没用的。</p>
+
+<p>所以为了实现上面的功能，我们开发了 <a href="https://github.com/fanux/fist">fist</a>, fist的auth模块把dex里最核心的token生成功能以及jwt功能实现了。</p>
+
+<h1 id="sealyun-fist-auth-使用教程">sealyun fist/auth 使用教程</h1>
+
+<h2 id="安装部署">安装部署</h2>
+
+<blockquote>
+<p>生成证书</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># mkdir /etc/kubernetes/pki/fist
+# cd /etc/kubernetes/pki/fist
+# sh gencert.sh # 脚本内容内代码</pre></td></tr></table>
+</div>
+</div>
+<blockquote>
+<p>启动fist auth模块</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">kubectl create -f deploy/fist-auth.yaml</pre></td></tr></table>
+</div>
+</div>
+<blockquote>
+<p>修改k8s apiserver启动参数</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">vim /etc/kubernetes/manifests/kube-apiserver.yaml</pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">  - command:
+    - kube-apiserver
+    - --oidc-issuer-url=https://fist.sealyun.svc.cluster.local:8080
+    - --oidc-client-id=example-app
+    - --oidc-ca-file=/etc/kubernetes/pki/fist/ca.pem
+    - --oidc-username-claim=name
+    - --oidc-groups-claim=groups</pre></td></tr></table>
+</div>
+</div>
+<h2 id="获取及使用-token">获取及使用 token</h2>
+
+<blockquote>
+<p>获取token</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">curl https://fist.sealyun.svc.cluster.local:8080/token?user=fanux&amp;group=sealyun,develop --cacert ca.pem</pre></td></tr></table>
+</div>
+</div>
+<blockquote>
+<p>使用token</p>
+</blockquote>
+
+<p>直接curl加bare token 见上文</p>
+
+<p>加入到kubeconfig中:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">kubectl config set-credentials --token=eyJhbGciOiJSUzI1NiIsImtpZCI6IkNnYzRPVEV5TlRVM0VnWm5hWFJvZFdJIn0.eyJpc3MiOiJodHRwczovL2RleC5leGFtcGxlLmNvbTo4MDgwIiwic3ViIjoiQ2djNE9URXlOVFUzRWdabmFYUm9kV0kiLCJhdWQiOiJleGFtcGxlLWFwcCIsImV4cCI6MTU1MTEwMDI5MywiaWF0IjoxNTUwNzQwMjkzLCJlbWFpbCI6ImZodGpvYkBob3RtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJncm91cHMiOlsiZGV2Il0sIm5hbWUiOiJmYW51eCJ9.OAK4oIYqJszm1EACYW2neXTo738RW9kXFOIN5bOT4Z2CeKAvYqyOVKCWZf04xX45jwT78mATR3uas2YvRooDXlvxaD3K43ls4KBSG-Ofp-ynqlcVTpD3sUDqyux2iieNv4N6IyCv11smrU0lIlkrQC6oyxzTGae1FrJVGc5rHNsIRZHp2WrQvw83uLn_elHgUfSlsOq0cPtVONaAQWMAMi2DX-y5GCNpn1CDvudGJihqsTciPx7bj0AOXyiOznWhV186Ybk-Rgqn8h0eBaQhFMyNpwVt6oIP5pvJQs0uoODeRv6P3I3-AjKyuCllh9KDtlCVvSP4WtMUTfHQN4BigQ  kubernetes-admin</pre></td></tr></table>
+</div>
+</div>
+<p>然后.kube/config 文件里的 user.client-certifacate-data 和 client-key-data就可以删了，再执行kubectl会：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@iZj6cegflzze2l7fpcqoerZ ~]# kubectl get pod
+Error from server (Forbidden): pods is forbidden: User &#34;https://dex.example.com:8080#fanux&#34; cannot list resource &#34;pods&#34; in API group &#34;&#34; in the namespace &#34;default&#34;</pre></td></tr></table>
+</div>
+</div>
+<p>说明新用户成功了</p>
+
+<blockquote>
+<p>授权</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@iZj6cegflzze2l7fpcqoerZ ~]# cat rolebind.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-secrets-global
+subjects:
+- kind: User
+  name: &#34;https://dex.example.com:8080#fanux&#34; # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin  # 超级用户给他
+  apiGroup: rbac.authorization.k8s.io</pre></td></tr></table>
+</div>
+</div>
+<p>创建个role binding即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@iZj6cegflzze2l7fpcqoerZ ~]# kubectl  --kubeconfig /etc/kubernetes/admin.conf create  -f rolebind.yaml # 用管理员的kubeconfig
+clusterrolebinding.rbac.authorization.k8s.io/read-secrets-global created
+[root@iZj6cegflzze2l7fpcqoerZ ~]# kubectl get pod # 有权限访问pod了
+No resources found.</pre></td></tr></table>
+</div>
+</div>
+<h1 id="原理介绍">原理介绍</h1>
+
+<h2 id="jwt原理">jwt原理</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">                       https://fist.sealyun.cluster.local:8080
+k8s                                             jwt server
+ |   /.well-known/openid-configuration             |
+ |------------------------------------------------&gt;|  k8s通过此url发现一些信息，最重要的就是用于校验token公钥的地址
+ |   discover info                                 |
+ |&lt;------------------------------------------------|
+ |     /keys                                       |
+ |------------------------------------------------&gt;|  上一步拿到地址，这一步获取到公钥
+ |     public keys                                 |
+ |&lt;------------------------------------------------|
+ |                                                 |</pre></td></tr></table>
+</div>
+</div>
+<p>discoer info 是个json:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+&#34;issuer&#34;: &#34;https://accounts.google.com&#34;,
+&#34;authorization_endpoint&#34;: &#34;https://accounts.google.com/o/oauth2/v2/auth&#34;,
+&#34;token_endpoint&#34;: &#34;https://oauth2.googleapis.com/token&#34;,
+&#34;userinfo_endpoint&#34;: &#34;https://openidconnect.googleapis.com/v1/userinfo&#34;,
+&#34;revocation_endpoint&#34;: &#34;https://oauth2.googleapis.com/revoke&#34;,
+&#34;jwks_uri&#34;: &#34;https://www.googleapis.com/oauth2/v3/certs&#34;,
+&#34;response_types_supported&#34;: [
+&#34;code&#34;,
+&#34;token&#34;,
+&#34;id_token&#34;,
+&#34;code token&#34;,
+&#34;code id_token&#34;,
+&#34;token id_token&#34;,
+&#34;code token id_token&#34;,
+&#34;none&#34;
+],
+...</pre></td></tr></table>
+</div>
+</div>
+<p>public keys也是个json 类似：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+&#34;keys&#34;: [
+{
+&#34;e&#34;: &#34;AQAB&#34;,
+&#34;kty&#34;: &#34;RSA&#34;,
+&#34;alg&#34;: &#34;RS256&#34;,
+&#34;n&#34;: &#34;3MdFK4pXPvehMipDL_COfqn6o9soHgSaq_V1o8U_5gTZ-j9DxO9PV7BVncXBgHFctnp3JQ1QTDF7txeHeuLOS4KziRw5r4ohaj2WoOTqXh7lqVMR2YDAcBK46asS177NpkQ1CqHIsy3kNfqhXLwTaKfdlwdA_XUfRbKORWbq0kDxV35egx35nHl5qJ6aP6fcpsnnPvHf7KWO0zkdvwuR-IX79HjqUAEg5UERd5FK4y06PRbxuXHjAgVhHu_sk4reNXNp1HRuTYtQ26DFbVaIjsWb8-nQC8-7FkTjlw9FteAwLVGOm9sTLFp73jAf0pWLh7sJ02pBxZKjsxLO1Lvg7w&#34;,
+&#34;use&#34;: &#34;sig&#34;,
+&#34;kid&#34;: &#34;7c309e3a1c1999cb0404ab7125ee40b7cdbcaf7d&#34;
+},
+{
+&#34;alg&#34;: &#34;RS256&#34;,
+&#34;n&#34;: &#34;2K7epoJWl_B68lRUi1txaa0kEuIK4WHiHpi1yC4kPyu48d046yLlrwuvbQMbog2YTOZdVoG1D4zlWKHuVY00O80U1ocFmBl3fKVrUMakvHru0C0mAcEUQo7ItyEX7rpOVYtxlrVk6G8PY4EK61EB-Xe35P0zb2AMZn7Tvm9-tLcccqYlrYBO4SWOwd5uBSqc_WcNJXgnQ-9sYEZ0JUMhKZelEMrpX72hslmduiz-LMsXCnbS7jDGcUuSjHXVLM9tb1SQynx5Xz9xyGeN4rQLnFIKvgwpiqnvLpbMo6grhJwrz67d1X6MwpKtAcqZ2V2v4rQsjbblNH7GzF8ZsfOaqw&#34;,
+&#34;use&#34;: &#34;sig&#34;,
+&#34;kid&#34;: &#34;7d680d8c70d44e947133cbd499ebc1a61c3d5abc&#34;,
+&#34;e&#34;: &#34;AQAB&#34;,
+&#34;kty&#34;: &#34;RSA&#34;
+}
+]
+}</pre></td></tr></table>
+</div>
+</div>
+<p>所以fist只需要实现这两个url 和 用私钥匙加密用户信息生成token即可。</p>
+
+<p>创建密钥对:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		log.Fatalf(&#34;gen rsa key: %v&#34;, err)
+	}
+	priv = jose.JSONWebKey{
+		Key:       key,
+		KeyID:     &#34;Cgc4OTEyNTU3EgZnaXRodWI&#34;,
+		Algorithm: &#34;RS256&#34;,
+		Use:       &#34;sig&#34;,
+	}
+	pub = jose.JSONWebKey{
+		Key:       key.Public(),
+		KeyID:     &#34;Cgc4OTEyNTU3EgZnaXRodWI&#34;,
+		Algorithm: &#34;RS256&#34;,
+		Use:       &#34;sig&#34;,
+	}</pre></td></tr></table>
+</div>
+</div>
+<p>私钥加密：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">	tok := idTokenClaims{
+		Issuer:        &#34;https://dex.example.com:8080&#34;,
+		Subject:       &#34;Cgc4OTEyNTU3EgZnaXRodWI&#34;,
+		Audience:      &#34;example-app&#34;,
+		Expiry:        time.Now().Add(time.Hour * 100).Unix(),
+		IssuedAt:      time.Now().Unix(),
+		Email:         &#34;fhtjob@hotmail.com&#34;,
+		EmailVerified: &amp;ev,
+		Groups:        []string{&#34;dev&#34;},
+		Name:          &#34;fanux&#34;,
+	}
+
+	payload, err := json.Marshal(&amp;tok)
+	if err != nil {
+		return
+	}
+
+	var idToken string
+	if idToken, err = signPayload(&amp;Priv, signingAlg, payload); err != nil {
+		return</pre></td></tr></table>
+</div>
+</div>
+<h1 id="总结">总结</h1>
+
+<p>fist核心代码已经可用，不过为了更方便使用还需要进一步梳理，敬请期待。 鉴权仅是其其中一个功能，fist定位是一个极简的k8s管理平台。</p>
+
+<p>探讨可加QQ群：98488045</p>
+
+<blockquote>
+<p>公众号：</p>
+</blockquote>
+
+<p><img src="https://sealyun.com/kubernetes-qrcode.jpg" alt="sealyun" /></p>
+
+<blockquote>
+<p>微信群：</p>
+</blockquote>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-02-20
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/event/">event</a>
+          <a href="/tags/dotscale/">dotScale</a>
+          <a href="/tags/sketchnote/">sketchnote</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/containerd/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">containerd与kubernetes集成</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/fist-terminal/">
+            <span class="next-text nav-default">属于极客的k8s管理工具fist, 强大的webterminal</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2019-02-20 10:54:24 \x2b0200 \x2b0200',
+        title: 'kubernetes 用户token教程',
+        link: decodeURI(location.href),
+        desc: 'kubernetes集群三步安装 概述 kubernetes server account的token很容易获取，但是User的token非常麻烦，本文给出一个极简的User t',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="fhtjob@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/fanux" class="iconfont icon-github" title="github"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> 本站总访问量 <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次 </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> 本站总访客数 <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 人 </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

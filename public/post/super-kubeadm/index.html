@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>k8s高可用一个kubeadm搞定,无依赖keepalived haproxy ansible - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<meta name="author" content="fanux" /><meta name="description" content="探讨可加QQ群：98488045 概述 地址sealos, 让kubernetes高可用不再需要keepalived haproxy和ansible" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/super-kubeadm/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="k8s高可用一个kubeadm搞定,无依赖keepalived haproxy ansible" />
+<meta property="og:description" content="探讨可加QQ群：98488045 概述 地址sealos, 让kubernetes高可用不再需要keepalived haproxy和ansible" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/super-kubeadm/" />
+<meta property="article:published_time" content="2019-04-01T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2019-04-01T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="k8s高可用一个kubeadm搞定,无依赖keepalived haproxy ansible">
+<meta itemprop="description" content="探讨可加QQ群：98488045 概述 地址sealos, 让kubernetes高可用不再需要keepalived haproxy和ansible">
+
+
+<meta itemprop="datePublished" content="2019-04-01T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2019-04-01T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="958">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="k8s高可用一个kubeadm搞定,无依赖keepalived haproxy ansible"/>
+<meta name="twitter:description" content="探讨可加QQ群：98488045 概述 地址sealos, 让kubernetes高可用不再需要keepalived haproxy和ansible"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">k8s高可用一个kubeadm搞定,无依赖keepalived haproxy ansible</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-04-01 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#概述">概述</a></li>
+<li><a href="#使用教程">使用教程</a>
+<ul>
+<li><a href="#环境介绍">环境介绍</a></li>
+<li><a href="#下载超级-kubeadm-https-github-com-fanux-kube-releases-tag-v0-0-30-kubeadm-lvscare">下载超级<a href="https://github.com/fanux/kube/releases/tag/v0.0.30-kubeadm-lvscare">kubeadm</a></a></li>
+<li><a href="#下载-kubernetes1-14-0-离线包-http-store-lameleg-com">下载<a href="http://store.lameleg.com">kubernetes1.14.0+离线包</a></a></li>
+<li><a href="#kubeadm配置文件">kubeadm配置文件</a></li>
+<li><a href="#在-master0-10-103-97-200-上">在 master0 10.103.97.200 上</a></li>
+<li><a href="#在-master1-10-103-97-201-上">在 master1 10.103.97.201 上</a></li>
+<li><a href="#在-master2-10-103-97-202-上-同master1">在 master2 10.103.97.202 上，同master1</a></li>
+<li><a href="#在node节点上">在Node节点上</a></li>
+</ul></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#lvscare-https-github-com-fanux-lvscare"><a href="https://github.com/fanux/LVScare">LVScare</a></a></li>
+<li><a href="#公众号">公众号：</a>
+<ul>
+<li>
+<ul>
+<li><a href="#微信群">微信群：</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<p>探讨可加QQ群：98488045</p>
+
+<h1 id="概述">概述</h1>
+
+<p>地址<a href="https://github.com/fanux/sealos">sealos</a>, 让kubernetes高可用不再需要keepalived haproxy和ansible,</p>
+
+<p>sealyun定制超级版kubeadm通过ipvs代理多个master，优雅解决k8s高可用问题。</p>
+
+<h1 id="使用教程">使用教程</h1>
+
+<h2 id="环境介绍">环境介绍</h2>
+
+<table>
+<thead>
+<tr>
+<th>ip</th>
+<th>role</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>10.103.97.200</td>
+<td>master0</td>
+</tr>
+
+<tr>
+<td>10.103.97.201</td>
+<td>master0</td>
+</tr>
+
+<tr>
+<td>10.103.97.202</td>
+<td>master0</td>
+</tr>
+
+<tr>
+<td>10.103.97.2</td>
+<td>virtulIP</td>
+</tr>
+
+<tr>
+<td>apiserver.cluster.local</td>
+<td>apiserver解析名</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="下载超级-kubeadm-https-github-com-fanux-kube-releases-tag-v0-0-30-kubeadm-lvscare">下载超级<a href="https://github.com/fanux/kube/releases/tag/v0.0.30-kubeadm-lvscare">kubeadm</a></h2>
+
+<h2 id="下载-kubernetes1-14-0-离线包-http-store-lameleg-com">下载<a href="http://store.lameleg.com">kubernetes1.14.0+离线包</a></h2>
+
+<p>在每个节点上初始化</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">tar zxvf kube1.14.0.tar.gz &amp;&amp; cd kube/shell &amp;&amp; sh init.sh</pre></td></tr></table>
+</div>
+</div>
+<p>用下载的kubeadm替换掉包内的kubeadm:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cp kubeadm /usr/bin/kubeadm</pre></td></tr></table>
+</div>
+</div>
+<h2 id="kubeadm配置文件">kubeadm配置文件</h2>
+
+<p>cat kubeadm-config.yaml :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+kubernetesVersion: v1.14.0
+controlPlaneEndpoint: &#34;apiserver.cluster.local:6443&#34; # 使用解析名去访问APIserver
+apiServer:
+        certSANs:
+        - 127.0.0.1
+        - apiserver.cluster.local
+        - 172.20.241.205
+        - 172.20.241.206
+        - 172.20.241.207
+        - 172.20.241.208
+        - 10.103.97.2          # 虚拟IP等都加入到证书中
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: &#34;ipvs&#34;
+ipvs:
+        excludeCIDRs: 
+        - &#34;10.103.97.2/32&#34; # 如果不加这个k8s会定时清理用户创建的IPVS规则，导致代理失败</pre></td></tr></table>
+</div>
+</div>
+<h2 id="在-master0-10-103-97-200-上">在 master0 10.103.97.200 上</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">echo &#34;10.103.97.200 apiserver.cluster.local&#34; &gt;&gt; /etc/hosts
+kubeadm init --config=kubeadm-config.yaml --experimental-upload-certs  
+mkdir ~/.kube &amp;&amp; cp /etc/kubernetes/admin.conf ~/.kube/config
+kubectl apply -f https://docs.projectcalico.org/v3.6/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml # 安装calico</pre></td></tr></table>
+</div>
+</div>
+<p>执行完会输出一些日志，里面包含join需要用的命令</p>
+
+<h2 id="在-master1-10-103-97-201-上">在 master1 10.103.97.201 上</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># 注意，在安装之前解析到master0, 安装成功后解析改成自己,因为kubelet kube-proxy配置的都是这个解析名,如果不改解析master0宕机整个集群就不可用了
+echo &#34;10.103.97.200 apiserver.cluster.local&#34; &gt;&gt; /etc/hosts 
+kubeadm join 10.103.97.200:6443 --token 9vr73a.a8uxyaju799qwdjv \
+    --discovery-token-ca-cert-hash sha256:7c2e69131a36ae2a042a339b33381c6d0d43887e2de83720eff5359e26aec866 \
+    --experimental-control-plane \
+    --certificate-key f8902e114ef118304e561c3ecd4d0b543adc226b7a07f675f56564185ffe0c07 
+
+sed &#34;s/10.103.97.200/10.103.97.201/g&#34; -i /etc/hosts  # 解析改也自己本机地址</pre></td></tr></table>
+</div>
+</div>
+<h2 id="在-master2-10-103-97-202-上-同master1">在 master2 10.103.97.202 上，同master1</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">echo &#34;10.103.97.200 apiserver.cluster.local&#34; &gt;&gt; /etc/hosts
+kubeadm join 10.103.97.200:6443 --token 9vr73a.a8uxyaju799qwdjv \
+    --discovery-token-ca-cert-hash sha256:7c2e69131a36ae2a042a339b33381c6d0d43887e2de83720eff5359e26aec866 \
+    --experimental-control-plane \
+    --certificate-key f8902e114ef118304e561c3ecd4d0b543adc226b7a07f675f56564185ffe0c07  
+
+sed &#34;s/10.103.97.200/10.103.97.201/g&#34; -i /etc/hosts</pre></td></tr></table>
+</div>
+</div>
+<h2 id="在node节点上">在Node节点上</h2>
+
+<p>通过虚拟IP join到master上, 这个命令会在node节点上创建一条ipvs规则，virturl server就是虚拟IP， realserver就是三个master。
+然后再以一个static pod起一个守护进程守护这些规则，一旦哪个apiserver不可访问了就清除realserver, apiserver通了之后再次添加回来</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">echo &#34;10.103.97.2 apiserver.cluster.local&#34; &gt;&gt; /etc/hosts   # using vip
+kubeadm join 10.103.97.2:6443 --token 9vr73a.a8uxyaju799qwdjv \
+    --master 10.103.97.200:6443 \
+    --master 10.103.97.201:6443 \
+    --master 10.103.97.202:6443 \
+    --discovery-token-ca-cert-hash sha256:7c2e69131a36ae2a042a339b33381c6d0d43887e2de83720eff5359e26aec866 </pre></td></tr></table>
+</div>
+</div>
+<h1 id="architecture">Architecture</h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">  +----------+                       +---------------+  virturl server: 10.103.97.2:6443
+  | mater0   |&lt;----------------------| ipvs nodes    |    real servers:
+  +----------+                      |+---------------+            10.103.97.200:6443
+                                    |                             10.103.97.201:6443
+  +----------+                      |                             10.103.97.202:6443
+  | mater1   |&lt;---------------------+
+  +----------+                      |
+                                    |
+  +----------+                      |
+  | mater2   |&lt;---------------------+
+  +----------+</pre></td></tr></table>
+</div>
+</div>
+<p>集群每个node节点都会创建一条ipvs规则用于代理所有的master节点。类似kube-proxy的ipvs实现.</p>
+
+<p>然后起一个守护进程就健康检查apiservers <code>/etc/kubernetes/manifests/sealyun-lvscare.yaml</code></p>
+
+<h1 id="lvscare-https-github-com-fanux-lvscare"><a href="https://github.com/fanux/LVScare">LVScare</a></h1>
+
+<p>关于ipvs的创建与守护可见这个项目。</p>
+
+<h1 id="公众号">公众号：</h1>
+
+<p><img src="https://sealyun.com/kubernetes-qrcode.jpg" alt="sealyun" /></p>
+
+<h3 id="微信群">微信群：</h3>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-04-01
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/event/">event</a>
+          <a href="/tags/dotscale/">dotScale</a>
+          <a href="/tags/sketchnote/">sketchnote</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/sealos2.0/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">最简单的kubernetes HA安装方式-sealos详解</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/tektoncd-pipeline/">
+            <span class="next-text nav-default">tektoncd pipeline教程 - kubernetes原生pipeline</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2019-04-01 10:54:24 \x2b0200 \x2b0200',
+        title: 'k8s高可用一个kubeadm搞定,无依赖keepalived haproxy ansible',
+        link: decodeURI(location.href),
+        desc: '探讨可加QQ群：98488045 概述 地址sealos, 让kubernetes高可用不再需要keepalived haproxy和ansible',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="fhtjob@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/fanux" class="iconfont icon-github" title="github"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> 本站总访问量 <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次 </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> 本站总访客数 <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 人 </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>kubernetes Admission Controller原理介绍 - sealyun | kubernetes安装</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<meta name="author" content="fanux" /><meta name="description" content="Admission Controller介绍 Apiserver干的最重要的三个事就是： 认证 : 看是否是合法用户 授权 : 看用户具备哪些权限 admission controller : 一个调用链，对请求进" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://sealyun.com/post/kube-admin-control/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="kubernetes Admission Controller原理介绍" />
+<meta property="og:description" content="Admission Controller介绍 Apiserver干的最重要的三个事就是： 认证 : 看是否是合法用户 授权 : 看用户具备哪些权限 admission controller : 一个调用链，对请求进" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sealyun.com/post/kube-admin-control/" />
+<meta property="article:published_time" content="2019-05-23T10:54:24&#43;02:00"/>
+<meta property="article:modified_time" content="2019-05-23T10:54:24&#43;02:00"/>
+
+<meta itemprop="name" content="kubernetes Admission Controller原理介绍">
+<meta itemprop="description" content="Admission Controller介绍 Apiserver干的最重要的三个事就是： 认证 : 看是否是合法用户 授权 : 看用户具备哪些权限 admission controller : 一个调用链，对请求进">
+
+
+<meta itemprop="datePublished" content="2019-05-23T10:54:24&#43;02:00" />
+<meta itemprop="dateModified" content="2019-05-23T10:54:24&#43;02:00" />
+<meta itemprop="wordCount" content="1941">
+
+
+
+<meta itemprop="keywords" content="event,dotScale,sketchnote," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes Admission Controller原理介绍"/>
+<meta name="twitter:description" content="Admission Controller介绍 Apiserver干的最重要的三个事就是： 认证 : 看是否是合法用户 授权 : 看用户具备哪些权限 admission controller : 一个调用链，对请求进"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">SealYun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="">
+        <li class="mobile-menu-item">Istio下载</li>
+      </a><a href="/pro/products">
+        <li class="mobile-menu-item">Kubernetes下载</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">SealYun</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="">Istio下载</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/pro/products">Kubernetes下载</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">kubernetes Admission Controller原理介绍</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-23 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#admission-controller介绍">Admission Controller介绍</a></li>
+<li><a href="#默认admission-controller">默认admission controller</a></li>
+<li><a href="#alwayspullimages-介绍">alwaysPullImages 介绍</a></li>
+<li><a href="#admission-control-webhooks">admission control webhooks</a></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+<li><a href="#公众号">公众号：</a>
+<ul>
+<li>
+<ul>
+<li><a href="#微信群">微信群：</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="admission-controller介绍">Admission Controller介绍</h2>
+
+<p>Apiserver干的最重要的三个事就是：</p>
+
+<ol>
+<li>认证 : 看是否是合法用户</li>
+<li>授权 : 看用户具备哪些权限</li>
+<li>admission controller : 一个调用链，对请求进行控制或修改，比如是否允许这个请求。</li>
+</ol>
+
+<p>admission controller非常有用，也是经常会用到的k8s的一个扩展方式，今天在源码级别对其做一下介绍，以及如何自己去开发一个admission controller.</p>
+
+<p>我们的应用场景是：我们希望把所有需要创建的pod都加上一个注解，因为我们早期是通过podpreset给pod注入lxcfs的配置的，但是用户在写yaml文件时很容易忘记加上，所以需要在apiserver上来个自动处理</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">metadata:
+  name: test-net
+  annotations:
+    initializer.kubernetes.io/lxcfs: &#34;true&#34;   # 就是在pod的metadata里加上这个配置</pre></td></tr></table>
+</div>
+</div>
+<h2 id="默认admission-controller">默认admission controller</h2>
+
+<p>已经有很多默认非常有用的admission插件，这里挑几个介绍一下：</p>
+
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>作用</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>AlwaysPullImages</td>
+<td>把所有镜像策略都调整成alwaysPull, 多租户安全时比较有用</td>
+</tr>
+
+<tr>
+<td>DefaultStorageClass</td>
+<td>默认存储类型</td>
+</tr>
+
+<tr>
+<td>DefaultTolerationSeconds</td>
+<td>节点notready:NoExecute时的容忍时间，比如有时我们升级kubelet，希望升级时pod不要漂移就会用到</td>
+</tr>
+
+<tr>
+<td>DenyEscalatingExec</td>
+<td>拒绝远程连接容器</td>
+</tr>
+
+<tr>
+<td>ExtendedResourceToleration</td>
+<td>比如我有扩展资源，那么我可以通过它来玷污节点，防止不需要该资源的pod到我的机器上来，如GPU</td>
+</tr>
+
+<tr>
+<td>LimitRanger</td>
+<td>在多租户配额时相当有用，如果pod没配额，那么我可以默认给个很低的配额</td>
+</tr>
+
+<tr>
+<td>NamespaceAutoProvision</td>
+<td>这个也非常有用，资源的namespace不存在时就创建一个</td>
+</tr>
+
+<tr>
+<td>PodPreset</td>
+<td>可以对pod进行一些预处理设置</td>
+</tr>
+
+<tr>
+<td>ResourceQuota</td>
+<td>多租户配额时比较重要，看资源是否满足resource quota中的配置</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="alwayspullimages-介绍">alwaysPullImages 介绍</h2>
+
+<p>多租户时经常会开启这个，强制所有的镜像必须去拉取，因为如果不这样，那么别的租户如果知道了你的镜像名就可以写一个yaml去启动你的镜像，强制拉时犹豫需要image pull secret所以无法拉取你的镜像。</p>
+
+<p>所以这个admission干的事就是把镜像拉取策略都改成alwaysPull：</p>
+
+<p>代码位置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-golang" data-lang="golang"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">kubernetes</span><span class="o">/</span><span class="nx">plugin</span><span class="o">/</span><span class="nx">pkg</span><span class="o">/</span><span class="nx">admission</span><span class="o">/</span><span class="nx">alwayspullimages</span><span class="o">/</span><span class="nx">admission</span><span class="p">.</span><span class="k">go</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">AlwaysPullImages</span><span class="p">)</span> <span class="nf">Admit</span><span class="p">(</span><span class="nx">attributes</span> <span class="nx">admission</span><span class="p">.</span><span class="nx">Attributes</span><span class="p">,</span> <span class="nx">o</span> <span class="nx">admission</span><span class="p">.</span><span class="nx">ObjectInterfaces</span><span class="p">)</span> <span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 你可以在attibutes里获取到对象的一切信息，用户信息等
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nf">shouldIgnore</span><span class="p">(</span><span class="nx">attributes</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 检查一下是不是你关注的object, 比如创建的一个configmap 那么显然可以忽视
+</span><span class="c1"></span>		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="nx">pod</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">attributes</span><span class="p">.</span><span class="nf">GetObject</span><span class="p">().(</span><span class="o">*</span><span class="nx">api</span><span class="p">.</span><span class="nx">Pod</span><span class="p">)</span>
+
+    <span class="c1">// 这里把initContainer和Container的拉取策略都给改了
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">InitContainers</span> <span class="p">{</span>
+		<span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">InitContainers</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">ImagePullPolicy</span> <span class="p">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">PullAlways</span>
+	<span class="p">}</span>
+
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Containers</span> <span class="p">{</span>
+		<span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Containers</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">ImagePullPolicy</span> <span class="p">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">PullAlways</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="err">#</span> <span class="nx">还提供一个校验接口</span><span class="err">，</span><span class="nx">看是不是真的都已经被改了</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">AlwaysPullImages</span><span class="p">)</span> <span class="nf">Validate</span><span class="p">(</span><span class="nx">attributes</span> <span class="nx">admission</span><span class="p">.</span><span class="nx">Attributes</span><span class="p">,</span> <span class="nx">o</span> <span class="nx">admission</span><span class="p">.</span><span class="nx">ObjectInterfaces</span><span class="p">)</span> <span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">pod</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">attributes</span><span class="p">.</span><span class="nf">GetObject</span><span class="p">().(</span><span class="o">*</span><span class="nx">api</span><span class="p">.</span><span class="nx">Pod</span><span class="p">)</span>
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">InitContainers</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">InitContainers</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">ImagePullPolicy</span> <span class="o">!=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">PullAlways</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">admission</span><span class="p">.</span><span class="nf">NewForbidden</span><span class="p">(</span><span class="nx">attributes</span><span class="p">,</span>
+				<span class="nx">field</span><span class="p">.</span><span class="nf">NotSupported</span><span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nf">NewPath</span><span class="p">(</span><span class="s">&#34;spec&#34;</span><span class="p">,</span> <span class="s">&#34;initContainers&#34;</span><span class="p">).</span><span class="nf">Index</span><span class="p">(</span><span class="nx">i</span><span class="p">).</span><span class="nf">Child</span><span class="p">(</span><span class="s">&#34;imagePullPolicy&#34;</span><span class="p">),</span>
+					<span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">InitContainers</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">ImagePullPolicy</span><span class="p">,</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="nb">string</span><span class="p">(</span><span class="nx">api</span><span class="p">.</span><span class="nx">PullAlways</span><span class="p">)},</span>
+				<span class="p">),</span>
+			<span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+    <span class="o">...</span>
+
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>然后实现一个注册函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-golang" data-lang="golang"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">Register</span><span class="p">(</span><span class="nx">plugins</span> <span class="o">*</span><span class="nx">admission</span><span class="p">.</span><span class="nx">Plugins</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">plugins</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span><span class="nx">PluginName</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">config</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Reader</span><span class="p">)</span> <span class="p">(</span><span class="nx">admission</span><span class="p">.</span><span class="nx">Interface</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nf">NewAlwaysPullImages</span><span class="p">(),</span> <span class="kc">nil</span>
+	<span class="p">})</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">AlwaysPullImages</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="o">*</span><span class="nx">admission</span><span class="p">.</span><span class="nx">Handler</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>最后需要在plugin里面把其注册进去：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">kubernetes/pkg/kubeapiserver/options/plugins.go
+
+func RegisterAllAdmissionPlugins(plugins *admission.Plugins) {
+	imagepolicy.Register(plugins)
+    ...
+}</pre></td></tr></table>
+</div>
+</div>
+<p>所以实现一个admission非常简单，主要就是实现两个接口即可。</p>
+
+<h2 id="admission-control-webhooks">admission control webhooks</h2>
+
+<p>很多情况下我们并不希望大动干戈去改apiserver代码，所以apiserver提供了一种动态扩展admission的方式，非常推荐。</p>
+
+<p>有两种类型：</p>
+
+<ol>
+<li>validating admission Webhook  只作校验，比如检测到某个特殊字段就不让请求通过</li>
+<li>mutating admission webhook    可以对请求体进行修改（patch）</li>
+</ol>
+
+<p>比较重要的是这个AdmissionReview结构体，包含一个请求一个响应</p>
+
+<p>请求：有Object的详细信息，用户信息
+响应: 最重要的是 1. 是否允许  2. 修改（patch）的类型  3. 修改（patch）的值， 这个符合json patch标准 （kubectl patch）</p>
+
+<p>可<a href="https://github.com/kubernetes/kubernetes/blob/v1.13.0/test/images/webhook/main.go">在此</a> 找到一个webhook server的例子</p>
+
+<p>看一个具体例子，labelpatch，是给对象的元数据里加一些label的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">const</span> <span class="p">(</span>
+    <span class="c1">// 特定的json patch格式
+</span><span class="c1"></span>	<span class="nx">addFirstLabelPatch</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">`[
+</span><span class="s">         { &#34;op&#34;: &#34;add&#34;, &#34;path&#34;: &#34;/metadata/labels&#34;, &#34;value&#34;: {&#34;added-label&#34;: &#34;yes&#34;}}
+</span><span class="s">     ]`</span>
+	<span class="nx">addAdditionalLabelPatch</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">`[
+</span><span class="s">         { &#34;op&#34;: &#34;add&#34;, &#34;path&#34;: &#34;/metadata/labels/added-label&#34;, &#34;value&#34;: &#34;yes&#34; }
+</span><span class="s">     ]`</span>
+<span class="p">)</span>
+
+<span class="c1">// Add a label {&#34;added-label&#34;: &#34;yes&#34;} to the object
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">addLabel</span><span class="p">(</span><span class="nx">ar</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionResponse</span> <span class="p">{</span>
+	<span class="nx">obj</span> <span class="o">:=</span> <span class="kd">struct</span> <span class="p">{</span>
+		<span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span>
+		<span class="nx">Data</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span>
+	<span class="p">}{}</span>
+	<span class="nx">raw</span> <span class="o">:=</span> <span class="nx">ar</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">Object</span><span class="p">.</span><span class="nx">Raw</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">raw</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">obj</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nf">toAdmissionResponse</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">reviewResponse</span> <span class="o">:=</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionResponse</span><span class="p">{}</span>
+	<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Allowed</span> <span class="p">=</span> <span class="kc">true</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">ObjectMeta</span><span class="p">.</span><span class="nx">Labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Patch</span> <span class="p">=</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">addFirstLabelPatch</span><span class="p">)</span> <span class="c1">// 这里最需要注意的就是修改时是通过patch的方式
+</span><span class="c1"></span>	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Patch</span> <span class="p">=</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">addAdditionalLabelPatch</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">pt</span> <span class="o">:=</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">PatchTypeJSONPatch</span>
+	<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">PatchType</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">pt</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">reviewResponse</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>把这个放到http handle里。</p>
+
+<p>把这个HTTPS服务起一个service, 这样apiserver就可以自动发现它。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: &lt;name of this configuration object&gt;
+webhooks:
+- name: &lt;webhook name, e.g., pod-policy.example.io&gt;
+  rules:                                            # 最好明确一下该hook关心哪些api，防止带来不必要的额外开销。
+  - apiGroups:
+    - &#34;&#34;
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+    scope: &#34;Namespaced&#34;
+  clientConfig:
+    service:
+      namespace: &lt;namespace of the front-end service&gt;  # webhook server的namespace
+      name: &lt;name of the front-end service&gt;            # service name
+    caBundle: &lt;pem encoded ca cert that signs the server cert used by the webhook&gt; # 因为需要通过https访问，所以要给apiserver配置ca
+  admissionReviewVersions:
+  - v1beta1
+  timeoutSeconds: 1</pre></td></tr></table>
+</div>
+</div>
+<h2 id="总结">总结</h2>
+
+<p>adminssion control 是非常重要的APIserver扩展的方式，掌握了其开发很多地方就能以比较优雅的方式解决一些实际问题。是基于k8s开发PaaS平台的利器</p>
+
+<p>探讨可加QQ群：98488045</p>
+
+<h1 id="公众号">公众号：</h1>
+
+<p><img src="https://sealyun.com/kubernetes-qrcode.jpg" alt="sealyun" /></p>
+
+<h3 id="微信群">微信群：</h3>
+
+<p><img src="/wechatgroup1.png" alt="" /></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">fanux</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-05-23
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/event/">event</a>
+          <a href="/tags/dotscale/">dotScale</a>
+          <a href="/tags/sketchnote/">sketchnote</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/kubernetes-vm/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">强隔离容器那些事</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/dev-k8s-workflow/">
+            <span class="next-text nav-default">kubernetes开发流程</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="comments-gitment"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitment = new Gitment({
+        id: '2019-05-23 10:54:24 \x2b0200 \x2b0200',
+        title: 'kubernetes Admission Controller原理介绍',
+        link: decodeURI(location.href),
+        desc: 'Admission Controller介绍 Apiserver干的最重要的三个事就是： 认证 : 看是否是合法用户 授权 : 看用户具备哪些权限 admission controller : 一个调用链，对请求进',
+        owner: 'fanux',
+        repo: 'fanux.github.io',
+        oauth: {
+          client_id: 'dbec2d3194e8cd765fae',
+          client_secret: 'a628bdc03410089c6b6460250a8756a9189a6f4c'
+        }
+      });
+      gitment.render('comments-gitment');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="fhtjob@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/fanux" class="iconfont icon-github" title="github"></a>
+  <a href="https://sealyun.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> 本站总访问量 <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次 </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> 本站总访客数 <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 人 </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">fanux</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
