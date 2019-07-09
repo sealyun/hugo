@@ -1,5 +1,5 @@
 +++
-title = "常见问题总结"
+title = "kubernetes安装常见问题总结"
 description = "安装常见问题"
 keywords = ["FAQ","How do I","questions","what if"]
 +++
@@ -17,6 +17,7 @@ https://github.com/fanux/fanux.github.io/issues/3
 3. Remove any matching reference found in /etc/fstab
 ```
 永久关闭selinux:
+
 ```
 vim /etc/sysconfig/selinux SELINUX=enforcing 改为 SELINUX=disabled 
 ```
@@ -29,21 +30,16 @@ vim /etc/sysconfig/selinux SELINUX=enforcing 改为 SELINUX=disabled
 
 1.用openssl创建证书
 
+```
 $ mkdir certs
-
 $ cd certs
-
 $ openssl genrsa -des3 -passout pass:x -out dashboard.pass.key 2048
-
 $ openssl rsa -passin pass:x -in dashboard.pass.key -out dashboard.key
-
 $ rm dashboard.pass.key
-
 $ openssl req -new -key dashboard.key -out dashboard.csr
-
 $ openssl x509 -req -sha256 -days 365 -in dashboard.csr -signkey dashboard.key -out dashboard.crt
-
 $ rm -rf dashboard.csr
+```
 
 
 2.删除dashboard,这个文件在解压包里找
@@ -58,6 +54,7 @@ $ kubectl create-f kubernetes-dashboard.yaml
 > 修改calico pod地址段?
 
 [kubeadm文档](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/)  要改两个地方1. kubeadm配置：
+
 ```
 networking:
   dnsDomain: <string>
@@ -65,6 +62,7 @@ networking:
   podSubnet: <cidr>   # 这里
 ```
 2. calico yaml配置:
+
 ```
     - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
       value: "ACCEPT"
@@ -85,6 +83,7 @@ networking:
 > 需要通过外网访问APIserver?
 
 典型场景：通过阿里云floatingIP访问APIserver，这时需要把floatingip加入到证书里面，或者如keepalived的虚拟IP， 修改conf/kubeadm.yaml 加入以下字段：
+
 ```
 apiServerCertSANs:
   - 10.100.81.11   // 你的外网IP等
