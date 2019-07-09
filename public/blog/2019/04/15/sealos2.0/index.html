@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+    
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>最简单的kubernetes HA安装方式-sealos详解</title>
+  <meta name="author" content="" />
+
+  
+  <meta name="keywords" content="devows, hugo, go">	
+  
+
+  
+  <meta name="description" content="Site template made by devcows using hugo">	
+  
+
+  <meta name="generator" content="Hugo 0.54.0" />
+
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,500,700,800' rel='stylesheet' type='text/css'>
+
+  
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  
+  <link href="/css/animate.css" rel="stylesheet">
+
+  
+  
+    <link href="/css/style.green.css" rel="stylesheet" id="theme-stylesheet">
+  
+
+
+  
+  <link href="/css/custom.css" rel="stylesheet">
+
+  
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+  
+
+  <link href="/css/owl.carousel.css" rel="stylesheet">
+  <link href="/css/owl.theme.css" rel="stylesheet">
+
+  <link rel="alternate" href="https://sealyun.com/index.xml" type="application/rss+xml" title="SealYun">
+
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@GoHugoIO">
+  <meta name="twitter:title" content="最简单的kubernetes HA安装方式-sealos详解">
+  <meta name="twitter:image" content="https://sealyun.com/img/twitter-default.png">
+  <meta name="twitter:description" content="Site template made by devcows using hugo">
+
+  
+  <meta property="og:title" content="最简单的kubernetes HA安装方式-sealos详解" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sealyun.com/blog/2019/04/15/sealos2.0//" />
+  <meta property="og:image" content="/img/logo.jpg" />
+
+</head>
+
+
+  <body>
+      <img src="http://localhost:1313/img/qrcode.png" style="width:140px;position:fixed;right:10px;bottom:10px;z-index:10;"/>
+      <img src="http://localhost:1313/img/qrcode1.jpg" style="width:140px;position:fixed;right:10px;bottom:160px;z-index:10;"/>
+
+    <div id="all">
+
+        <header>
+
+          <div class="navbar-affixed-top" data-spy="affix" data-offset-top="200">
+
+    <div class="navbar navbar-default yamm" role="navigation" id="navbar">
+
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand home" href="https://sealyun.com/">
+                    <img src="https://sealyun.com//img/logo.jpg" alt="最简单的kubernetes HA安装方式-sealos详解 logo" class="hidden-xs hidden-sm">
+                    <img src="https://sealyun.com//img/logo-small.png" alt="最简单的kubernetes HA安装方式-sealos详解 logo" class="visible-xs visible-sm">
+                    <span class="sr-only">最简单的kubernetes HA安装方式-sealos详解 - go to homepage</span>
+                </a>
+                <div class="navbar-buttons">
+                    <button type="button" class="navbar-toggle btn-template-main" data-toggle="collapse" data-target="#navigation">
+                      <span class="sr-only">Toggle Navigation</span>
+                        <i class="fa fa-align-justify"></i>
+                    </button>
+                </div>
+            </div>
+            
+
+            <div class="navbar-collapse collapse" id="navigation">
+                <ul class="nav navbar-nav navbar-right">
+                  
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/">首页</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown active">
+                    
+                    <a href="/blog/">博客</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="http://store.lameleg.com">kubernetes离线安装</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="https://sealyun.com/blog/2019/04/15/sealos2.0/">安装文档</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/faq">常见问题</a>
+                    
+                  </li>
+                  
+                </ul>
+            </div>
+            
+
+            <div class="collapse clearfix" id="search">
+
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-btn">
+
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+
+                </span>
+                    </div>
+                </form>
+
+            </div>
+            
+
+        </div>
+    </div>
+    
+
+</div>
+
+
+
+
+        </header>
+
+        <div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>最简单的kubernetes HA安装方式-sealos详解</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <div id="content">
+            <div class="container">
+
+                <div class="row">
+
+                    
+
+                    <div class="col-md-9" id="blog-post">
+
+                        <p class="text-muted text-uppercase mb-small text-right">By <a href="#">fanux</a> | April 15, 2019</p>
+
+                        <div id="post-content">
+                          <blockquote>
+<p><a href="https://sealyun.com/pro/products/">kubernetes集群三步安装</a></p>
+</blockquote>
+
+<h1 id="概述">概述</h1>
+
+<p>本文教你如何用一条命令构建k8s高可用集群且不依赖haproxy和keepalived，也无需ansible。通过内核ipvs对apiserver进行负载均衡，并且带apiserver健康检测。</p>
+
+<h1 id="快速入门">快速入门</h1>
+
+<p><a href="https://github.com/fanux/sealos">sealos项目地址</a></p>
+
+<h2 id="准备条件">准备条件</h2>
+
+<ul>
+<li>装好docker并启动docker</li>
+<li>把<a href="http://store.lameleg.com">离线安装包</a> 下载好拷贝到所有节点的/root目录下, 不需要解压，如果有文件服务器更好，sealos支持从一个服务器上wget到所有节点上</li>
+</ul>
+
+<h2 id="安装">安装</h2>
+
+<p>sealos已经放在离线包中，解压后在kube/bin目录下(可以解压一个，获取sealos bin文件)</p>
+
+<pre><code>sealos init \
+    --master 192.168.0.2 \
+    --master 192.168.0.3 \
+    --master 192.168.0.4 \          # master地址列表
+    --node 192.168.0.5 \            # node地址列表
+    --user root \                   # 服务用户名
+    --passwd your-server-password \ # 服务器密码，用于远程执行命令
+    --pkg kube1.14.1.tar.gz  \      # 离线安装包名称
+    --version v1.14.1               # kubernetes 离线安装包版本，这渲染kubeadm配置时需要使用
+</code></pre>
+
+<p>然后，就没有然后了</p>
+
+<p>其它参数:</p>
+
+<pre><code> --kubeadm-config string   kubeadm-config.yaml local # 自定义kubeadm配置文件，如有这个sealos就不去渲染kubeadm配置
+ --pkg-url string          http://store.lameleg.com/kube1.14.1.tar.gz download offline pakage url # 支持从远程拉取离线包，省的每个机器拷贝，前提你得有个http服务器放离线包
+ --vip string              virtual ip (default &quot;10.103.97.2&quot;) # 代理master的虚拟IP，只要与你地址不冲突请不要改
+</code></pre>
+
+<h2 id="清理">清理</h2>
+
+<pre><code>sealos clean \
+    --master 192.168.0.2 \
+    --master 192.168.0.3 \
+    --master 192.168.0.4 \          # master地址列表
+    --node 192.168.0.5 \            # node地址列表
+    --user root \                   # 服务用户名
+    --passwd your-server-password
+</code></pre>
+
+<h2 id="增加节点">增加节点</h2>
+
+<p>新增节点可直接使用kubeadm， 到新节点上解压</p>
+
+<pre><code>cd kube/shell &amp;&amp; init.sh
+echo &quot;10.103.97.2 apiserver.cluster.local&quot; &gt;&gt; /etc/hosts   # using vip
+kubeadm join 10.103.97.2:6443 --token 9vr73a.a8uxyaju799qwdjv \
+    --master 10.103.97.100:6443 \
+    --master 10.103.97.101:6443 \
+    --master 10.103.97.102:6443 \
+    --discovery-token-ca-cert-hash sha256:7c2e69131a36ae2a042a339b33381c6d0d43887e2de83720eff5359e26aec866
+</code></pre>
+
+<h2 id="安装dashboard-prometheus等">安装dashboard prometheus等</h2>
+
+<p>离线包里包含了yaml配置和镜像，用户按需安装。</p>
+
+<pre><code>cd /root/kube/conf
+kubectl taint nodes --all node-role.kubernetes.io/master-  # 去污点，根据需求看情况，去了后master允许调度
+kubectl apply -f heapster/ # 安装heapster, 不安装dashboard上没监控数据
+kubectl apply -f heapster/rbac 
+kubectl apply -f dashboard  # 装dashboard
+kubectl apply -f prometheus # 装监控
+</code></pre>
+
+<p>是不是很神奇，到底是如何做到这点的？那就需要去看下面两个东西</p>
+
+<h1 id="关于超级kubeadm">关于超级kubeadm</h1>
+
+<p>我们定制了kubeadm，做了两个事情：</p>
+
+<ol>
+<li>在每个node节点上增加了一条ipvs规则，其后端代理了三个master</li>
+<li>在node上起了一个lvscare的static pod去守护这个 ipvs, 一旦apiserver不可访问了，会自动清理掉所有node上对应的ipvs规则， master恢复正常时添加回来。</li>
+</ol>
+
+<p>通过这样的方式实现每个node上通过本地内核负载均衡访问masters：</p>
+
+<pre><code>  +----------+                       +---------------+  virturl server: 127.0.0.1:6443
+  | mater0   |&lt;----------------------| ipvs nodes    |    real servers:
+  +----------+                      |+---------------+            10.103.97.200:6443
+                                    |                             10.103.97.201:6443
+  +----------+                      |                             10.103.97.202:6443
+  | mater1   |&lt;---------------------+
+  +----------+                      |
+                                    |
+  +----------+                      |
+  | mater2   |&lt;---------------------+
+  +----------+
+</code></pre>
+
+<p>这是一个非常优雅的方案</p>
+
+<p>其实sealos就是帮你执行了如下命令：
+<a href="https://sealyun.com/post/super-kubeadm/">super-kubeadm</a></p>
+
+<p>在你的node上增加了三个东西：</p>
+
+<pre><code>cat /etc/kubernetes/manifests   # 这下面增加了lvscare的static pod
+ipvsadm -Ln                     # 可以看到创建的ipvs规则
+cat /etc/hosts                  # 增加了虚拟IP的地址解析
+</code></pre>
+
+<h1 id="关于-lvscare-https-github-com-fanux-lvscare">关于<a href="https://github.com/fanux/LVScare">lvscare</a></h1>
+
+<p>这是一个超级简单轻量级的lvs创建与守护进程，支持健康检查，底层与kube-proxy使用的是相同的库，支持HTTP的健康检测。</p>
+
+<p>清理机器上的IPVS规则</p>
+
+<pre><code>ipvsadm -C
+</code></pre>
+
+<p>启动几个nginx作为ipvs代理后端的realserver</p>
+
+<pre><code>docker run -p 8081:80 --name nginx1 -d nginx
+docker run -p 8082:80 --name nginx2 -d nginx
+docker run -p 8083:80 --name nginx3 -d nginx
+</code></pre>
+
+<p>启动lvscare守护它们</p>
+
+<pre><code>lvscare care --vs 10.103.97.12:6443 --rs 127.0.0.1:8081 --rs 127.0.0.1:8082 --rs 127.0.0.1:8083 \
+--health-path / --health-schem http
+</code></pre>
+
+<p>可以看到规则已经被创建</p>
+
+<pre><code>ipvsadm -Ln
+[root@iZj6c9fiza9orwscdhate4Z ~]# ipvsadm -Ln
+IP Virtual Server version 1.2.1 (size=4096)
+Prot LocalAddress:Port Scheduler Flags
+  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn
+TCP  10.103.97.12:6443 rr
+  -&gt; 127.0.0.1:8081               Masq    1      0          0         
+  -&gt; 127.0.0.1:8082               Masq    1      0          0         
+  -&gt; 127.0.0.1:8083               Masq    1      0          0 
+</code></pre>
+
+<p>curl vip:</p>
+
+<pre><code>[root@iZj6c9fiza9orwscdhate4Z ~]# curl 10.103.97.12:6443 
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+&lt;style&gt;
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+&lt;/style&gt;
+&lt;/head&gt;
+</code></pre>
+
+<p>删除一个nginx,规则就少了一条</p>
+
+<pre><code>[root@iZj6c9fiza9orwscdhate4Z ~]# docker stop nginx1
+nginx1
+[root@iZj6c9fiza9orwscdhate4Z ~]# ipvsadm -Ln
+IP Virtual Server version 1.2.1 (size=4096)
+Prot LocalAddress:Port Scheduler Flags
+  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn
+TCP  10.103.97.12:6443 rr
+  -&gt; 127.0.0.1:8082               Masq    1      0          0         
+  -&gt; 127.0.0.1:8083               Masq    1      0          1 
+</code></pre>
+
+<p>再删除一个:</p>
+
+<pre><code>[root@iZj6c9fiza9orwscdhate4Z ~]# docker stop nginx2
+nginx2
+[root@iZj6c9fiza9orwscdhate4Z ~]# ipvsadm -Ln
+IP Virtual Server version 1.2.1 (size=4096)
+Prot LocalAddress:Port Scheduler Flags
+  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn
+TCP  10.103.97.12:6443 rr
+  -&gt; 127.0.0.1:8083               Masq    1      0          0 
+</code></pre>
+
+<p>此时VIP任然可以访问:</p>
+
+<pre><code>[root@iZj6c9fiza9orwscdhate4Z ~]# curl 10.103.97.12:6443 
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+&lt;style&gt;
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+&lt;/style&gt;
+&lt;/head&gt;
+</code></pre>
+
+<p>全部删除, 规则就自动被清除光了, curl也curl不通了，因为没realserver可用了</p>
+
+<pre><code>[root@iZj6c9fiza9orwscdhate4Z ~]# docker stop nginx3
+nginx3
+[root@iZj6c9fiza9orwscdhate4Z ~]# ipvsadm -Ln
+IP Virtual Server version 1.2.1 (size=4096)
+Prot LocalAddress:Port Scheduler Flags
+  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn
+TCP  10.103.97.12:6443 rr
+[root@iZj6c9fiza9orwscdhate4Z ~]# curl 10.103.97.12:6443 
+curl: (7) Failed connect to 10.103.97.12:6443; 拒绝连接
+</code></pre>
+
+<p>再把nginx都启动起来,规则就自动被加回来</p>
+
+<pre><code>[root@iZj6c9fiza9orwscdhate4Z ~]# docker start nginx1 nginx2 nginx3
+nginx1
+nginx2
+nginx3
+[root@iZj6c9fiza9orwscdhate4Z ~]# ipvsadm -Ln
+IP Virtual Server version 1.2.1 (size=4096)
+Prot LocalAddress:Port Scheduler Flags
+  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn
+TCP  10.103.97.12:6443 rr
+  -&gt; 127.0.0.1:8081               Masq    1      0          0         
+  -&gt; 127.0.0.1:8082               Masq    1      0          0         
+  -&gt; 127.0.0.1:8083               Masq    1      0          0 
+</code></pre>
+
+<p>所以sealos中，上面apiserver就是上面三个nginx，lvscare会对其进行健康检测。</p>
+
+<p>当然你也可以把lvscare用于一些其它场景，比如代理自己的TCP服务等</p>
+
+<p>探讨可加QQ群：98488045</p>
+                        </div>
+                        
+                        
+                        <div id="comments">
+                            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "devcows" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+                        </div>
+                        
+
+                    </div>
+                    
+
+                    
+
+                    
+
+                    <div class="col-md-3">
+
+                        
+
+                        
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Search</h3>
+    </div>
+
+    <div class="panel-body">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" role="search">
+            <div class="input-group">
+                <input type="search" name="q" class="form-control" placeholder="Search">
+                <input type="hidden" name="sitesearch" value="https://sealyun.com/">
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Categories</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="nav nav-pills nav-stacked">
+            
+            <li><a href="https://sealyun.com/categories/starting">starting (1)</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="panel sidebar-menu">
+    <div class="panel-heading">
+      <h3 class="panel-title">Tags</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="tag-cloud">
+            
+            <li><a href="https://sealyun.com/tags/dotscale"><i class="fa fa-tags"></i> dotscale</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/event"><i class="fa fa-tags"></i> event</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/install"><i class="fa fa-tags"></i> install</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/kubeadm"><i class="fa fa-tags"></i> kubeadm</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/network"><i class="fa fa-tags"></i> network</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sealos"><i class="fa fa-tags"></i> sealos</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sketchnote"><i class="fa fa-tags"></i> sketchnote</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+                        
+
+                    </div>
+                    
+
+                    
+
+                </div>
+                
+
+            </div>
+            
+        </div>
+        
+
+        <footer id="footer">
+    <div class="container">
+
+        
+        <div class="col-md-4 col-sm-6">
+            <h4>About us</h4>
+
+            把我们实践过程中好的东西拿出来给大家复用，收点小费，我们很用心，用我们产品也很值得
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+        <div class="col-md-4 col-sm-6">
+
+             
+            <h4>Recent posts</h4>
+
+            <div class="blog-entries">
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">
+                          
+                            <img src="https://sealyun.com//img/ovn-test.png" class="img-responsive" alt="从CNI到ovn">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">从CNI到ovn</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/23/macvtap/">
+                          
+                            <img src="https://sealyun.com//macvtap.jpg" class="img-responsive" alt="macvtap实践教程">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/23/macvtap/">macvtap实践教程</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">
+                          
+                            <img src="https://sealyun.com//lxcfs.jpg" class="img-responsive" alt="强隔离容器那些事">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">强隔离容器那些事</a></h5>
+                    </div>
+                </div>
+                
+            </div>
+
+            <hr class="hidden-md hidden-lg">
+             
+
+        </div>
+        
+
+        
+        <div class="col-md-4 col-sm-6">
+
+          <h4>Contact</h4>
+
+            <strong>fhtjob@hotmail.com</strong>
+      </p>
+      
+
+
+            <a href="/contact" class="btn btn-small btn-template-main">Go to contact page</a>
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+    </div>
+    
+</footer>
+
+
+
+
+
+
+
+<div id="copyright">
+    <div class="container">
+        <div class="col-md-12">
+            
+            <p class="pull-left">Copyright (c) 2015 - 2016, Beiming; all rights reserved.</p>
+            
+            <p class="pull-right">
+              Template by <a href="http://bootstrapious.com/free-templates">Bootstrapious</a>.
+              
+
+              Ported to Hugo by <a href="https://github.com/devcows/hugo-universal-theme">DevCows</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    </div>
+    
+
+    
+<script src="//code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0/jquery.counterup.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-parallax/1.1.3/jquery-parallax.js"></script>
+
+<script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+<script src="https://sealyun.com/js/hpneo.gmaps.js"></script>
+<script src="https://sealyun.com/js/gmaps.init.js"></script>
+<script src="https://sealyun.com/js/front.js"></script>
+
+
+<script src="https://sealyun.com/js/owl.carousel.min.js"></script>
+
+
+  </body>
+</html>
+
+<style>
+#post-content img {
+    width: 100%;
+    height: 100%;
+}
+</style>

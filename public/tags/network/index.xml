@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Network on SealYun</title>
+    <link>https://sealyun.com/tags/network/</link>
+    <description>Recent content in Network on SealYun</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 08 Jul 2019 13:50:46 +0200</lastBuildDate>
+    
+	<atom:link href="https://sealyun.com/tags/network/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>从CNI到ovn</title>
+      <link>https://sealyun.com/blog/2019/07/08/ovn-vni/</link>
+      <pubDate>Mon, 08 Jul 2019 13:50:46 +0200</pubDate>
+      
+      <guid>https://sealyun.com/blog/2019/07/08/ovn-vni/</guid>
+      <description>&lt;p&gt;诸如calico flannel等CNI实现，通过牺牲一些功能让网络复杂度得以大幅度降低是我极其推崇的，在云原生时代应用不再关心基础设施的场景下是一个明智之举，给网络调错带来了极大方便。&lt;/p&gt;
+
+&lt;p&gt;openstack与k8s放一起比较意义不大，openstack还是着重与基础设施，所以对上接口还是机器设施，网络设施，存储设施等，着重与资源的抽象。&lt;/p&gt;
+
+&lt;p&gt;然鹅k8s不仅需要资源抽象，还需要关心应用的管理，其基于容器的设计理念已经改变了传统三层的云计算架构，而更像一个云内核，对上不再关心基础设施的接口了，反正把用户应用管好了就行。&lt;/p&gt;
+
+&lt;p&gt;对比早起的操作系统很发现历史是惊人的相似，早期分层式操作系统到现代的宏内核与微内核操作系统，系统设计更为内聚了。目测云操作系统也会朝着这个路子发展吧（openstack粉太多，亡openstack之心不死不敢直说）&lt;/p&gt;
+
+&lt;p&gt;但是！&lt;/p&gt;
+
+&lt;p&gt;openstack底层一些技术还是非常值得学习与应用的，如qemu kvm ovs ovn ceph DPDK等。。。&lt;/p&gt;
+
+&lt;p&gt;本文重点讲网络这块,ovn ovs怎么与kubernetes擦出火花&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

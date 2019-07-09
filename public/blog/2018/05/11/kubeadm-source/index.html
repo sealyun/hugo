@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+    
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>kubeadm源码分析</title>
+  <meta name="author" content="" />
+
+  
+  <meta name="keywords" content="devows, hugo, go">	
+  
+
+  
+  <meta name="description" content="Site template made by devcows using hugo">	
+  
+
+  <meta name="generator" content="Hugo 0.54.0" />
+
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,500,700,800' rel='stylesheet' type='text/css'>
+
+  
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  
+  <link href="/css/animate.css" rel="stylesheet">
+
+  
+  
+    <link href="/css/style.green.css" rel="stylesheet" id="theme-stylesheet">
+  
+
+
+  
+  <link href="/css/custom.css" rel="stylesheet">
+
+  
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+  
+
+  <link href="/css/owl.carousel.css" rel="stylesheet">
+  <link href="/css/owl.theme.css" rel="stylesheet">
+
+  <link rel="alternate" href="https://sealyun.com/index.xml" type="application/rss+xml" title="SealYun">
+
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@GoHugoIO">
+  <meta name="twitter:title" content="kubeadm源码分析">
+  <meta name="twitter:image" content="https://sealyun.com/img/twitter-default.png">
+  <meta name="twitter:description" content="Site template made by devcows using hugo">
+
+  
+  <meta property="og:title" content="kubeadm源码分析" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sealyun.com/blog/2018/05/11/kubeadm-source//" />
+  <meta property="og:image" content="/img/logo.jpg" />
+
+</head>
+
+
+  <body>
+      <img src="http://localhost:1313/img/qrcode.png" style="width:140px;position:fixed;right:10px;bottom:10px;z-index:10;"/>
+      <img src="http://localhost:1313/img/qrcode1.jpg" style="width:140px;position:fixed;right:10px;bottom:160px;z-index:10;"/>
+
+    <div id="all">
+
+        <header>
+
+          <div class="navbar-affixed-top" data-spy="affix" data-offset-top="200">
+
+    <div class="navbar navbar-default yamm" role="navigation" id="navbar">
+
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand home" href="https://sealyun.com/">
+                    <img src="https://sealyun.com//img/logo.jpg" alt="kubeadm源码分析 logo" class="hidden-xs hidden-sm">
+                    <img src="https://sealyun.com//img/logo-small.png" alt="kubeadm源码分析 logo" class="visible-xs visible-sm">
+                    <span class="sr-only">kubeadm源码分析 - go to homepage</span>
+                </a>
+                <div class="navbar-buttons">
+                    <button type="button" class="navbar-toggle btn-template-main" data-toggle="collapse" data-target="#navigation">
+                      <span class="sr-only">Toggle Navigation</span>
+                        <i class="fa fa-align-justify"></i>
+                    </button>
+                </div>
+            </div>
+            
+
+            <div class="navbar-collapse collapse" id="navigation">
+                <ul class="nav navbar-nav navbar-right">
+                  
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/">首页</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown active">
+                    
+                    <a href="/blog/">博客</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="http://store.lameleg.com">kubernetes离线安装</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="https://sealyun.com/blog/2019/04/15/sealos2.0/">安装文档</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/faq">常见问题</a>
+                    
+                  </li>
+                  
+                </ul>
+            </div>
+            
+
+            <div class="collapse clearfix" id="search">
+
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-btn">
+
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+
+                </span>
+                    </div>
+                </form>
+
+            </div>
+            
+
+        </div>
+    </div>
+    
+
+</div>
+
+
+
+
+        </header>
+
+        <div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>kubeadm源码分析</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <div id="content">
+            <div class="container">
+
+                <div class="row">
+
+                    
+
+                    <div class="col-md-9" id="blog-post">
+
+                        <p class="text-muted text-uppercase mb-small text-right">By <a href="#">fanux</a> | May 11, 2018</p>
+
+                        <div id="post-content">
+                          <p><a href="http://sealyun.com/pro/products/">k8s离线安装包</a> 三步安装，简单到难以置信</p>
+
+<h1 id="kubeadm源码分析">kubeadm源码分析</h1>
+
+<p>说句实在话，kubeadm的代码写的真心一般，质量不是很高。</p>
+
+<p>几个关键点来先说一下kubeadm干的几个核心的事：</p>
+
+<ul>
+<li>kubeadm 生成证书在/etc/kubernetes/pki目录下</li>
+<li>kubeadm 生成static pod yaml配置，全部在/etc/kubernetes/manifasts下</li>
+<li>kubeadm 生成kubelet配置，kubectl配置等 在/etc/kubernetes下</li>
+<li>kubeadm 通过client go去启动dns</li>
+</ul>
+
+<h2 id="kubeadm-init">kubeadm init</h2>
+
+<p>代码入口 <code>cmd/kubeadm/app/cmd/init.go</code> 建议大家去看看cobra</p>
+
+<p>找到Run函数来分析下主要流程：</p>
+
+<ol>
+<li><p>如果证书不存在，就创建证书，所以如果我们有自己的证书可以把它放在/etc/kubernetes/pki下即可, 下文细看如果生成证书</p>
+
+<pre><code>	if res, _ := certsphase.UsingExternalCA(i.cfg); !res {
+		if err := certsphase.CreatePKIAssets(i.cfg); err != nil {
+			return err
+		}
+</code></pre></li>
+
+<li><p>创建kubeconfig文件</p>
+
+<pre><code>		if err := kubeconfigphase.CreateInitKubeConfigFiles(kubeConfigDir, i.cfg); err != nil {
+			return err
+		}
+</code></pre></li>
+
+<li><p>创建manifest文件，etcd apiserver manager scheduler都在这里创建, 可以看到如果你的配置文件里已经写了etcd的地址了，就不创建了，这我们就可以自己装etcd集群，而不用默认单点的etcd，很有用</p>
+
+<pre><code>controlplanephase.CreateInitStaticPodManifestFiles(manifestDir, i.cfg); 
+if len(i.cfg.Etcd.Endpoints) == 0 {
+	if err := etcdphase.CreateLocalEtcdStaticPodManifestFile(manifestDir, i.cfg); err != nil {
+		return fmt.Errorf(&quot;error creating local etcd static pod manifest file: %v&quot;, err)
+	}
+}
+</code></pre></li>
+
+<li><p>等待APIserver和kubelet启动成功，这里就会遇到我们经常遇到的镜像拉不下来的错误，其实有时kubelet因为别的原因也会报这个错，让人误以为是镜像弄不下来</p></li>
+</ol>
+
+<pre><code>if err := waitForAPIAndKubelet(waiter); err != nil {
+	ctx := map[string]string{
+		&quot;Error&quot;:                  fmt.Sprintf(&quot;%v&quot;, err),
+		&quot;APIServerImage&quot;:         images.GetCoreImage(kubeadmconstants.KubeAPIServer, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
+		&quot;ControllerManagerImage&quot;: images.GetCoreImage(kubeadmconstants.KubeControllerManager, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
+		&quot;SchedulerImage&quot;:         images.GetCoreImage(kubeadmconstants.KubeScheduler, i.cfg.GetControlPlaneImageRepository(), i.cfg.KubernetesVersion, i.cfg.UnifiedControlPlaneImage),
+	}
+
+	kubeletFailTempl.Execute(out, ctx)
+
+	return fmt.Errorf(&quot;couldn't initialize a Kubernetes cluster&quot;)
+}
+</code></pre>
+
+<ol>
+<li><p>给master加标签，加污点, 所以想要pod调度到master上可以把污点清除了</p>
+
+<pre><code>if err := markmasterphase.MarkMaster(client, i.cfg.NodeName); err != nil {
+	return fmt.Errorf(&quot;error marking master: %v&quot;, err)
+}
+</code></pre></li>
+
+<li><p>生成tocken</p>
+
+<pre><code>if err := nodebootstraptokenphase.UpdateOrCreateToken(client, i.cfg.Token, false, i.cfg.TokenTTL.Duration, kubeadmconstants.DefaultTokenUsages, []string{kubeadmconstants.NodeBootstrapTokenAuthGroup}, tokenDescription); err != nil {
+	return fmt.Errorf(&quot;error updating or creating token: %v&quot;, err)
+}
+</code></pre></li>
+
+<li><p>调用clientgo创建dns和kube-proxy</p></li>
+</ol>
+
+<pre><code>if err := dnsaddonphase.EnsureDNSAddon(i.cfg, client); err != nil {
+	return fmt.Errorf(&quot;error ensuring dns addon: %v&quot;, err)
+}
+
+if err := proxyaddonphase.EnsureProxyAddon(i.cfg, client); err != nil {
+	return fmt.Errorf(&quot;error ensuring proxy addon: %v&quot;, err)
+}
+</code></pre>
+
+<p>笔者批判代码无脑式的一个流程到底，要是笔者操刀定抽象成接口 RenderConf Save Run Clean等，DNS kube-porxy以及其它组件去实现，然后问题就是没把dns和kubeproxy的配置渲染出来，可能是它们不是static pod的原因, 然后就是join时的bug下文提到</p>
+
+<h3 id="证书生成">证书生成</h3>
+
+<p>循环的调用了这一坨函数，我们只需要看其中一两个即可，其它的都差不多</p>
+
+<pre><code>certActions := []func(cfg *kubeadmapi.MasterConfiguration) error{
+	CreateCACertAndKeyfiles,
+	CreateAPIServerCertAndKeyFiles,
+	CreateAPIServerKubeletClientCertAndKeyFiles,
+	CreateServiceAccountKeyAndPublicKeyFiles,
+	CreateFrontProxyCACertAndKeyFiles,
+	CreateFrontProxyClientCertAndKeyFiles,
+}
+</code></pre>
+
+<p>根证书生成：</p>
+
+<pre><code>
+//返回了根证书的公钥和私钥
+func NewCACertAndKey() (*x509.Certificate, *rsa.PrivateKey, error) {
+
+	caCert, caKey, err := pkiutil.NewCertificateAuthority()
+	if err != nil {
+		return nil, nil, fmt.Errorf(&quot;failure while generating CA certificate and key: %v&quot;, err)
+	}
+
+	return caCert, caKey, nil
+}
+
+</code></pre>
+
+<p>k8s.io/client-go/util/cert 这个库里面有两个函数，一个生成key的一个生成cert的：</p>
+
+<pre><code>key, err := certutil.NewPrivateKey()
+config := certutil.Config{
+	CommonName: &quot;kubernetes&quot;,
+}
+cert, err := certutil.NewSelfSignedCACert(config, key)
+</code></pre>
+
+<p>config里面我们也可以填充一些别的证书信息：</p>
+
+<pre><code>type Config struct {
+	CommonName   string
+	Organization []string
+	AltNames     AltNames
+	Usages       []x509.ExtKeyUsage
+}
+</code></pre>
+
+<p>私钥就是封装了rsa库里面的函数：</p>
+
+<pre><code>	&quot;crypto/rsa&quot;
+	&quot;crypto/x509&quot;
+func NewPrivateKey() (*rsa.PrivateKey, error) {
+	return rsa.GenerateKey(cryptorand.Reader, rsaKeySize)
+}
+</code></pre>
+
+<p>自签证书,所以根证书里只有CommonName信息，Organization相当于没设置：</p>
+
+<pre><code>func NewSelfSignedCACert(cfg Config, key *rsa.PrivateKey) (*x509.Certificate, error) {
+	now := time.Now()
+	tmpl := x509.Certificate{
+		SerialNumber: new(big.Int).SetInt64(0),
+		Subject: pkix.Name{
+			CommonName:   cfg.CommonName,
+			Organization: cfg.Organization,
+		},
+		NotBefore:             now.UTC(),
+		NotAfter:              now.Add(duration365d * 10).UTC(),
+		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
+		BasicConstraintsValid: true,
+		IsCA: true,
+	}
+
+	certDERBytes, err := x509.CreateCertificate(cryptorand.Reader, &amp;tmpl, &amp;tmpl, key.Public(), key)
+	if err != nil {
+		return nil, err
+	}
+	return x509.ParseCertificate(certDERBytes)
+}
+</code></pre>
+
+<p>生成好之后把之写入文件：</p>
+
+<pre><code> pkiutil.WriteCertAndKey(pkiDir, baseName, cert, key);
+certutil.WriteCert(certificatePath, certutil.EncodeCertPEM(cert))
+</code></pre>
+
+<p>这里调用了pem库进行了编码</p>
+
+<pre><code>encoding/pem
+
+func EncodeCertPEM(cert *x509.Certificate) []byte {
+	block := pem.Block{
+		Type:  CertificateBlockType,
+		Bytes: cert.Raw,
+	}
+	return pem.EncodeToMemory(&amp;block)
+}
+</code></pre>
+
+<p>然后我们看apiserver的证书生成：</p>
+
+<pre><code>caCert, caKey, err := loadCertificateAuthorithy(cfg.CertificatesDir, kubeadmconstants.CACertAndKeyBaseName)
+//从根证书生成apiserver证书
+apiCert, apiKey, err := NewAPIServerCertAndKey(cfg, caCert, caKey)
+</code></pre>
+
+<p>这时需要关注AltNames了比较重要，所有需要访问master的地址域名都得加进去，对应配置文件中apiServerCertSANs字段,其它东西与根证书无差别</p>
+
+<pre><code>config := certutil.Config{
+	CommonName: kubeadmconstants.APIServerCertCommonName,
+	AltNames:   *altNames,
+	Usages:     []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+}
+</code></pre>
+
+<h3 id="创建k8s配置文件">创建k8s配置文件</h3>
+
+<p>可以看到创建了这些文件</p>
+
+<pre><code>return createKubeConfigFiles(
+	outDir,
+	cfg,
+	kubeadmconstants.AdminKubeConfigFileName,
+	kubeadmconstants.KubeletKubeConfigFileName,
+	kubeadmconstants.ControllerManagerKubeConfigFileName,
+	kubeadmconstants.SchedulerKubeConfigFileName,
+)
+</code></pre>
+
+<p>k8s封装了两个渲染配置的函数：
+区别是你的kubeconfig文件里会不会产生token，比如你进入dashboard需要一个token，或者你调用api需要一个token那么请生成带token的配置
+生成的conf文件基本一直只是比如ClientName这些东西不同，所以加密后的证书也不同，ClientName会被加密到证书里，然后k8s取出来当用户使用</p>
+
+<p>所以重点来了，我们做多租户时也要这样去生成。然后给该租户绑定角色。</p>
+
+<pre><code>return kubeconfigutil.CreateWithToken(
+	spec.APIServer,
+	&quot;kubernetes&quot;,
+	spec.ClientName,
+	certutil.EncodeCertPEM(spec.CACert),
+	spec.TokenAuth.Token,
+), nil
+
+return kubeconfigutil.CreateWithCerts(
+	spec.APIServer,
+	&quot;kubernetes&quot;,
+	spec.ClientName,
+	certutil.EncodeCertPEM(spec.CACert),
+	certutil.EncodePrivateKeyPEM(clientKey),
+	certutil.EncodeCertPEM(clientCert),
+), nil
+</code></pre>
+
+<p>然后就是填充Config结构体喽, 最后写到文件里，略</p>
+
+<pre><code>&quot;k8s.io/client-go/tools/clientcmd/api
+return &amp;clientcmdapi.Config{
+	Clusters: map[string]*clientcmdapi.Cluster{
+		clusterName: {
+			Server: serverURL,
+			CertificateAuthorityData: caCert,
+		},
+	},
+	Contexts: map[string]*clientcmdapi.Context{
+		contextName: {
+			Cluster:  clusterName,
+			AuthInfo: userName,
+		},
+	},
+	AuthInfos:      map[string]*clientcmdapi.AuthInfo{},
+	CurrentContext: contextName,
+}
+</code></pre>
+
+<h3 id="创建static-pod-yaml文件">创建static pod yaml文件</h3>
+
+<p>这里返回了apiserver manager scheduler的pod结构体,</p>
+
+<pre><code>specs := GetStaticPodSpecs(cfg, k8sVersion)
+staticPodSpecs := map[string]v1.Pod{
+	kubeadmconstants.KubeAPIServer: staticpodutil.ComponentPod(v1.Container{
+		Name:          kubeadmconstants.KubeAPIServer,
+		Image:         images.GetCoreImage(kubeadmconstants.KubeAPIServer, cfg.GetControlPlaneImageRepository(), cfg.KubernetesVersion, cfg.UnifiedControlPlaneImage),
+		Command:       getAPIServerCommand(cfg, k8sVersion),
+		VolumeMounts:  staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(kubeadmconstants.KubeAPIServer)),
+		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeAPIServer, int(cfg.API.BindPort), &quot;/healthz&quot;, v1.URISchemeHTTPS),
+		Resources:     staticpodutil.ComponentResources(&quot;250m&quot;),
+		Env:           getProxyEnvVars(),
+	}, mounts.GetVolumes(kubeadmconstants.KubeAPIServer)),
+	kubeadmconstants.KubeControllerManager: staticpodutil.ComponentPod(v1.Container{
+		Name:          kubeadmconstants.KubeControllerManager,
+		Image:         images.GetCoreImage(kubeadmconstants.KubeControllerManager, cfg.GetControlPlaneImageRepository(), cfg.KubernetesVersion, cfg.UnifiedControlPlaneImage),
+		Command:       getControllerManagerCommand(cfg, k8sVersion),
+		VolumeMounts:  staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(kubeadmconstants.KubeControllerManager)),
+		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeControllerManager, 10252, &quot;/healthz&quot;, v1.URISchemeHTTP),
+		Resources:     staticpodutil.ComponentResources(&quot;200m&quot;),
+		Env:           getProxyEnvVars(),
+	}, mounts.GetVolumes(kubeadmconstants.KubeControllerManager)),
+	kubeadmconstants.KubeScheduler: staticpodutil.ComponentPod(v1.Container{
+		Name:          kubeadmconstants.KubeScheduler,
+		Image:         images.GetCoreImage(kubeadmconstants.KubeScheduler, cfg.GetControlPlaneImageRepository(), cfg.KubernetesVersion, cfg.UnifiedControlPlaneImage),
+		Command:       getSchedulerCommand(cfg),
+		VolumeMounts:  staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(kubeadmconstants.KubeScheduler)),
+		LivenessProbe: staticpodutil.ComponentProbe(cfg, kubeadmconstants.KubeScheduler, 10251, &quot;/healthz&quot;, v1.URISchemeHTTP),
+		Resources:     staticpodutil.ComponentResources(&quot;100m&quot;),
+		Env:           getProxyEnvVars(),
+	}, mounts.GetVolumes(kubeadmconstants.KubeScheduler)),
+}
+
+//获取特定版本的镜像
+func GetCoreImage(image, repoPrefix, k8sVersion, overrideImage string) string {
+	if overrideImage != &quot;&quot; {
+		return overrideImage
+	}
+	kubernetesImageTag := kubeadmutil.KubernetesVersionToImageTag(k8sVersion)
+	etcdImageTag := constants.DefaultEtcdVersion
+	etcdImageVersion, err := constants.EtcdSupportedVersion(k8sVersion)
+	if err == nil {
+		etcdImageTag = etcdImageVersion.String()
+	}
+	return map[string]string{
+		constants.Etcd:                  fmt.Sprintf(&quot;%s/%s-%s:%s&quot;, repoPrefix, &quot;etcd&quot;, runtime.GOARCH, etcdImageTag),
+		constants.KubeAPIServer:         fmt.Sprintf(&quot;%s/%s-%s:%s&quot;, repoPrefix, &quot;kube-apiserver&quot;, runtime.GOARCH, kubernetesImageTag),
+		constants.KubeControllerManager: fmt.Sprintf(&quot;%s/%s-%s:%s&quot;, repoPrefix, &quot;kube-controller-manager&quot;, runtime.GOARCH, kubernetesImageTag),
+		constants.KubeScheduler:         fmt.Sprintf(&quot;%s/%s-%s:%s&quot;, repoPrefix, &quot;kube-scheduler&quot;, runtime.GOARCH, kubernetesImageTag),
+	}[image]
+}
+//然后就把这个pod写到文件里了，比较简单
+ staticpodutil.WriteStaticPodToDisk(componentName, manifestDir, spec); 
+</code></pre>
+
+<p>创建etcd的一样，不多废话</p>
+
+<h3 id="等待kubelet启动成功">等待kubelet启动成功</h3>
+
+<p>这个错误非常容易遇到，看到这个基本就是kubelet没起来，我们需要检查：selinux swap 和Cgroup driver是不是一致
+setenforce 0 &amp;&amp; swapoff -a &amp;&amp; systemctl restart kubelet如果不行请保证 kubelet的Cgroup driver与docker一致，docker info|grep Cg</p>
+
+<pre><code>go func(errC chan error, waiter apiclient.Waiter) {
+	// This goroutine can only make kubeadm init fail. If this check succeeds, it won't do anything special
+	if err := waiter.WaitForHealthyKubelet(40*time.Second, &quot;http://localhost:10255/healthz&quot;); err != nil {
+		errC &lt;- err
+	}
+}(errorChan, waiter)
+
+go func(errC chan error, waiter apiclient.Waiter) {
+	// This goroutine can only make kubeadm init fail. If this check succeeds, it won't do anything special
+	if err := waiter.WaitForHealthyKubelet(60*time.Second, &quot;http://localhost:10255/healthz/syncloop&quot;); err != nil {
+		errC &lt;- err
+	}
+}(errorChan, waiter)
+</code></pre>
+
+<h3 id="创建dns和kubeproxy">创建DNS和kubeproxy</h3>
+
+<p>我就是在此发现coreDNS的</p>
+
+<pre><code>if features.Enabled(cfg.FeatureGates, features.CoreDNS) {
+	return coreDNSAddon(cfg, client, k8sVersion)
+}
+return kubeDNSAddon(cfg, client, k8sVersion)
+</code></pre>
+
+<p>然后coreDNS的yaml配置模板直接是写在代码里的：
+/app/phases/addons/dns/manifests.go</p>
+
+<pre><code>	CoreDNSDeployment = `
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: coredns
+  namespace: kube-system
+  labels:
+    k8s-app: kube-dns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kube-dns
+  template:
+    metadata:
+      labels:
+        k8s-app: kube-dns
+    spec:
+      serviceAccountName: coredns
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: {{ .MasterTaintKey }}
+...
+</code></pre>
+
+<p>然后渲染模板，最后调用k8sapi创建,这种创建方式可以学习一下，虽然有点拙劣，这地方写的远不如kubectl好</p>
+
+<pre><code>coreDNSConfigMap := &amp;v1.ConfigMap{}
+if err := kuberuntime.DecodeInto(legacyscheme.Codecs.UniversalDecoder(), configBytes, coreDNSConfigMap); err != nil {
+	return fmt.Errorf(&quot;unable to decode CoreDNS configmap %v&quot;, err)
+}
+
+// Create the ConfigMap for CoreDNS or update it in case it already exists
+if err := apiclient.CreateOrUpdateConfigMap(client, coreDNSConfigMap); err != nil {
+	return err
+}
+
+coreDNSClusterRoles := &amp;rbac.ClusterRole{}
+if err := kuberuntime.DecodeInto(legacyscheme.Codecs.UniversalDecoder(), []byte(CoreDNSClusterRole), coreDNSClusterRoles); err != nil {
+	return fmt.Errorf(&quot;unable to decode CoreDNS clusterroles %v&quot;, err)
+}
+...
+</code></pre>
+
+<p>这里值得一提的是kubeproxy的configmap真应该把apiserver地址传入进来，允许自定义，因为做高可用时需要指定虚拟ip，得修改，很麻烦
+kubeproxy大差不差，不说了,想改的话改： app/phases/addons/proxy/manifests.go</p>
+
+<h2 id="kubeadm-join">kubeadm join</h2>
+
+<p>kubeadm join比较简单，一句话就可以说清楚，获取cluster info, 创建kubeconfig，怎么创建的kubeinit里面已经说了。带上token让kubeadm有权限
+可以拉取</p>
+
+<pre><code>return https.RetrieveValidatedClusterInfo(cfg.DiscoveryFile)
+
+cluster info内容
+type Cluster struct {
+	// LocationOfOrigin indicates where this object came from.  It is used for round tripping config post-merge, but never serialized.
+	LocationOfOrigin string
+	// Server is the address of the kubernetes cluster (https://hostname:port).
+	Server string `json:&quot;server&quot;`
+	// InsecureSkipTLSVerify skips the validity check for the server's certificate. This will make your HTTPS connections insecure.
+	// +optional
+	InsecureSkipTLSVerify bool `json:&quot;insecure-skip-tls-verify,omitempty&quot;`
+	// CertificateAuthority is the path to a cert file for the certificate authority.
+	// +optional
+	CertificateAuthority string `json:&quot;certificate-authority,omitempty&quot;`
+	// CertificateAuthorityData contains PEM-encoded certificate authority certificates. Overrides CertificateAuthority
+	// +optional
+	CertificateAuthorityData []byte `json:&quot;certificate-authority-data,omitempty&quot;`
+	// Extensions holds additional information. This is useful for extenders so that reads and writes don't clobber unknown fields
+	// +optional
+	Extensions map[string]runtime.Object `json:&quot;extensions,omitempty&quot;`
+}
+
+return kubeconfigutil.CreateWithToken(
+	clusterinfo.Server,
+	&quot;kubernetes&quot;,
+	TokenUser,
+	clusterinfo.CertificateAuthorityData,
+	cfg.TLSBootstrapToken,
+), nil
+</code></pre>
+
+<p>CreateWithToken上文提到了不再赘述，这样就能去生成kubelet配置文件了，然后把kubelet启动起来即可</p>
+
+<p>kubeadm join的问题就是渲染配置时没有使用命令行传入的apiserver地址，而用clusterinfo里的地址，这不利于我们做高可用，可能我们传入一个虚拟ip，但是配置里还是apiser的地址</p>
+                        </div>
+                        
+                        
+                        <div id="comments">
+                            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "devcows" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+                        </div>
+                        
+
+                    </div>
+                    
+
+                    
+
+                    
+
+                    <div class="col-md-3">
+
+                        
+
+                        
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Search</h3>
+    </div>
+
+    <div class="panel-body">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" role="search">
+            <div class="input-group">
+                <input type="search" name="q" class="form-control" placeholder="Search">
+                <input type="hidden" name="sitesearch" value="https://sealyun.com/">
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Categories</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="nav nav-pills nav-stacked">
+            
+            <li><a href="https://sealyun.com/categories/starting">starting (1)</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="panel sidebar-menu">
+    <div class="panel-heading">
+      <h3 class="panel-title">Tags</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="tag-cloud">
+            
+            <li><a href="https://sealyun.com/tags/dotscale"><i class="fa fa-tags"></i> dotscale</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/event"><i class="fa fa-tags"></i> event</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/install"><i class="fa fa-tags"></i> install</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/kubeadm"><i class="fa fa-tags"></i> kubeadm</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/network"><i class="fa fa-tags"></i> network</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sealos"><i class="fa fa-tags"></i> sealos</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sketchnote"><i class="fa fa-tags"></i> sketchnote</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+                        
+
+                    </div>
+                    
+
+                    
+
+                </div>
+                
+
+            </div>
+            
+        </div>
+        
+
+        <footer id="footer">
+    <div class="container">
+
+        
+        <div class="col-md-4 col-sm-6">
+            <h4>About us</h4>
+
+            把我们实践过程中好的东西拿出来给大家复用，收点小费，我们很用心，用我们产品也很值得
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+        <div class="col-md-4 col-sm-6">
+
+             
+            <h4>Recent posts</h4>
+
+            <div class="blog-entries">
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">
+                          
+                            <img src="https://sealyun.com//img/ovn-test.png" class="img-responsive" alt="从CNI到ovn">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">从CNI到ovn</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/23/macvtap/">
+                          
+                            <img src="https://sealyun.com//macvtap.jpg" class="img-responsive" alt="macvtap实践教程">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/23/macvtap/">macvtap实践教程</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">
+                          
+                            <img src="https://sealyun.com//lxcfs.jpg" class="img-responsive" alt="强隔离容器那些事">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">强隔离容器那些事</a></h5>
+                    </div>
+                </div>
+                
+            </div>
+
+            <hr class="hidden-md hidden-lg">
+             
+
+        </div>
+        
+
+        
+        <div class="col-md-4 col-sm-6">
+
+          <h4>Contact</h4>
+
+            <strong>fhtjob@hotmail.com</strong>
+      </p>
+      
+
+
+            <a href="/contact" class="btn btn-small btn-template-main">Go to contact page</a>
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+    </div>
+    
+</footer>
+
+
+
+
+
+
+
+<div id="copyright">
+    <div class="container">
+        <div class="col-md-12">
+            
+            <p class="pull-left">Copyright (c) 2015 - 2016, Beiming; all rights reserved.</p>
+            
+            <p class="pull-right">
+              Template by <a href="http://bootstrapious.com/free-templates">Bootstrapious</a>.
+              
+
+              Ported to Hugo by <a href="https://github.com/devcows/hugo-universal-theme">DevCows</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    </div>
+    
+
+    
+<script src="//code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0/jquery.counterup.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-parallax/1.1.3/jquery-parallax.js"></script>
+
+<script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+<script src="https://sealyun.com/js/hpneo.gmaps.js"></script>
+<script src="https://sealyun.com/js/gmaps.init.js"></script>
+<script src="https://sealyun.com/js/front.js"></script>
+
+
+<script src="https://sealyun.com/js/owl.carousel.min.js"></script>
+
+
+  </body>
+</html>
+
+<style>
+#post-content img {
+    width: 100%;
+    height: 100%;
+}
+</style>

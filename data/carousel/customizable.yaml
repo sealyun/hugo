@@ -1,0 +1,9 @@
+weight: 4
+title: "产品价格"
+description: >
+  <ul class="list-style-none">
+    <li>试用版0.01元，一般针对新发布的大版本如v1.15.0</li>
+    <li>测试稳定版50元，一般针对bug修复版，推荐生产使用</li>
+    <li>不论成功失败，用户只要用的不爽，无条件退款!</li>
+  </ul>
+image: "img/carousel/template-easy-code.png"

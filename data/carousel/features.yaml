@@ -1,0 +1,13 @@
+weight: 2
+title: "产品介绍"
+description: >
+  <ul class="list-style-none">
+    <li>一行命令即可搞定kubernetes HA安装</li>
+    <li>简单的像无法自定义安装配置文件一样</li>
+    <li>生产环境久经考验，数千客户的选择</li>
+    <li>下载离线安装包，五分钟内构建高可用集群</li>
+    <li>定制kubeadm 99年证书，不用担心证书过期</li>
+    <li>定制kubeadm 内核负载均衡master,简单稳定</li>
+    <li>任何客户安装不成功提供远程链接调试服务</li>
+   </ul>
+image: "img/carousel/template-mac.png"

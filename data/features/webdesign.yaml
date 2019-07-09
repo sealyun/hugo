@@ -1,0 +1,4 @@
+weight: 1
+name: "SealOS"
+icon: "fa fa-desktop"
+description: "https://github.com/fanux/sealos 实现一条命令解决kubernetes离线安装问题，离线包中包含安装所需依赖，不同版本仅需要更换不同安装包即可，通过内核ipvs负载多个master，让HA更轻量级，不需要再多在本地运行应用层代理如nginx等，也不再需要keepalived，稳定可靠"

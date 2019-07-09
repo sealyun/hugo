@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/07/08/ovn-vni/</loc>
+    <lastmod>2019-07-08T13:50:46+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/06/23/macvtap/</loc>
+    <lastmod>2019-06-23T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/06/22/kubernetes-vm/</loc>
+    <lastmod>2019-06-22T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/05/23/kube-admin-control/</loc>
+    <lastmod>2019-05-23T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/05/01/dev-k8s-workflow/</loc>
+    <lastmod>2019-05-01T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/04/15/sealos2.0/</loc>
+    <lastmod>2019-04-15T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/04/01/super-kubeadm/</loc>
+    <lastmod>2019-04-01T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/03/27/tektoncd-pipeline/</loc>
+    <lastmod>2019-03-27T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/03/23/docker-oerlay2/</loc>
+    <lastmod>2019-03-23T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/03/11/containerd/</loc>
+    <lastmod>2019-03-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/02/20/user-token/</loc>
+    <lastmod>2019-02-20T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/02/05/fist-terminal/</loc>
+    <lastmod>2019-02-05T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/01/23/rook/</loc>
+    <lastmod>2019-01-23T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/01/23/envoy-ingress/</loc>
+    <lastmod>2019-01-23T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/01/23/vim/</loc>
+    <lastmod>2019-01-23T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/01/10/keepalived/</loc>
+    <lastmod>2019-01-10T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/01/06/referrer/</loc>
+    <lastmod>2019-01-06T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2019/01/01/prometheus-operator-envoy/</loc>
+    <lastmod>2019-01-01T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/12/25/kube-batch/</loc>
+    <lastmod>2018-12-25T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/12/11/docs/</loc>
+    <lastmod>2018-12-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/12/04/kubeadm/</loc>
+    <lastmod>2018-12-04T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/11/07/kubeadm-dev/</loc>
+    <lastmod>2018-11-07T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/11/06/kube-scheduler-source-code/</loc>
+    <lastmod>2018-11-06T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/10/24/sealos/</loc>
+    <lastmod>2018-10-24T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/10/10/ci-cd/</loc>
+    <lastmod>2018-10-10T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/08/12/etcd-manage/</loc>
+    <lastmod>2018-08-12T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/08/10/heapster-error/</loc>
+    <lastmod>2018-08-10T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/07/30/istio-quickstart/</loc>
+    <lastmod>2018-07-30T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/06/21/kube-dev/</loc>
+    <lastmod>2018-06-21T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/06/20/kube-proxy-src/</loc>
+    <lastmod>2018-06-20T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/05/29/k8s-ipvs/</loc>
+    <lastmod>2018-05-29T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/05/11/kubeadm-source/</loc>
+    <lastmod>2018-05-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/05/11/k8s-rbac/</loc>
+    <lastmod>2018-05-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/05/11/k8s-authenticating/</loc>
+    <lastmod>2018-05-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/05/11/k8s-ha-conf/</loc>
+    <lastmod>2018-05-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2018/04/24/sealyun-k8s-offline/</loc>
+    <lastmod>2018-04-24T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2017/07/11/docker-architech/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2017/07/11/calico/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2017/07/11/calico-architecture/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2017/07/11/calico-network-policy/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2017/07/11/install-k8s/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2017/07/11/install-k8s-cluster/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2017/07/11/container-stop-timeout/</loc>
+    <lastmod>2017-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2016/07/11/docker-dev/</loc>
+    <lastmod>2016-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2016/07/11/docker-ovs/</loc>
+    <lastmod>2016-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2016/07/11/docker-network/</loc>
+    <lastmod>2016-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2016/05/11/iptables/</loc>
+    <lastmod>2016-05-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2015/07/11/rpc-protobuf/</loc>
+    <lastmod>2015-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2014/07/11/kubernetes-dns/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2014/07/11/grafana-promethus/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2014/07/11/runc/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2014/07/11/scratch/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2014/07/11/offline-install/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2014/07/11/k8s-offline-install-ha/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/2014/07/11/keep_containers_alive_deamon_downtme/</loc>
+    <lastmod>2014-07-11T10:54:24+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/blog/</loc>
+    <lastmod>2019-07-08T13:50:46+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/contact/</loc>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/dotscale/</loc>
+    <lastmod>2019-06-23T10:54:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/event/</loc>
+    <lastmod>2019-06-23T10:54:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/install/</loc>
+    <lastmod>2019-04-15T10:54:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/kubeadm/</loc>
+    <lastmod>2019-04-15T10:54:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/network/</loc>
+    <lastmod>2019-07-08T13:50:46+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/</loc>
+    <lastmod>2019-07-08T13:50:46+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/sealos/</loc>
+    <lastmod>2019-04-15T10:54:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/sketchnote/</loc>
+    <lastmod>2019-06-23T10:54:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/categories/starting/</loc>
+    <lastmod>2019-07-08T13:50:46+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/tags/</loc>
+    <lastmod>2019-06-23T10:54:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sealyun.com/faq/</loc>
+  </url>
+  
+</urlset>

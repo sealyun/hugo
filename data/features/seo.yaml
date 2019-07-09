@@ -1,0 +1,4 @@
+weight: 3
+name: "定制版kuberntes"
+icon: "fa fa-globe"
+description: "https://github.com/fanux/kube 深度定制kubernetes,如定制版kubeadm支持99年证书，定制版本kubelet支持lxcfs, 全局超分等特性"

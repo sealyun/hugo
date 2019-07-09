@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+    
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>是时候表现一下我的vim了</title>
+  <meta name="author" content="" />
+
+  
+  <meta name="keywords" content="devows, hugo, go">	
+  
+
+  
+  <meta name="description" content="Site template made by devcows using hugo">	
+  
+
+  <meta name="generator" content="Hugo 0.54.0" />
+
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,500,700,800' rel='stylesheet' type='text/css'>
+
+  
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  
+  <link href="/css/animate.css" rel="stylesheet">
+
+  
+  
+    <link href="/css/style.green.css" rel="stylesheet" id="theme-stylesheet">
+  
+
+
+  
+  <link href="/css/custom.css" rel="stylesheet">
+
+  
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+  
+
+  <link href="/css/owl.carousel.css" rel="stylesheet">
+  <link href="/css/owl.theme.css" rel="stylesheet">
+
+  <link rel="alternate" href="https://sealyun.com/index.xml" type="application/rss+xml" title="SealYun">
+
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@GoHugoIO">
+  <meta name="twitter:title" content="是时候表现一下我的vim了">
+  <meta name="twitter:image" content="https://sealyun.com/img/twitter-default.png">
+  <meta name="twitter:description" content="Site template made by devcows using hugo">
+
+  
+  <meta property="og:title" content="是时候表现一下我的vim了" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sealyun.com/blog/2019/01/23/vim//" />
+  <meta property="og:image" content="/img/logo.jpg" />
+
+</head>
+
+
+  <body>
+      <img src="http://localhost:1313/img/qrcode.png" style="width:140px;position:fixed;right:10px;bottom:10px;z-index:10;"/>
+      <img src="http://localhost:1313/img/qrcode1.jpg" style="width:140px;position:fixed;right:10px;bottom:160px;z-index:10;"/>
+
+    <div id="all">
+
+        <header>
+
+          <div class="navbar-affixed-top" data-spy="affix" data-offset-top="200">
+
+    <div class="navbar navbar-default yamm" role="navigation" id="navbar">
+
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand home" href="https://sealyun.com/">
+                    <img src="https://sealyun.com//img/logo.jpg" alt="是时候表现一下我的vim了 logo" class="hidden-xs hidden-sm">
+                    <img src="https://sealyun.com//img/logo-small.png" alt="是时候表现一下我的vim了 logo" class="visible-xs visible-sm">
+                    <span class="sr-only">是时候表现一下我的vim了 - go to homepage</span>
+                </a>
+                <div class="navbar-buttons">
+                    <button type="button" class="navbar-toggle btn-template-main" data-toggle="collapse" data-target="#navigation">
+                      <span class="sr-only">Toggle Navigation</span>
+                        <i class="fa fa-align-justify"></i>
+                    </button>
+                </div>
+            </div>
+            
+
+            <div class="navbar-collapse collapse" id="navigation">
+                <ul class="nav navbar-nav navbar-right">
+                  
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/">首页</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown active">
+                    
+                    <a href="/blog/">博客</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="http://store.lameleg.com">kubernetes离线安装</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="https://sealyun.com/blog/2019/04/15/sealos2.0/">安装文档</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/faq">常见问题</a>
+                    
+                  </li>
+                  
+                </ul>
+            </div>
+            
+
+            <div class="collapse clearfix" id="search">
+
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-btn">
+
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+
+                </span>
+                    </div>
+                </form>
+
+            </div>
+            
+
+        </div>
+    </div>
+    
+
+</div>
+
+
+
+
+        </header>
+
+        <div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>是时候表现一下我的vim了</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <div id="content">
+            <div class="container">
+
+                <div class="row">
+
+                    
+
+                    <div class="col-md-9" id="blog-post">
+
+                        <p class="text-muted text-uppercase mb-small text-right">By <a href="#">fanux</a> | January 23, 2019</p>
+
+                        <div id="post-content">
+                          <blockquote>
+<p><a href="https://sealyun.com/pro/products/">kubernetes集群三步安装</a>
+探讨可加QQ群：98488045</p>
+</blockquote>
+
+<h1 id="使用vim作golang开发">使用vim作golang开发</h1>
+
+<p>分享一些我使用的vim插件，以及制作过程，最终的功能有：</p>
+
+<ul>
+<li>golang开发，补全，跳转，文件列表，函数列表等</li>
+<li>kubernetes插件，方便写yaml文件</li>
+<li>好看的颜色主题</li>
+</ul>
+
+<p>先睹为快：</p>
+
+<p><img src="/vim.png" alt="" /></p>
+
+<h1 id="安装macvim">安装macvim</h1>
+
+<p>主要是YouCompleteMe mac系统上需要依赖这个<a href="https://github.com/macvim-dev/macvim/releases">地址</a></p>
+
+<p>非mac环境我会提供一个docker镜像</p>
+
+<h1 id="安装插件管理器vundle">安装插件管理器vundle</h1>
+
+<pre><code>git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+</code></pre>
+
+<p>我的~/.vimrc</p>
+
+<pre><code>set nocompatible              &quot; be iMproved, required
+&quot; 🔑  (key)
+let mapleader=&quot;,&quot;
+filetype off &quot;required
+
+set foldmethod=indent
+
+&quot; set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+&quot; alternatively, pass a path where Vundle should install plugins
+&quot;call vundle#begin('~/some/path/here')
+
+&quot; let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+&quot; The following are examples of different formats supported.
+&quot; Keep Plugin commands between vundle#begin/end.
+&quot; plugin on GitHub repo
+&quot; Plugin 'tpope/vim-fugitive'
+&quot; plugin from http://vim-scripts.org/vim/scripts.html
+Plugin 'L9'
+&quot; The sparkup vim script is in a subdirectory of this repo called vim.
+&quot; Pass the path to set the runtimepath properly.
+&quot; Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+&quot; Plugin 'nsf/gocode',{'rtp':'vim/'}
+Plugin 'fatih/vim-go'
+Bundle 'scrooloose/nerdtree'
+&quot;Bundle 'cespare/vim-golang'
+&quot; Bundle 'dgryski/vim-godef'
+Plugin 'Valloric/YouCompleteMe'
+&quot; Plugin 'SirVer/ultisnips'
+&quot; Plugin 'majutsushi/tagbar'
+Plugin 'vim-scripts/taglist.vim'
+&quot; Plugin 'junegunn/vim-emoji'
+&quot; Plugin 'rjohnsondev/vim-compiler-go'
+&quot; Plugin 'dgryski/vim-godef'
+&quot; Plugin 'davidhalter/jedi-vim'
+&quot; Plugin 'scrooloose/syntastic'
+
+call vundle#end()            &quot; required
+filetype plugin indent on    &quot; required
+
+nmap &lt;C-h&gt; &lt;C-w&gt;h
+nmap &lt;C-l&gt; &lt;C-w&gt;l
+nmap &lt;C-j&gt; &lt;C-w&gt;j
+nmap &lt;C-k&gt; &lt;C-w&gt;k
+
+map &lt;C-n&gt; :NERDTreeToggle&lt;CR&gt;
+map &lt;C-t&gt; :b 1 &lt;CR&gt;
+
+
+Bundle 'majutsushi/tagbar'
+nmap &lt;Leader&gt;t :TagbarToggle&lt;CR&gt;
+let g:tagbar_width = 25
+autocmd VimEnter * nested :call tagbar#autoopen(1)
+autocmd BufWritePre *.go:Fmt
+let g:tagbar_right = 1
+let g:Tlist_Ctags_Cmd='/usr/local/Cellar/ctags/5.8_1/bin/ctags'
+
+let g:molokai_original = 1
+let g:rehash256 = 1
+set sw=4
+
+colorscheme molokai
+
+set nu
+set ts=4
+set expandtab
+syntax on
+
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+let g:go_fmt_command = &quot;goimports&quot;
+let g:go_fmt_fail_silently = 1
+let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+
+let g:UltiSnipsExpandTrigger=&quot;&lt;C-g&gt;&quot;
+
+let g:godef_split=2
+let g:godef_same_file_in_same_window=1
+
+au FileType go nmap &lt;leader&gt;r &lt;Plug&gt;(go-run)
+au FileType go nmap &lt;leader&gt;b &lt;Plug&gt;(go-build)
+au FileType go nmap &lt;leader&gt;T &lt;Plug&gt;(go-test)
+au FileType go nmap &lt;leader&gt;c &lt;Plug&gt;(go-coverage)
+
+au FileType go nmap &lt;Leader&gt;ds &lt;Plug&gt;(go-def-split)
+au FileType go nmap &lt;Leader&gt;dv &lt;Plug&gt;(go-def-vertical)
+au FileType go nmap &lt;Leader&gt;dt &lt;Plug&gt;(go-def-tab)
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+set rtp+=$GOPATH/src/github.com/golang/lint/misc/vim
+autocmd BufWritePost,FileWritePost *.go execute 'Lint' | cwindow
+set completefunc=emoji#complete
+map &lt;C-e&gt; :%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/g &lt;CR&gt;
+
+set lines=120 columns=150
+</code></pre>
+
+<p>启动vim 执行 :PluginInstall</p>
+
+<h1 id="安装youcompleteme">安装YouCompleteMe</h1>
+
+<p>安装brew ctags cmake:</p>
+
+<pre><code>/usr/bin/ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;
+brew install cmake
+brew install ctags-exuberant
+</code></pre>
+
+<p>必须要安装好golang再进行以下步骤</p>
+
+<pre><code>cd ~/.vim/bundle/YouCompleteMe
+./install.py --clangd-completer --go-completer
+</code></pre>
+
+<h1 id="初始化vim-go">初始化vim-go</h1>
+
+<p>启动vim执行 :GoInstallBinaries (要访问golang官网，所以你懂的)</p>
+
+<h1 id="安装颜色主题">安装颜色主题</h1>
+
+<pre><code>git clone https://github.com/tomasr/molokai ~/.vim
+mv ~/.vim/molokai/colors ~/.vim
+</code></pre>
+
+<h1 id="常用快捷键">常用快捷键</h1>
+
+<p>Ctrl n 文件目录
+, t 函数列表
+,dt 跳转到函数定义</p>
+
+<h1 id="更多内容">更多内容</h1>
+
+<p>为什么写这篇文章，因为<a href="https://github.com/fanux/fist">fist</a> 的webterminal里会集成这样一个vim，webterminal就具备非常强大的k8s管理能力，特别是编写yaml配置文件，就可以做到比如你输入一个dep补全后就直接生成一个Deployment配置，非常高效，还语法高亮，yaml语法检测等，是不是很期待~</p>
+                        </div>
+                        
+                        
+                        <div id="comments">
+                            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "devcows" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+                        </div>
+                        
+
+                    </div>
+                    
+
+                    
+
+                    
+
+                    <div class="col-md-3">
+
+                        
+
+                        
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Search</h3>
+    </div>
+
+    <div class="panel-body">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" role="search">
+            <div class="input-group">
+                <input type="search" name="q" class="form-control" placeholder="Search">
+                <input type="hidden" name="sitesearch" value="https://sealyun.com/">
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Categories</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="nav nav-pills nav-stacked">
+            
+            <li><a href="https://sealyun.com/categories/starting">starting (1)</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="panel sidebar-menu">
+    <div class="panel-heading">
+      <h3 class="panel-title">Tags</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="tag-cloud">
+            
+            <li><a href="https://sealyun.com/tags/dotscale"><i class="fa fa-tags"></i> dotscale</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/event"><i class="fa fa-tags"></i> event</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/install"><i class="fa fa-tags"></i> install</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/kubeadm"><i class="fa fa-tags"></i> kubeadm</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/network"><i class="fa fa-tags"></i> network</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sealos"><i class="fa fa-tags"></i> sealos</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sketchnote"><i class="fa fa-tags"></i> sketchnote</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+                        
+
+                    </div>
+                    
+
+                    
+
+                </div>
+                
+
+            </div>
+            
+        </div>
+        
+
+        <footer id="footer">
+    <div class="container">
+
+        
+        <div class="col-md-4 col-sm-6">
+            <h4>About us</h4>
+
+            把我们实践过程中好的东西拿出来给大家复用，收点小费，我们很用心，用我们产品也很值得
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+        <div class="col-md-4 col-sm-6">
+
+             
+            <h4>Recent posts</h4>
+
+            <div class="blog-entries">
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">
+                          
+                            <img src="https://sealyun.com//img/ovn-test.png" class="img-responsive" alt="从CNI到ovn">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">从CNI到ovn</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/23/macvtap/">
+                          
+                            <img src="https://sealyun.com//macvtap.jpg" class="img-responsive" alt="macvtap实践教程">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/23/macvtap/">macvtap实践教程</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">
+                          
+                            <img src="https://sealyun.com//lxcfs.jpg" class="img-responsive" alt="强隔离容器那些事">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">强隔离容器那些事</a></h5>
+                    </div>
+                </div>
+                
+            </div>
+
+            <hr class="hidden-md hidden-lg">
+             
+
+        </div>
+        
+
+        
+        <div class="col-md-4 col-sm-6">
+
+          <h4>Contact</h4>
+
+            <strong>fhtjob@hotmail.com</strong>
+      </p>
+      
+
+
+            <a href="/contact" class="btn btn-small btn-template-main">Go to contact page</a>
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+    </div>
+    
+</footer>
+
+
+
+
+
+
+
+<div id="copyright">
+    <div class="container">
+        <div class="col-md-12">
+            
+            <p class="pull-left">Copyright (c) 2015 - 2016, Beiming; all rights reserved.</p>
+            
+            <p class="pull-right">
+              Template by <a href="http://bootstrapious.com/free-templates">Bootstrapious</a>.
+              
+
+              Ported to Hugo by <a href="https://github.com/devcows/hugo-universal-theme">DevCows</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    </div>
+    
+
+    
+<script src="//code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0/jquery.counterup.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-parallax/1.1.3/jquery-parallax.js"></script>
+
+<script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+<script src="https://sealyun.com/js/hpneo.gmaps.js"></script>
+<script src="https://sealyun.com/js/gmaps.init.js"></script>
+<script src="https://sealyun.com/js/front.js"></script>
+
+
+<script src="https://sealyun.com/js/owl.carousel.min.js"></script>
+
+
+  </body>
+</html>
+
+<style>
+#post-content img {
+    width: 100%;
+    height: 100%;
+}
+</style>

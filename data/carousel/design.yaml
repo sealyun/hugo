@@ -1,0 +1,9 @@
+weight: 3
+title: "100%开源"
+description: >
+  <ul class="list-style-none">
+    <li>sealyun旗下任何产品代码坚持100%开源原则</li>
+    <li>追求轻量级可扩展，牺牲20%功能降低80%复杂度</li>
+    <li>不吹牛不忽悠,简简单单做技术</li>
+  </ul>
+image: "img/carousel/template-easy-customize.png"

@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+    
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>istio安装使用教程</title>
+  <meta name="author" content="" />
+
+  
+  <meta name="keywords" content="devows, hugo, go">	
+  
+
+  
+  <meta name="description" content="Site template made by devcows using hugo">	
+  
+
+  <meta name="generator" content="Hugo 0.54.0" />
+
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,500,700,800' rel='stylesheet' type='text/css'>
+
+  
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  
+  <link href="/css/animate.css" rel="stylesheet">
+
+  
+  
+    <link href="/css/style.green.css" rel="stylesheet" id="theme-stylesheet">
+  
+
+
+  
+  <link href="/css/custom.css" rel="stylesheet">
+
+  
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+  
+
+  <link href="/css/owl.carousel.css" rel="stylesheet">
+  <link href="/css/owl.theme.css" rel="stylesheet">
+
+  <link rel="alternate" href="https://sealyun.com/index.xml" type="application/rss+xml" title="SealYun">
+
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@GoHugoIO">
+  <meta name="twitter:title" content="istio安装使用教程">
+  <meta name="twitter:image" content="https://sealyun.com/img/twitter-default.png">
+  <meta name="twitter:description" content="Site template made by devcows using hugo">
+
+  
+  <meta property="og:title" content="istio安装使用教程" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sealyun.com/blog/2018/07/30/istio-quickstart//" />
+  <meta property="og:image" content="/img/logo.jpg" />
+
+</head>
+
+
+  <body>
+      <img src="http://localhost:1313/img/qrcode.png" style="width:140px;position:fixed;right:10px;bottom:10px;z-index:10;"/>
+      <img src="http://localhost:1313/img/qrcode1.jpg" style="width:140px;position:fixed;right:10px;bottom:160px;z-index:10;"/>
+
+    <div id="all">
+
+        <header>
+
+          <div class="navbar-affixed-top" data-spy="affix" data-offset-top="200">
+
+    <div class="navbar navbar-default yamm" role="navigation" id="navbar">
+
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand home" href="https://sealyun.com/">
+                    <img src="https://sealyun.com//img/logo.jpg" alt="istio安装使用教程 logo" class="hidden-xs hidden-sm">
+                    <img src="https://sealyun.com//img/logo-small.png" alt="istio安装使用教程 logo" class="visible-xs visible-sm">
+                    <span class="sr-only">istio安装使用教程 - go to homepage</span>
+                </a>
+                <div class="navbar-buttons">
+                    <button type="button" class="navbar-toggle btn-template-main" data-toggle="collapse" data-target="#navigation">
+                      <span class="sr-only">Toggle Navigation</span>
+                        <i class="fa fa-align-justify"></i>
+                    </button>
+                </div>
+            </div>
+            
+
+            <div class="navbar-collapse collapse" id="navigation">
+                <ul class="nav navbar-nav navbar-right">
+                  
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/">首页</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown active">
+                    
+                    <a href="/blog/">博客</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="http://store.lameleg.com">kubernetes离线安装</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="https://sealyun.com/blog/2019/04/15/sealos2.0/">安装文档</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/faq">常见问题</a>
+                    
+                  </li>
+                  
+                </ul>
+            </div>
+            
+
+            <div class="collapse clearfix" id="search">
+
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-btn">
+
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+
+                </span>
+                    </div>
+                </form>
+
+            </div>
+            
+
+        </div>
+    </div>
+    
+
+</div>
+
+
+
+
+        </header>
+
+        <div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>istio安装使用教程</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <div id="content">
+            <div class="container">
+
+                <div class="row">
+
+                    
+
+                    <div class="col-md-9" id="blog-post">
+
+                        <p class="text-muted text-uppercase mb-small text-right">By <a href="#">fanux</a> | July 30, 2018</p>
+
+                        <div id="post-content">
+                          <blockquote>
+<p>广告 | <a href="http://sealyun.com/pro/products/">kubernetes各版本离线安装包</a></p>
+</blockquote>
+
+<p>祝贺istio1.0发布, 在此献上教程一份</p>
+
+<h1 id="安装">安装</h1>
+
+<blockquote>
+<p>安装k8s <a href="http://sealyun.com/pro/products/">强势插播广告</a></p>
+</blockquote>
+
+<p>三步安装，不多说</p>
+
+<blockquote>
+<p>安装helm, 推荐生产环境用helm安装，可以调参</p>
+</blockquote>
+
+<p><a href="https://github.com/helm/helm/releases">release地址</a></p>
+
+<p>如我使用的2.9.1版本</p>
+
+<pre><code>yum install -y socat # 这个不装会报错
+</code></pre>
+
+<pre><code>[root@istiohost ~]# wget https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
+[root@istiohost ~]# tar zxvf helm-v2.9.1-linux-amd64.tar.gz
+[root@istiohost ~]# cp linux-amd64/helm /usr/bin
+</code></pre>
+
+<p>先创建一个service account 把管理员权限给helm:</p>
+
+<pre><code>[root@istiohost ~]# cat helmserviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: kube-system
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: tiller-clusterrolebinding
+subjects:
+- kind: ServiceAccount
+  name: tiller
+  namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: &quot;&quot;
+</code></pre>
+
+<pre><code>kubectl create -f  helmserviceaccount.yaml
+</code></pre>
+
+<p>安装helm 服务端 tiller :</p>
+
+<pre><code>helm init  --service-account tiller #  如果已安装更新加 --upgrade 参数
+helm list #没任何返回表示成功
+</code></pre>
+
+<blockquote>
+<p>安装istio</p>
+</blockquote>
+
+<pre><code>curl -L https://git.io/getLatestIstio | sh -
+cd istio-1.0.0/
+export PATH=$PWD/bin:$PATH
+</code></pre>
+
+<p>helm 2.10.0以前的版本需要装一下CRD：</p>
+
+<pre><code>kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+kubectl apply -f install/kubernetes/helm/istio/charts/certmanager/templates/crds.yaml
+</code></pre>
+
+<p>安装istio, 由于你没有LB所以用NodePort代替:</p>
+
+<pre><code>helm install install/kubernetes/helm/istio  --name istio --namespace istio-system --set gateways.istio-ingressgateway.type=NodePort --set gateways.istio-egressgateway.type=NodePort
+</code></pre>
+
+<p>安装成功：</p>
+
+<pre><code>[root@istiohost istio-1.0.0]# kubectl get pod -n istio-system
+NAME                                        READY     STATUS    RESTARTS   AGE
+istio-citadel-7d8f9748c5-ntqnp              1/1       Running   0          5m
+istio-egressgateway-676c8546c5-2w4cq        1/1       Running   0          5m
+istio-galley-5669f7c9b-mkxjg                1/1       Running   0          5m
+istio-ingressgateway-5475685bbb-96mbr       1/1       Running   0          5m
+istio-pilot-5795d6d695-gr4h4                2/2       Running   0          5m
+istio-policy-7f945bf487-gkpxr               2/2       Running   0          5m
+istio-sidecar-injector-d96cd9459-674pk      1/1       Running   0          5m
+istio-statsd-prom-bridge-549d687fd9-6cbzs   1/1       Running   0          5m
+istio-telemetry-6c587bdbc4-jndjn            2/2       Running   0          5m
+prometheus-6ffc56584f-98mr9                 1/1       Running   0          5m
+[root@istiohost istio-1.0.0]# kubectl get svc -n istio-system
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                                                                     AGE
+istio-citadel              ClusterIP   10.108.253.89    &lt;none&gt;        8060/TCP,9093/TCP                                                                                           5m
+istio-egressgateway        NodePort    10.96.151.14     &lt;none&gt;        80:30830/TCP,443:30038/TCP                                                                                  5m
+istio-galley               ClusterIP   10.102.83.130    &lt;none&gt;        443/TCP,9093/TCP                                                                                            5m
+istio-ingressgateway       NodePort    10.99.194.13     &lt;none&gt;        80:31380/TCP,443:31390/TCP,31400:31400/TCP,15011:31577/TCP,8060:30037/TCP,15030:31855/TCP,15031:30775/TCP   5m
+istio-pilot                ClusterIP   10.101.4.143     &lt;none&gt;        15010/TCP,15011/TCP,8080/TCP,9093/TCP                                                                       5m
+istio-policy               ClusterIP   10.106.221.68    &lt;none&gt;        9091/TCP,15004/TCP,9093/TCP                                                                                 5m
+istio-sidecar-injector     ClusterIP   10.100.5.170     &lt;none&gt;        443/TCP                                                                                                     5m
+istio-statsd-prom-bridge   ClusterIP   10.107.28.242    &lt;none&gt;        9102/TCP,9125/UDP                                                                                           5m
+istio-telemetry            ClusterIP   10.105.66.20     &lt;none&gt;        9091/TCP,15004/TCP,9093/TCP,42422/TCP                                                                       5m
+prometheus                 ClusterIP   10.103.128.152   &lt;none&gt;        9090/TCP
+</code></pre>
+
+<h1 id="使用教程">使用教程</h1>
+
+<h2 id="官网事例-bookinfo-application">官网事例 Bookinfo Application</h2>
+
+<p><img src="/noistio.svg" alt="" /></p>
+
+<ul>
+<li>productpage 调用details和reviews渲染页面</li>
+<li>details包含书本信息</li>
+<li>reviews 书本反馈，调用ratings服务</li>
+<li>ratings 书本租借信息</li>
+</ul>
+
+<p>reviews服务有三个版本:</p>
+
+<ul>
+<li>V1 不请求ratings</li>
+<li>V2 请求ratings，返回1到5个黑星</li>
+<li>V3 请求ratings，返回1到5个红星</li>
+</ul>
+
+<p>数据平面：
+<img src="/withistio.svg" alt="" /></p>
+
+<p>安装应用：</p>
+
+<pre><code>kubectl apply -f &lt;(istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml)
+</code></pre>
+
+<p>安装完成：</p>
+
+<pre><code>[root@istiohost istio-1.0.0]# kubectl get services
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+details       ClusterIP   10.104.66.31    &lt;none&gt;        9080/TCP   2m
+kubernetes    ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP    4h
+productpage   ClusterIP   10.109.68.13    &lt;none&gt;        9080/TCP   2m
+ratings       ClusterIP   10.99.55.110    &lt;none&gt;        9080/TCP   2m
+reviews       ClusterIP   10.102.19.129   &lt;none&gt;        9080/TCP   2m
+[root@istiohost istio-1.0.0]# kubectl get pods
+NAME                              READY     STATUS    RESTARTS   AGE
+details-v1-fc9649d9c-dpnlp        2/2       Running   0          2m
+productpage-v1-58845c779c-7g8th   2/2       Running   0          2m
+ratings-v1-6cc485c997-fb7nh       2/2       Running   0          2m
+reviews-v1-76987687b7-x5n7z       2/2       Running   0          2m
+reviews-v2-86749dcd5-xchzb        2/2       Running   0          2m
+reviews-v3-7f4746b959-nthrq       2/2       Running   0          2m
+</code></pre>
+
+<p>创建一个gateway,这是为了集群外可以访问</p>
+
+<pre><code>kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml
+</code></pre>
+
+<p>浏览器访问url:
+47.254.28.88是我的节点ip，使用nodeport模式</p>
+
+<pre><code>http://47.254.28.88:31380/productpage 
+</code></pre>
+
+<p>连续点击三次，你会发现右边没星星-&gt; 黑星星-&gt; 红星星切换，对应三个版本的review,默认策略是轮询</p>
+
+<p>创建destination rules, 配置路由访问规则，现在还是轮询</p>
+
+<pre><code>kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
+</code></pre>
+
+<h1 id="智能路由">智能路由</h1>
+
+<h2 id="请求路由-request-routing">请求路由 request routing</h2>
+
+<h3 id="根据版本路由">根据版本路由</h3>
+
+<p>把所有路由切换到v1版本</p>
+
+<pre><code>kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml
+</code></pre>
+
+<p>这样执行完后，不管怎么刷页面，我们都看不到星星，因为v1版本没星</p>
+
+<p>可以看到destination是这样的：</p>
+
+<pre><code>  http:
+  - route:
+    - destination:
+        host: details
+        subset: v1
+</code></pre>
+
+<p>试想如此我们做版本切换将是何等简单</p>
+
+<h3 id="根据用户路由">根据用户路由</h3>
+
+<pre><code>kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml
+</code></pre>
+
+<p>你会发现用jason用户登录就能看到黑星星，而其它方式看到的页面都是无星星</p>
+
+<p>因为这个user走了v2版本，能不强大？  那当然还能根据header什么的做路由了，就不多说了</p>
+
+<pre><code>  http:
+  - match:
+    - headers:
+        end-user:
+          exact: jason
+    route:
+    - destination:
+        host: reviews
+        subset: v2
+  - route:
+    - destination:
+        host: reviews
+        subset: v1
+</code></pre>
+
+<h2 id="故障注入-fault-injection">故障注入 Fault injection</h2>
+
+<pre><code>kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml
+kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml
+</code></pre>
+
+<p>假设代码里有个bug，用户jason, reviews:v2 访问ratings时会卡10s, 我们任然希望端到端的测试能正常走完</p>
+
+<pre><code>kubectl apply -f samples/bookinfo/networking/virtual-service-ratings-test-delay.yaml
+</code></pre>
+
+<p>注入错误让jason用户有个7s的延迟</p>
+
+<pre><code>  hosts:
+  - ratings
+  http:
+  - fault:
+      delay:
+        fixedDelay: 7s
+        percent: 100
+    match:
+    - headers:
+        end-user:
+          exact: jason
+    route:
+    - destination:
+        host: ratings
+        subset: v1
+  - route:
+    - destination:
+        host: ratings
+        subset: v1
+</code></pre>
+
+<p>这时访问页面显然会出错，因为我们希望7s内能返回,这样我们就发现了一个延迟的bug</p>
+
+<pre><code>Error fetching product reviews!
+Sorry, product reviews are currently unavailable for this book.
+</code></pre>
+
+<p>所以我们就可能通过故障注入去发现这些异常现象</p>
+
+<h2 id="链路切换-traffic-shifting">链路切换 Traffic Shifting</h2>
+
+<p>我们先把50%流量发送给reviews:v1 50%流量发送给v3，然后再把100%的流量都切给v3</p>
+
+<h3 id="把100-流量切到v1">把100%流量切到v1</h3>
+
+<pre><code>kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml
+</code></pre>
+
+<p>此时不论刷几遍，都没有星星</p>
+
+<h3 id="v1-v3各50-流量">v1 v3各50%流量</h3>
+
+<pre><code>kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-50-v3.yaml
+</code></pre>
+
+<pre><code>  - route:
+    - destination:
+        host: reviews
+        subset: v1
+      weight: 50
+    - destination:
+        host: reviews
+        subset: v3
+      weight: 50
+</code></pre>
+
+<p>此时一会有星，一会没星，但是已经不是轮询算法了</p>
+
+<h3 id="全切v3">全切v3</h3>
+
+<pre><code>kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-v3.yaml
+</code></pre>
+
+<p>这时不管怎么刷都是红心了</p>
+                        </div>
+                        
+                        
+                        <div id="comments">
+                            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "devcows" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+                        </div>
+                        
+
+                    </div>
+                    
+
+                    
+
+                    
+
+                    <div class="col-md-3">
+
+                        
+
+                        
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Search</h3>
+    </div>
+
+    <div class="panel-body">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" role="search">
+            <div class="input-group">
+                <input type="search" name="q" class="form-control" placeholder="Search">
+                <input type="hidden" name="sitesearch" value="https://sealyun.com/">
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Categories</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="nav nav-pills nav-stacked">
+            
+            <li><a href="https://sealyun.com/categories/starting">starting (1)</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="panel sidebar-menu">
+    <div class="panel-heading">
+      <h3 class="panel-title">Tags</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="tag-cloud">
+            
+            <li><a href="https://sealyun.com/tags/dotscale"><i class="fa fa-tags"></i> dotscale</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/event"><i class="fa fa-tags"></i> event</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/install"><i class="fa fa-tags"></i> install</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/kubeadm"><i class="fa fa-tags"></i> kubeadm</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/network"><i class="fa fa-tags"></i> network</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sealos"><i class="fa fa-tags"></i> sealos</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sketchnote"><i class="fa fa-tags"></i> sketchnote</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+                        
+
+                    </div>
+                    
+
+                    
+
+                </div>
+                
+
+            </div>
+            
+        </div>
+        
+
+        <footer id="footer">
+    <div class="container">
+
+        
+        <div class="col-md-4 col-sm-6">
+            <h4>About us</h4>
+
+            把我们实践过程中好的东西拿出来给大家复用，收点小费，我们很用心，用我们产品也很值得
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+        <div class="col-md-4 col-sm-6">
+
+             
+            <h4>Recent posts</h4>
+
+            <div class="blog-entries">
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">
+                          
+                            <img src="https://sealyun.com//img/ovn-test.png" class="img-responsive" alt="从CNI到ovn">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">从CNI到ovn</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/23/macvtap/">
+                          
+                            <img src="https://sealyun.com//macvtap.jpg" class="img-responsive" alt="macvtap实践教程">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/23/macvtap/">macvtap实践教程</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">
+                          
+                            <img src="https://sealyun.com//lxcfs.jpg" class="img-responsive" alt="强隔离容器那些事">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">强隔离容器那些事</a></h5>
+                    </div>
+                </div>
+                
+            </div>
+
+            <hr class="hidden-md hidden-lg">
+             
+
+        </div>
+        
+
+        
+        <div class="col-md-4 col-sm-6">
+
+          <h4>Contact</h4>
+
+            <strong>fhtjob@hotmail.com</strong>
+      </p>
+      
+
+
+            <a href="/contact" class="btn btn-small btn-template-main">Go to contact page</a>
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+    </div>
+    
+</footer>
+
+
+
+
+
+
+
+<div id="copyright">
+    <div class="container">
+        <div class="col-md-12">
+            
+            <p class="pull-left">Copyright (c) 2015 - 2016, Beiming; all rights reserved.</p>
+            
+            <p class="pull-right">
+              Template by <a href="http://bootstrapious.com/free-templates">Bootstrapious</a>.
+              
+
+              Ported to Hugo by <a href="https://github.com/devcows/hugo-universal-theme">DevCows</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    </div>
+    
+
+    
+<script src="//code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0/jquery.counterup.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-parallax/1.1.3/jquery-parallax.js"></script>
+
+<script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+<script src="https://sealyun.com/js/hpneo.gmaps.js"></script>
+<script src="https://sealyun.com/js/gmaps.init.js"></script>
+<script src="https://sealyun.com/js/front.js"></script>
+
+
+<script src="https://sealyun.com/js/owl.carousel.min.js"></script>
+
+
+  </body>
+</html>
+
+<style>
+#post-content img {
+    width: 100%;
+    height: 100%;
+}
+</style>

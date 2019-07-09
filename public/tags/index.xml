@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on SealYun</title>
+    <link>https://sealyun.com/tags/</link>
+    <description>Recent content in Tags on SealYun</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 23 Jun 2019 10:54:24 +0200</lastBuildDate>
+    
+	<atom:link href="https://sealyun.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Dotscale</title>
+      <link>https://sealyun.com/tags/dotscale/</link>
+      <pubDate>Sun, 23 Jun 2019 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/tags/dotscale/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Event</title>
+      <link>https://sealyun.com/tags/event/</link>
+      <pubDate>Sun, 23 Jun 2019 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/tags/event/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Install</title>
+      <link>https://sealyun.com/tags/install/</link>
+      <pubDate>Mon, 15 Apr 2019 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/tags/install/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kubeadm</title>
+      <link>https://sealyun.com/tags/kubeadm/</link>
+      <pubDate>Mon, 15 Apr 2019 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/tags/kubeadm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Network</title>
+      <link>https://sealyun.com/tags/network/</link>
+      <pubDate>Mon, 08 Jul 2019 13:50:46 +0200</pubDate>
+      
+      <guid>https://sealyun.com/tags/network/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sealos</title>
+      <link>https://sealyun.com/tags/sealos/</link>
+      <pubDate>Mon, 15 Apr 2019 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/tags/sealos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sketchnote</title>
+      <link>https://sealyun.com/tags/sketchnote/</link>
+      <pubDate>Sun, 23 Jun 2019 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/tags/sketchnote/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,4 @@
+weight: 2
+name: "Fist"
+icon: "fa fa-print"
+description: "https://github.com/fanux/fist 轻量级kubernetes管理工具，包含token管理，模板渲染，角色权限管理，web终端等功能，支持多租户，不再关心节点，让集群成功真正的云,兼容kubernetes API,引导用户以正确的理念用云."

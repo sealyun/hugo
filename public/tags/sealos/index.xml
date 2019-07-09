@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sealos on SealYun</title>
+    <link>https://sealyun.com/tags/sealos/</link>
+    <description>Recent content in Sealos on SealYun</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 15 Apr 2019 10:54:24 +0200</lastBuildDate>
+    
+	<atom:link href="https://sealyun.com/tags/sealos/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>最简单的kubernetes HA安装方式-sealos详解</title>
+      <link>https://sealyun.com/blog/2019/04/15/sealos2.0/</link>
+      <pubDate>Mon, 15 Apr 2019 10:54:24 +0200</pubDate>
+      
+      <guid>https://sealyun.com/blog/2019/04/15/sealos2.0/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://sealyun.com/pro/products/&#34;&gt;kubernetes集群三步安装&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h1 id=&#34;概述&#34;&gt;概述&lt;/h1&gt;
+
+&lt;p&gt;本文教你如何用一条命令构建k8s高可用集群且不依赖haproxy和keepalived，也无需ansible。通过内核ipvs对apiserver进行负载均衡，并且带apiserver健康检测。&lt;/p&gt;
+
+&lt;h1 id=&#34;快速入门&#34;&gt;快速入门&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/fanux/sealos&#34;&gt;sealos项目地址&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;准备条件&#34;&gt;准备条件&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;装好docker并启动docker&lt;/li&gt;
+&lt;li&gt;把&lt;a href=&#34;http://store.lameleg.com&#34;&gt;离线安装包&lt;/a&gt; 下载好拷贝到所有节点的/root目录下, 不需要解压，如果有文件服务器更好，sealos支持从一个服务器上wget到所有节点上&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

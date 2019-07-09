@@ -1,0 +1,168 @@
+baseurl = "https://sealyun.com/"
+title = "SealYun"
+theme = "hugo-universal-theme"
+themesDir = "../.."
+languageCode = "en-us"
+# Site language. Available translations in the theme's `/i18n` directory.
+defaultContentLanguage = "en"
+# Enable comments by entering your Disqus shortname
+disqusShortname = "devcows"
+# Enable Google Analytics by entering your tracking code
+# googleAnalytics = ""
+
+# Define the number of posts per page
+paginate = 10
+
+[menu]
+
+# Main menu
+
+[[menu.main]]
+    identifier="home"
+    name = "首页"
+    url  = "/"
+    weight = 1
+
+[[menu.main]]
+    identifier="blog"
+    name = "博客"
+    url  = "/blog/"
+    weight = 2
+
+[[menu.main]]
+    identifier = "install"
+    name = "kubernetes离线安装"
+    url  = "http://store.lameleg.com"
+    weight = 3
+
+[[menu.main]]
+    identifier = "contact"
+    name = "安装文档"
+    url  = "https://sealyun.com/blog/2019/04/15/sealos2.0/"
+    weight = 4
+
+[[menu.main]]
+    identifier = "faq"
+    name = "常见问题"
+    url  = "/faq"
+    weight = 5
+
+# Top bar social links menu
+
+[[menu.topbar]]
+    weight = 1
+    name = "GitHub"
+    url = "https://github.com/fanux"
+    pre = "<i class='fa fa-2x fa-github'></i>"
+
+[[menu.topbar]]
+    weight = 4
+    name = "Email"
+    url = "mailto:fhtjob@hotmail.com"
+    pre = "<i class='fa fa-2x fa-envelope'></i>"
+
+[params]
+    viewMorePostLink = "/blog/"
+    author = "DevCows"
+    defaultKeywords = ["devows", "hugo", "go"]
+    defaultDescription = "Site template made by devcows using hugo"
+
+    # Twitter
+    twitter = "GoHugoIO"
+    twitterImage = "img/twitter-default.png"
+
+    # Google Maps API key (if not set will default to not passing a key.)
+    # googleMapsApiKey = "AIzaSyCFhtWLJcE30xOAjcbSFi-0fnoVmQZPb1Y"
+
+    # Style options: default (light-blue), blue, green, marsala, pink, red, turquoise, violet
+    style = "green"
+
+    # Since this template is static, the contact form uses www.formspree.io as a
+    # proxy. The form makes a POST request to their servers to send the actual
+    # email. Visitors can send up to a 1000 emails each month for free.
+    #
+    # What you need to do for the setup?
+    #
+    # - set your email address under 'email' below
+    # - upload the generated site to your server
+    # - send a dummy email yourself to confirm your account
+    # - click the confirm link in the email from www.formspree.io
+    # - you're done. Happy mailing!
+    #
+    # Enable the contact form by entering your Formspree.io email
+    email = "your@email.com"
+    contact_form_ajax = false
+
+    about_us= "<p>把我们实践过程中好的东西拿出来给大家复用，收点小费，我们很用心，用我们产品也很值得</p>"
+    copyright = "Copyright (c) 2015 - 2016, Beiming; all rights reserved."
+
+    # Format dates with Go's time formatting
+    date_format = "January 2, 2006"
+
+    logo = "/img/logo.jpg"
+    logo_small = "/img/logo-small.png"
+    address = """<p><strong>fhtjob@hotmail.com</strong>
+      </p>
+      """
+    latitude = "-12.043333"
+    longitude = "-77.028333"
+
+[Permalinks]
+    blog = "/blog/:year/:month/:day/:filename/"
+
+# Enable or disable top bar with social icons
+[params.topbar]
+    enable = true
+    text = """<p class="hidden-sm hidden-xs">微信群：sealnux QQ群：98488045 公众号：sealyun</p>
+      <p class="hidden-md hidden-lg"><a href="#" data-animate-hover="pulse"><i class="fa fa-phone"></i></a>
+      <a href="#" data-animate-hover="pulse"><i class="fa fa-envelope"></i></a>
+      </p>
+      """
+
+# Enable and disable widgets for the right sidebar
+[params.widgets]
+    categories = true
+    tags = true
+    search = true
+
+[params.carousel]
+    enable = true
+    # All carousel items are defined in their own files. You can find example items
+    # at 'exampleSite/data/carousel'.
+    # For more informtion take a look at the README.
+
+[params.features]
+    enable = true
+    # All features are defined in their own files. You can find example items
+    # at 'exampleSite/data/features'.
+    # For more informtion take a look at the README.
+
+[params.testimonials]
+    enable = true
+    # All testimonials are defined in their own files. You can find example items
+    # at 'exampleSite/data/testimonials'.
+    # For more informtion take a look at the README.
+    title = "Testimonials"
+    subtitle = "We have worked with many clients and we always like to hear they come out from the cooperation happy and satisfied. Have a look what our clients said about us."
+
+[params.see_more]
+    enable = true
+    icon = "fa fa-file-code-o"
+    title = "了解更多"
+    subtitle = "网页右下角有我们的公众号，我们会发一些有技术含量的文章，杜绝广告;下面二维码可进交流群"
+    link_url = "#"
+    link_text = "回到首页"
+
+[params.clients]
+    enable = true
+    # All clients are defined in their own files. You can find example items
+    # at 'exampleSite/data/clients'.
+    # For more informtion take a look at the README.
+    title = "友情链接"
+    subtitle = ""
+
+[params.recent_posts]
+    enable = true
+    title = "博客精选"
+    subtitle = "把我们实践虚拟化的所有技术整理成博客分享给大家，希望大家能够喜欢与支持"
+

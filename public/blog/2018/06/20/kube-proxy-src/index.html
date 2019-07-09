@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+    
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>kube-proxy源码解析</title>
+  <meta name="author" content="" />
+
+  
+  <meta name="keywords" content="devows, hugo, go">	
+  
+
+  
+  <meta name="description" content="Site template made by devcows using hugo">	
+  
+
+  <meta name="generator" content="Hugo 0.54.0" />
+
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,500,700,800' rel='stylesheet' type='text/css'>
+
+  
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  
+  <link href="/css/animate.css" rel="stylesheet">
+
+  
+  
+    <link href="/css/style.green.css" rel="stylesheet" id="theme-stylesheet">
+  
+
+
+  
+  <link href="/css/custom.css" rel="stylesheet">
+
+  
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+  
+
+  <link href="/css/owl.carousel.css" rel="stylesheet">
+  <link href="/css/owl.theme.css" rel="stylesheet">
+
+  <link rel="alternate" href="https://sealyun.com/index.xml" type="application/rss+xml" title="SealYun">
+
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@GoHugoIO">
+  <meta name="twitter:title" content="kube-proxy源码解析">
+  <meta name="twitter:image" content="https://sealyun.com/img/twitter-default.png">
+  <meta name="twitter:description" content="Site template made by devcows using hugo">
+
+  
+  <meta property="og:title" content="kube-proxy源码解析" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sealyun.com/blog/2018/06/20/kube-proxy-src//" />
+  <meta property="og:image" content="/img/logo.jpg" />
+
+</head>
+
+
+  <body>
+      <img src="http://localhost:1313/img/qrcode.png" style="width:140px;position:fixed;right:10px;bottom:10px;z-index:10;"/>
+      <img src="http://localhost:1313/img/qrcode1.jpg" style="width:140px;position:fixed;right:10px;bottom:160px;z-index:10;"/>
+
+    <div id="all">
+
+        <header>
+
+          <div class="navbar-affixed-top" data-spy="affix" data-offset-top="200">
+
+    <div class="navbar navbar-default yamm" role="navigation" id="navbar">
+
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand home" href="https://sealyun.com/">
+                    <img src="https://sealyun.com//img/logo.jpg" alt="kube-proxy源码解析 logo" class="hidden-xs hidden-sm">
+                    <img src="https://sealyun.com//img/logo-small.png" alt="kube-proxy源码解析 logo" class="visible-xs visible-sm">
+                    <span class="sr-only">kube-proxy源码解析 - go to homepage</span>
+                </a>
+                <div class="navbar-buttons">
+                    <button type="button" class="navbar-toggle btn-template-main" data-toggle="collapse" data-target="#navigation">
+                      <span class="sr-only">Toggle Navigation</span>
+                        <i class="fa fa-align-justify"></i>
+                    </button>
+                </div>
+            </div>
+            
+
+            <div class="navbar-collapse collapse" id="navigation">
+                <ul class="nav navbar-nav navbar-right">
+                  
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/">首页</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown active">
+                    
+                    <a href="/blog/">博客</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="http://store.lameleg.com">kubernetes离线安装</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="https://sealyun.com/blog/2019/04/15/sealos2.0/">安装文档</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/faq">常见问题</a>
+                    
+                  </li>
+                  
+                </ul>
+            </div>
+            
+
+            <div class="collapse clearfix" id="search">
+
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-btn">
+
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+
+                </span>
+                    </div>
+                </form>
+
+            </div>
+            
+
+        </div>
+    </div>
+    
+
+</div>
+
+
+
+
+        </header>
+
+        <div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>kube-proxy源码解析</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <div id="content">
+            <div class="container">
+
+                <div class="row">
+
+                    
+
+                    <div class="col-md-9" id="blog-post">
+
+                        <p class="text-muted text-uppercase mb-small text-right">By <a href="#">fanux</a> | June 20, 2018</p>
+
+                        <div id="post-content">
+                          <blockquote>
+<p>广告 | <a href="http://sealyun.com/pro/products/">kubernetes离线安装包，仅需三步</a></p>
+</blockquote>
+
+<h1 id="kube-proxy源码解析">kube-proxy源码解析</h1>
+
+<p>ipvs相对于iptables模式具备较高的性能与稳定性, 本文讲以此模式的源码解析为主，如果想去了解iptables模式的原理，可以去参考其实现，架构上无差别。</p>
+
+<p>kube-proxy主要功能是监听service和endpoint的事件，然后下放代理策略到机器上。 底层调用<a href="https://github.com/docker/libnetwork">docker/libnetwork</a>, 而libnetwork最终调用了<a href="https://github.com/vishvananda/netlink">netlink</a> 与netns来实现ipvs的创建等动作</p>
+
+<h2 id="初始化配置">初始化配置</h2>
+
+<p>代码入口：<code>cmd/kube-proxy/app/server.go</code> Run() 函数</p>
+
+<p>通过命令行参数去初始化proxyServer的配置</p>
+
+<pre><code>proxyServer, err := NewProxyServer(o)
+</code></pre>
+
+<pre><code>type ProxyServer struct {
+    // k8s client
+	Client                 clientset.Interface
+	EventClient            v1core.EventsGetter
+
+    // ipvs 相关接口
+	IptInterface           utiliptables.Interface
+	IpvsInterface          utilipvs.Interface
+	IpsetInterface         utilipset.Interface
+
+    // 处理同步时的处理器
+	Proxier                proxy.ProxyProvider
+
+    // 代理模式，ipvs iptables userspace kernelspace(windows)四种
+	ProxyMode              string
+    // 配置同步周期
+	ConfigSyncPeriod       time.Duration
+
+    // service 与 endpoint 事件处理器
+	ServiceEventHandler    config.ServiceHandler
+	EndpointsEventHandler  config.EndpointsHandler
+}
+</code></pre>
+
+<p>Proxier是主要入口，抽象了两个函数：</p>
+
+<pre><code>type ProxyProvider interface {
+	// Sync immediately synchronizes the ProxyProvider's current state to iptables.
+	Sync()
+	// 定期执行
+	SyncLoop()
+}
+</code></pre>
+
+<p>ipvs 的interface 这个很重要：</p>
+
+<pre><code>type Interface interface {
+	// 删除所有规则
+	Flush() error
+	// 增加一个virtual server
+	AddVirtualServer(*VirtualServer) error
+
+	UpdateVirtualServer(*VirtualServer) error
+	DeleteVirtualServer(*VirtualServer) error
+	GetVirtualServer(*VirtualServer) (*VirtualServer, error)
+	GetVirtualServers() ([]*VirtualServer, error)
+
+    // 给virtual server加个realserver, 如 VirtualServer就是一个clusterip realServer就是pod(或者自定义的endpoint)
+	AddRealServer(*VirtualServer, *RealServer) error
+	GetRealServers(*VirtualServer) ([]*RealServer, error)
+	DeleteRealServer(*VirtualServer, *RealServer) error
+}
+</code></pre>
+
+<p>我们在下文再详细看ipvs_linux是如何实现上面接口的</p>
+
+<p>virtual server与realserver, 最重要的是ip:port，然后就是一些代理的模式如sessionAffinity等:</p>
+
+<pre><code>type VirtualServer struct {
+	Address   net.IP
+	Protocol  string
+	Port      uint16
+	Scheduler string
+	Flags     ServiceFlags
+	Timeout   uint32
+}
+
+type RealServer struct {
+	Address net.IP
+	Port    uint16
+	Weight  int
+}
+</code></pre>
+
+<blockquote>
+<p>创建apiserver client</p>
+</blockquote>
+
+<pre><code>client, eventClient, err := createClients(config.ClientConnection, master)
+</code></pre>
+
+<blockquote>
+<p>创建Proxier 这是仅仅关注ipvs模式的proxier</p>
+</blockquote>
+
+<pre><code>else if proxyMode == proxyModeIPVS {
+		glog.V(0).Info(&quot;Using ipvs Proxier.&quot;)
+		proxierIPVS, err := ipvs.NewProxier(
+			iptInterface,
+			ipvsInterface,
+			ipsetInterface,
+			utilsysctl.New(),
+			execer,
+			config.IPVS.SyncPeriod.Duration,
+			config.IPVS.MinSyncPeriod.Duration,
+			config.IPTables.MasqueradeAll,
+			int(*config.IPTables.MasqueradeBit),
+			config.ClusterCIDR,
+			hostname,
+			getNodeIP(client, hostname),
+			recorder,
+			healthzServer,
+			config.IPVS.Scheduler,
+		)
+...
+		proxier = proxierIPVS
+		serviceEventHandler = proxierIPVS
+		endpointsEventHandler = proxierIPVS
+</code></pre>
+
+<p>这个Proxier具备以下方法：</p>
+
+<pre><code>   +OnEndpointsAdd(endpoints *api.Endpoints)
+   +OnEndpointsDelete(endpoints *api.Endpoints)
+   +OnEndpointsSynced()
+   +OnEndpointsUpdate(oldEndpoints, endpoints *api.Endpoints)
+   +OnServiceAdd(service *api.Service)
+   +OnServiceDelete(service *api.Service)
+   +OnServiceSynced()
+   +OnServiceUpdate(oldService, service *api.Service)
+   +Sync()
+   +SyncLoop()
+</code></pre>
+
+<p>所以ipvs的这个Proxier实现了我们需要的绝大部分接口</p>
+
+<p>小结一下：</p>
+
+<pre><code>     +-----------&gt; endpointHandler
+     |
+     +-----------&gt; serviceHandler
+     |                ^
+     |                | +-------------&gt; sync 定期同步等
+     |                | |
+ProxyServer---------&gt; Proxier --------&gt; service 事件回调           
+     |                  |                                                
+     |                  +-------------&gt; endpoint事件回调          
+     |                                             |  触发
+     +-----&gt; ipvs interface ipvs handler     &lt;-----+
+</code></pre>
+
+<h2 id="启动proxyserver">启动proxyServer</h2>
+
+<ol>
+<li>检查是不是带了clean up参数，如果带了那么清除所有规则退出</li>
+<li>OOM adjuster貌似没实现，忽略</li>
+<li>resouceContainer也没实现，忽略</li>
+<li>启动metrics服务器，这个挺重要，比如我们想监控时可以传入这个参数, 包含promethus的 metrics. metrics-bind-address参数</li>
+<li>启动informer, 开始监听事件，分别启动协程处理。</li>
+</ol>
+
+<p>1 2 3 4我们都不用太关注，细看5即可：</p>
+
+<pre><code>informerFactory := informers.NewSharedInformerFactory(s.Client, s.ConfigSyncPeriod)
+
+serviceConfig := config.NewServiceConfig(informerFactory.Core().InternalVersion().Services(), s.ConfigSyncPeriod)
+// 注册 service handler并启动
+serviceConfig.RegisterEventHandler(s.ServiceEventHandler)
+// 这里面仅仅是把ServiceEventHandler赋值给informer回调 
+go serviceConfig.Run(wait.NeverStop)
+
+endpointsConfig := config.NewEndpointsConfig(informerFactory.Core().InternalVersion().Endpoints(), s.ConfigSyncPeriod)
+// 注册endpoint 
+endpointsConfig.RegisterEventHandler(s.EndpointsEventHandler)
+go endpointsConfig.Run(wait.NeverStop)
+
+go informerFactory.Start(wait.NeverStop)
+</code></pre>
+
+<p>serviceConfig.Run与endpointConfig.Run仅仅是给回调函数赋值, 所以注册的handler就给了informer, informer监听到事件时就会回调：</p>
+
+<pre><code>for i := range c.eventHandlers {
+	glog.V(3).Infof(&quot;Calling handler.OnServiceSynced()&quot;)
+	c.eventHandlers[i].OnServiceSynced()
+}
+</code></pre>
+
+<p>那么问题来了，注册进去的这个handler是啥？ 回顾一下上文的</p>
+
+<pre><code>		serviceEventHandler = proxierIPVS
+		endpointsEventHandler = proxierIPVS
+</code></pre>
+
+<p>所以都是这个proxierIPVS</p>
+
+<p>handler的回调函数, informer会回调这几个函数，所以我们在自己开发时实现这个interface注册进去即可：</p>
+
+<pre><code>type ServiceHandler interface {
+	// OnServiceAdd is called whenever creation of new service object
+	// is observed.
+	OnServiceAdd(service *api.Service)
+	// OnServiceUpdate is called whenever modification of an existing
+	// service object is observed.
+	OnServiceUpdate(oldService, service *api.Service)
+	// OnServiceDelete is called whenever deletion of an existing service
+	// object is observed.
+	OnServiceDelete(service *api.Service)
+	// OnServiceSynced is called once all the initial even handlers were
+	// called and the state is fully propagated to local cache.
+	OnServiceSynced()
+}
+</code></pre>
+
+<h2 id="开始监听">开始监听</h2>
+
+<pre><code>go informerFactory.Start(wait.NeverStop)
+</code></pre>
+
+<p>这里执行后，我们创建删除service endpoint等动作都会被监听到，然后回调,回顾一下上面的图，最终都是由Proxier去实现，所以后面我们重点关注Proxier即可</p>
+
+<pre><code>s.Proxier.SyncLoop()
+</code></pre>
+
+<p>然后开始SyncLoop,下文开讲</p>
+
+<h2 id="proxier-实现">Proxier 实现</h2>
+
+<p>我们创建一个service时OnServiceAdd方法会被调用, 这里记录一下之前的状态与当前状态两个东西，然后发个信号给syncRunner让它去处理：</p>
+
+<pre><code>func (proxier *Proxier) OnServiceAdd(service *api.Service) {
+	namespacedName := types.NamespacedName{Namespace: service.Namespace, Name: service.Name}
+	if proxier.serviceChanges.update(&amp;namespacedName, nil, service) &amp;&amp; proxier.isInitialized() {
+		proxier.syncRunner.Run()
+	}
+}
+</code></pre>
+
+<p>记录service 信息,可以看到没做什么事，就是把service存在map里, 如果没变直接删掉map信息不做任何处理：</p>
+
+<pre><code>change, exists := scm.items[*namespacedName]
+if !exists {
+	change = &amp;serviceChange{}
+    // 老的service信息
+	change.previous = serviceToServiceMap(previous)
+	scm.items[*namespacedName] = change
+}
+// 当前监听到的service信息
+change.current = serviceToServiceMap(current)
+
+如果一样，直接删除
+if reflect.DeepEqual(change.previous, change.current) {
+	delete(scm.items, *namespacedName)
+}
+</code></pre>
+
+<p>proxier.syncRunner.Run() 里面就发送了一个信号</p>
+
+<pre><code>select {
+case bfr.run &lt;- struct{}{}:
+default:
+}
+</code></pre>
+
+<p>这里面处理了这个信号</p>
+
+<pre><code>s.Proxier.SyncLoop()
+
+func (proxier *Proxier) SyncLoop() {
+	// Update healthz timestamp at beginning in case Sync() never succeeds.
+	if proxier.healthzServer != nil {
+		proxier.healthzServer.UpdateTimestamp()
+	}
+	proxier.syncRunner.Loop(wait.NeverStop)
+}
+</code></pre>
+
+<p>runner里收到信号执行，没收到信号会定期执行：</p>
+
+<pre><code>func (bfr *BoundedFrequencyRunner) Loop(stop &lt;-chan struct{}) {
+	glog.V(3).Infof(&quot;%s Loop running&quot;, bfr.name)
+	bfr.timer.Reset(bfr.maxInterval)
+	for {
+		select {
+		case &lt;-stop:
+			bfr.stop()
+			glog.V(3).Infof(&quot;%s Loop stopping&quot;, bfr.name)
+			return
+		case &lt;-bfr.timer.C():  // 定期执行
+			bfr.tryRun()
+		case &lt;-bfr.run:
+			bfr.tryRun()       // 收到事件信号执行
+		}
+	}
+}
+</code></pre>
+
+<p>这个bfr runner里我们最需要主意的是一个回调函数，tryRun里检查这个回调是否满足被调度的条件：</p>
+
+<pre><code>type BoundedFrequencyRunner struct {
+	name        string        // the name of this instance
+	minInterval time.Duration // the min time between runs, modulo bursts
+	maxInterval time.Duration // the max time between runs
+
+	run chan struct{} // try an async run
+
+	mu      sync.Mutex  // guards runs of fn and all mutations
+	fn      func()      // function to run, 这个回调
+	lastRun time.Time   // time of last run
+	timer   timer       // timer for deferred runs
+	limiter rateLimiter // rate limiter for on-demand runs
+}
+
+// 传入的proxier.syncProxyRules这个函数
+proxier.syncRunner = async.NewBoundedFrequencyRunner(&quot;sync-runner&quot;, proxier.syncProxyRules, minSyncPeriod, syncPeriod, burstSyncs)
+</code></pre>
+
+<p>这是个600行左右的搓逼函数，也是处理主要逻辑的地方。</p>
+
+<h2 id="syncproxyrules">syncProxyRules</h2>
+
+<ol>
+<li>设置一些iptables规则，如mark与comment</li>
+<li>确定机器上有网卡，ipvs需要绑定地址到上面</li>
+<li>确定有ipset，ipset是iptables的扩展，可以给一批地址设置iptables规则
+&hellip;(又臭又长，重复代码多，看不下去了，细节问题自己去看吧)</li>
+<li>我们最关注的，如何去处理VirtualServer的</li>
+</ol>
+
+<pre><code>serv := &amp;utilipvs.VirtualServer{
+	Address:   net.ParseIP(ingress.IP),
+	Port:      uint16(svcInfo.port),
+	Protocol:  string(svcInfo.protocol),
+	Scheduler: proxier.ipvsScheduler,
+}
+if err := proxier.syncService(svcNameString, serv, false); err == nil {
+	if err := proxier.syncEndpoint(svcName, svcInfo.onlyNodeLocalEndpoints, serv); err != nil {
+	}
+}
+</code></pre>
+
+<p>看下实现, 如果没有就创建，如果已存在就更新, 给网卡绑定service的cluster ip：</p>
+
+<pre><code>func (proxier *Proxier) syncService(svcName string, vs *utilipvs.VirtualServer, bindAddr bool) error {
+	appliedVirtualServer, _ := proxier.ipvs.GetVirtualServer(vs)
+	if appliedVirtualServer == nil || !appliedVirtualServer.Equal(vs) {
+		if appliedVirtualServer == nil {
+			if err := proxier.ipvs.AddVirtualServer(vs); err != nil {
+				return err
+			}
+		} else {
+			if err := proxier.ipvs.UpdateVirtualServer(appliedVirtualServer); err != nil {
+				return err
+			}
+		}
+	}
+
+	// bind service address to dummy interface even if service not changed,
+	// in case that service IP was removed by other processes
+	if bindAddr {
+		_, err := proxier.netlinkHandle.EnsureAddressBind(vs.Address.String(), DefaultDummyDevice)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+</code></pre>
+
+<h2 id="创建service实现">创建service实现</h2>
+
+<p>现在可以去看ipvs的AddVirtualServer的实现了，主要是利用socket与内核进程通信做到的。
+<code>pkg/util/ipvs/ipvs_linux.go</code> 里 runner结构体实现了这些方法, 这里用到了 docker/libnetwork/ipvs库：</p>
+
+<pre><code>// runner implements Interface.
+type runner struct {
+	exec       utilexec.Interface
+	ipvsHandle *ipvs.Handle
+}
+
+// New returns a new Interface which will call ipvs APIs.
+func New(exec utilexec.Interface) Interface {
+	ihandle, err := ipvs.New(&quot;&quot;) // github.com/docker/libnetwork/ipvs
+	if err != nil {
+		glog.Errorf(&quot;IPVS interface can't be initialized, error: %v&quot;, err)
+		return nil
+	}
+	return &amp;runner{
+		exec:       exec,
+		ipvsHandle: ihandle,
+	}
+}
+</code></pre>
+
+<p>New的时候创建了一个特殊的socket, 这里与我们普通的socket编程无差别，关键是syscall.AF_NETLINK这个参数，代表与内核进程通信：</p>
+
+<pre><code>sock, err := nl.GetNetlinkSocketAt(n, netns.None(), syscall.NETLINK_GENERIC)
+
+func getNetlinkSocket(protocol int) (*NetlinkSocket, error) {
+	fd, err := syscall.Socket(syscall.AF_NETLINK, syscall.SOCK_RAW|syscall.SOCK_CLOEXEC, protocol)
+	if err != nil {
+		return nil, err
+	}
+	s := &amp;NetlinkSocket{
+		fd: int32(fd),
+	}
+	s.lsa.Family = syscall.AF_NETLINK
+	if err := syscall.Bind(fd, &amp;s.lsa); err != nil {
+		syscall.Close(fd)
+		return nil, err
+	}
+
+	return s, nil
+}
+</code></pre>
+
+<p>创建一个service, 转换成docker service格式，直接调用:</p>
+
+<pre><code>// AddVirtualServer is part of Interface.
+func (runner *runner) AddVirtualServer(vs *VirtualServer) error {
+	eSvc, err := toBackendService(vs)
+	if err != nil {
+		return err
+	}
+	return runner.ipvsHandle.NewService(eSvc)
+}
+</code></pre>
+
+<p>然后就是把service信息打包，往socket里面写即可：</p>
+
+<pre><code>
+func (i *Handle) doCmdwithResponse(s *Service, d *Destination, cmd uint8) ([][]byte, error) {
+	req := newIPVSRequest(cmd)
+	req.Seq = atomic.AddUint32(&amp;i.seq, 1)
+
+	if s == nil {
+		req.Flags |= syscall.NLM_F_DUMP                    //Flag to dump all messages
+		req.AddData(nl.NewRtAttr(ipvsCmdAttrService, nil)) //Add a dummy attribute
+	} else {
+		req.AddData(fillService(s))
+	} // 把service塞到请求中
+
+	if d == nil {
+		if cmd == ipvsCmdGetDest {
+			req.Flags |= syscall.NLM_F_DUMP
+		}
+
+	} else {
+		req.AddData(fillDestinaton(d))
+	}
+
+    // 给内核进程发送service信息
+	res, err := execute(i.sock, req, 0)
+	if err != nil {
+		return [][]byte{}, err
+	}
+
+	return res, nil
+}
+</code></pre>
+
+<blockquote>
+<p>构造请求</p>
+</blockquote>
+
+<pre><code>func newIPVSRequest(cmd uint8) *nl.NetlinkRequest {
+	return newGenlRequest(ipvsFamily, cmd)
+}
+</code></pre>
+
+<p>在构造请求时传入的是ipvs协议簇</p>
+
+<p>然后构造一个与内核通信的消息头</p>
+
+<pre><code>func NewNetlinkRequest(proto, flags int) *NetlinkRequest {
+	return &amp;NetlinkRequest{
+		NlMsghdr: syscall.NlMsghdr{
+			Len:   uint32(syscall.SizeofNlMsghdr),
+			Type:  uint16(proto),
+			Flags: syscall.NLM_F_REQUEST | uint16(flags),
+			Seq:   atomic.AddUint32(&amp;nextSeqNr, 1),
+		},
+	}
+}
+</code></pre>
+
+<blockquote>
+<p>给消息加Data,这个Data是个数组，需要实现两个方法：</p>
+</blockquote>
+
+<pre><code>type NetlinkRequestData interface {
+	Len() int  // 长度
+	Serialize() []byte // 序列化, 内核通信也需要一定的数据格式，service信息也需要实现
+}
+</code></pre>
+
+<p>比如 header是这样序列化的, 一看愣住了，思考好久才看懂：
+拆下看：
+(*[unsafe.Sizeof(<em>hdr)]byte) 一个</em>[]byte类型，长度就是结构体大小
+(unsafe.Pointer(hdr))把结构体转成byte指针类型
+加个*取它的值
+用[:]转成byte返回</p>
+
+<pre><code>func (hdr *genlMsgHdr) Serialize() []byte {
+	return (*(*[unsafe.Sizeof(*hdr)]byte)(unsafe.Pointer(hdr)))[:]
+}
+</code></pre>
+
+<blockquote>
+<p>发送service信息给内核</p>
+</blockquote>
+
+<p>一个很普通的socket发送接收数据</p>
+
+<pre><code>func execute(s *nl.NetlinkSocket, req *nl.NetlinkRequest, resType uint16) ([][]byte, error) {
+	var (
+		err error
+	)
+
+	if err := s.Send(req); err != nil {
+		return nil, err
+	}
+
+	pid, err := s.GetPid()
+	if err != nil {
+		return nil, err
+	}
+
+	var res [][]byte
+
+done:
+	for {
+		msgs, err := s.Receive()
+		if err != nil {
+			return nil, err
+		}
+		for _, m := range msgs {
+			if m.Header.Seq != req.Seq {
+				continue
+			}
+			if m.Header.Pid != pid {
+				return nil, fmt.Errorf(&quot;Wrong pid %d, expected %d&quot;, m.Header.Pid, pid)
+			}
+			if m.Header.Type == syscall.NLMSG_DONE {
+				break done
+			}
+			if m.Header.Type == syscall.NLMSG_ERROR {
+				error := int32(native.Uint32(m.Data[0:4]))
+				if error == 0 {
+					break done
+				}
+				return nil, syscall.Errno(-error)
+			}
+			if resType != 0 &amp;&amp; m.Header.Type != resType {
+				continue
+			}
+			res = append(res, m.Data)
+			if m.Header.Flags&amp;syscall.NLM_F_MULTI == 0 {
+				break done
+			}
+		}
+	}
+	return res, nil
+}
+</code></pre>
+
+<blockquote>
+<p>Service 数据打包
+这里比较细，核心思想就是内核只认一定格式的标准数据，我们把service信息按其标准打包发送给内核即可。
+至于怎么打包的就不详细讲了。</p>
+
+<pre><code>func fillService(s *Service) nl.NetlinkRequestData {
+	cmdAttr := nl.NewRtAttr(ipvsCmdAttrService, nil)
+	nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrAddressFamily, nl.Uint16Attr(s.AddressFamily))
+	if s.FWMark != 0 {
+		nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrFWMark, nl.Uint32Attr(s.FWMark))
+	} else {
+		nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrProtocol, nl.Uint16Attr(s.Protocol))
+		nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrAddress, rawIPData(s.Address))
+
+		// Port needs to be in network byte order.
+		portBuf := new(bytes.Buffer)
+		binary.Write(portBuf, binary.BigEndian, s.Port)
+		nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrPort, portBuf.Bytes())
+	}
+
+	nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrSchedName, nl.ZeroTerminated(s.SchedName))
+	if s.PEName != &quot;&quot; {
+		nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrPEName, nl.ZeroTerminated(s.PEName))
+	}
+	f := &amp;ipvsFlags{
+		flags: s.Flags,
+		mask:  0xFFFFFFFF,
+	}
+	nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrFlags, f.Serialize())
+	nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrTimeout, nl.Uint32Attr(s.Timeout))
+	nl.NewRtAttrChild(cmdAttr, ipvsSvcAttrNetmask, nl.Uint32Attr(s.Netmask))
+	return cmdAttr
+}
+</code></pre>
+</blockquote>
+
+<h2 id="总结">总结</h2>
+
+<p>Service总体来讲代码比较简单，但是觉得有些地方实现的有点绕，不够简单直接。 总体来说就是监听apiserver事件，然后比对 处理，定期也会去执行同步策略.</p>
+                        </div>
+                        
+                        
+                        <div id="comments">
+                            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "devcows" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+                        </div>
+                        
+
+                    </div>
+                    
+
+                    
+
+                    
+
+                    <div class="col-md-3">
+
+                        
+
+                        
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Search</h3>
+    </div>
+
+    <div class="panel-body">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" role="search">
+            <div class="input-group">
+                <input type="search" name="q" class="form-control" placeholder="Search">
+                <input type="hidden" name="sitesearch" value="https://sealyun.com/">
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Categories</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="nav nav-pills nav-stacked">
+            
+            <li><a href="https://sealyun.com/categories/starting">starting (1)</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="panel sidebar-menu">
+    <div class="panel-heading">
+      <h3 class="panel-title">Tags</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="tag-cloud">
+            
+            <li><a href="https://sealyun.com/tags/dotscale"><i class="fa fa-tags"></i> dotscale</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/event"><i class="fa fa-tags"></i> event</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/install"><i class="fa fa-tags"></i> install</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/kubeadm"><i class="fa fa-tags"></i> kubeadm</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/network"><i class="fa fa-tags"></i> network</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sealos"><i class="fa fa-tags"></i> sealos</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sketchnote"><i class="fa fa-tags"></i> sketchnote</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+                        
+
+                    </div>
+                    
+
+                    
+
+                </div>
+                
+
+            </div>
+            
+        </div>
+        
+
+        <footer id="footer">
+    <div class="container">
+
+        
+        <div class="col-md-4 col-sm-6">
+            <h4>About us</h4>
+
+            把我们实践过程中好的东西拿出来给大家复用，收点小费，我们很用心，用我们产品也很值得
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+        <div class="col-md-4 col-sm-6">
+
+             
+            <h4>Recent posts</h4>
+
+            <div class="blog-entries">
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">
+                          
+                            <img src="https://sealyun.com//img/ovn-test.png" class="img-responsive" alt="从CNI到ovn">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">从CNI到ovn</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/23/macvtap/">
+                          
+                            <img src="https://sealyun.com//macvtap.jpg" class="img-responsive" alt="macvtap实践教程">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/23/macvtap/">macvtap实践教程</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">
+                          
+                            <img src="https://sealyun.com//lxcfs.jpg" class="img-responsive" alt="强隔离容器那些事">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">强隔离容器那些事</a></h5>
+                    </div>
+                </div>
+                
+            </div>
+
+            <hr class="hidden-md hidden-lg">
+             
+
+        </div>
+        
+
+        
+        <div class="col-md-4 col-sm-6">
+
+          <h4>Contact</h4>
+
+            <strong>fhtjob@hotmail.com</strong>
+      </p>
+      
+
+
+            <a href="/contact" class="btn btn-small btn-template-main">Go to contact page</a>
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+    </div>
+    
+</footer>
+
+
+
+
+
+
+
+<div id="copyright">
+    <div class="container">
+        <div class="col-md-12">
+            
+            <p class="pull-left">Copyright (c) 2015 - 2016, Beiming; all rights reserved.</p>
+            
+            <p class="pull-right">
+              Template by <a href="http://bootstrapious.com/free-templates">Bootstrapious</a>.
+              
+
+              Ported to Hugo by <a href="https://github.com/devcows/hugo-universal-theme">DevCows</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    </div>
+    
+
+    
+<script src="//code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0/jquery.counterup.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-parallax/1.1.3/jquery-parallax.js"></script>
+
+<script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+<script src="https://sealyun.com/js/hpneo.gmaps.js"></script>
+<script src="https://sealyun.com/js/gmaps.init.js"></script>
+<script src="https://sealyun.com/js/front.js"></script>
+
+
+<script src="https://sealyun.com/js/owl.carousel.min.js"></script>
+
+
+  </body>
+</html>
+
+<style>
+#post-content img {
+    width: 100%;
+    height: 100%;
+}
+</style>

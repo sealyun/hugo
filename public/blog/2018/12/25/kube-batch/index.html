@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+    
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>kube-scheduler定制，支持深度学习批处理任务调度</title>
+  <meta name="author" content="" />
+
+  
+  <meta name="keywords" content="devows, hugo, go">	
+  
+
+  
+  <meta name="description" content="Site template made by devcows using hugo">	
+  
+
+  <meta name="generator" content="Hugo 0.54.0" />
+
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,500,700,800' rel='stylesheet' type='text/css'>
+
+  
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  
+  <link href="/css/animate.css" rel="stylesheet">
+
+  
+  
+    <link href="/css/style.green.css" rel="stylesheet" id="theme-stylesheet">
+  
+
+
+  
+  <link href="/css/custom.css" rel="stylesheet">
+
+  
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+  
+
+  <link href="/css/owl.carousel.css" rel="stylesheet">
+  <link href="/css/owl.theme.css" rel="stylesheet">
+
+  <link rel="alternate" href="https://sealyun.com/index.xml" type="application/rss+xml" title="SealYun">
+
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@GoHugoIO">
+  <meta name="twitter:title" content="kube-scheduler定制，支持深度学习批处理任务调度">
+  <meta name="twitter:image" content="https://sealyun.com/img/twitter-default.png">
+  <meta name="twitter:description" content="Site template made by devcows using hugo">
+
+  
+  <meta property="og:title" content="kube-scheduler定制，支持深度学习批处理任务调度" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sealyun.com/blog/2018/12/25/kube-batch//" />
+  <meta property="og:image" content="/img/logo.jpg" />
+
+</head>
+
+
+  <body>
+      <img src="http://localhost:1313/img/qrcode.png" style="width:140px;position:fixed;right:10px;bottom:10px;z-index:10;"/>
+      <img src="http://localhost:1313/img/qrcode1.jpg" style="width:140px;position:fixed;right:10px;bottom:160px;z-index:10;"/>
+
+    <div id="all">
+
+        <header>
+
+          <div class="navbar-affixed-top" data-spy="affix" data-offset-top="200">
+
+    <div class="navbar navbar-default yamm" role="navigation" id="navbar">
+
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand home" href="https://sealyun.com/">
+                    <img src="https://sealyun.com//img/logo.jpg" alt="kube-scheduler定制，支持深度学习批处理任务调度 logo" class="hidden-xs hidden-sm">
+                    <img src="https://sealyun.com//img/logo-small.png" alt="kube-scheduler定制，支持深度学习批处理任务调度 logo" class="visible-xs visible-sm">
+                    <span class="sr-only">kube-scheduler定制，支持深度学习批处理任务调度 - go to homepage</span>
+                </a>
+                <div class="navbar-buttons">
+                    <button type="button" class="navbar-toggle btn-template-main" data-toggle="collapse" data-target="#navigation">
+                      <span class="sr-only">Toggle Navigation</span>
+                        <i class="fa fa-align-justify"></i>
+                    </button>
+                </div>
+            </div>
+            
+
+            <div class="navbar-collapse collapse" id="navigation">
+                <ul class="nav navbar-nav navbar-right">
+                  
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/">首页</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown active">
+                    
+                    <a href="/blog/">博客</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="http://store.lameleg.com">kubernetes离线安装</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="https://sealyun.com/blog/2019/04/15/sealos2.0/">安装文档</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/faq">常见问题</a>
+                    
+                  </li>
+                  
+                </ul>
+            </div>
+            
+
+            <div class="collapse clearfix" id="search">
+
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-btn">
+
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+
+                </span>
+                    </div>
+                </form>
+
+            </div>
+            
+
+        </div>
+    </div>
+    
+
+</div>
+
+
+
+
+        </header>
+
+        <div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>kube-scheduler定制，支持深度学习批处理任务调度</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <div id="content">
+            <div class="container">
+
+                <div class="row">
+
+                    
+
+                    <div class="col-md-9" id="blog-post">
+
+                        <p class="text-muted text-uppercase mb-small text-right">By <a href="#">fanux</a> | December 25, 2018</p>
+
+                        <div id="post-content">
+                          <blockquote>
+<p><a href="https://sealyun.com/pro/products/">kubernetes集群三步安装</a></p>
+</blockquote>
+
+<h1 id="什么是批处理任务">什么是批处理任务</h1>
+
+<p>深度学习中经常会出现多机多卡的任务，也就是同事会起多个pod，但是这多个pod属于同一个任务。</p>
+
+<p>这样就会有一个问题</p>
+
+<p>一个任务要起100个pod，每个pod需要一张卡，总共需要100张GPU卡，而集群中只有99张空闲的GPU卡，这样默认的k8s调度器会如何处理？</p>
+
+<p>因为默认调度器是一个一个pod调度的，只会检查单个pod资源够不够，这样前99个都能成功，最后一个pod调度失败。</p>
+
+<p>这样非常有可能造成</p>
+
+<ol>
+<li>任务跑不了<br /></li>
+<li>前99个占着GPU不释放，新的任务无法调度</li>
+<li>严重时整个集群死锁，都“占着茅坑不拉屎”</li>
+</ol>
+
+<p>所以需要在调度时对整个task所需所有资源进行检查，当集群总体资源不够时，一个pod都得不到调度。</p>
+
+<p>社区提供了一个能支持这种特性的<a href="https://github.com/kubernetes-sigs/kube-batch/blob/master/doc/usage/tutorial.md">调度器</a>
+但是这个调度器是没办法和原生调度器很好的配合工作的</p>
+
+<ol>
+<li>最大的问题在于两个调度器都有cache，这样cache的内容会冲突，导致调度混乱</li>
+<li>这个调度器没法和原生调度器同时起作用，这样用了这个batch调度器后就没法用亲和性什么的特性了</li>
+</ol>
+
+<p>所以我们做的事是将两者特性融合，选择的方法是定制化开发kube-scheduler</p>
+
+<p>其实scheduler是可以通过extender扩展的，但是extender还是太弱了，它仅能在预选和优选过程中加入自己的过滤策略，而这对于批处理任务远远不够。</p>
+
+<h1 id="实现难点">实现难点</h1>
+
+<blockquote>
+<p>需要优选时加batch任务检查
+拿到一个pod &mdash;&gt; 如果是一个batchpod &mdash;&gt; 查询集群资源是否满足batch任务&mdash;&gt;否调度失败</p>
+
+<p>需要保障batch任务中其它pod能得到调度</p>
+</blockquote>
+
+<p>如果集群资源能满足这个batch任务直接去bind有个问题：
+假设调度队列是这样,假设集群中有三个GPU，而batch任务需要三个GPU：</p>
+
+<table>
+<thead>
+<tr>
+<th>A batch pod -&gt;</th>
+<th>pod -&gt;</th>
+<th>pod -&gt;</th>
+<th>A batch pod -&gt;</th>
+<th>A batch pod</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>集群资源够 调度成功</td>
+<td>调度了别的pod</td>
+<td>调度了别的pod</td>
+<td>GPU被别的pod占用 GPU不够 失败</td>
+<td>GPU不够 失败</td>
+</tr>
+</tbody>
+</table>
+
+<p>所以最终结果是A批任务占用了一个GPU但是整个任务是调度失败的，那一个GPU还得不到释放</p>
+
+<p>所以需要修改pod调度队列里的顺序?让A batch pod连续调度? 没这么简单，</p>
+
+<p>pod调度是创建协程并发调度的，这样即便去调整任务队列里pod的顺序也不一定能保证batch任务其它pod能得到优先调度。</p>
+
+<pre><code>go wait.Until(sched.scheduleOne, 0, sched.config.StopEverything)
+</code></pre>
+
+<blockquote>
+<p>只要batch pod走到Bind逻辑了就没有回头路了</p>
+</blockquote>
+
+<p>batch任务中所有pod先进行assume调度，其中任意一个失败就清理掉其它已经bind但是还没实际进行调度的pod。 并把所有pod扔回队列，或者直接返回调度失败清理改任务的pod，让上层重新触发?</p>
+
+<p>scheduler流程 scheduler/sheduler.go scheduleOne逻辑：</p>
+
+<p>选节点-&gt;cache assume pod on node-&gt; 创建协程bind</p>
+
+<p>所以在assume时去检查，不满足退还已经调度的pod是不可行的，因为之前batch任务中的pod可能已经bind过了， 所以只能batch任务中最后一个pod得到确认才能去bind前面的pod</p>
+
+<blockquote>
+<p>预占用策略
+预占用策略： 第一个batch pod任务来时，检查集群资源是不是够，如果够进行预占，把其它几个node打上标记，让接下来pod无法占用其它的node，这样batch任务其实pod过来就有节点可用。</p>
+</blockquote>
+
+<p>回到了不能bind的问题。。。</p>
+
+<p>这种问题有两点：</p>
+
+<p>如何知道batch任务中其它pod需要什么样的节点，如果pod都一样问题可简化
+如果后面的pod失败了，第一个pod还是已经bind，还是会出现一样的问题
+最终还是在所有pod assume之前不能bind单个pod</p>
+
+<p>综上，需要在几个地方处理</p>
+
+<p>队列最好用优先级队列，把正在调度的pod的关联pod优先级提高
+选节点时做判断，看集群资源是否够
+选好节点assume pod时检查，如果自己不够或者pod组不够就不去bind
+问题是之前的pod已经走了bind流程，所以最重要的是如何解决让之前的pod不去bind，延迟bind</p>
+
+<blockquote>
+<p>最终方案 - 延迟绑定</p>
+</blockquote>
+
+<p>方案：在batch任务bind时进行特殊处理</p>
+
+<ol>
+<li>如果是batch任务扔进task cache，不进行binding</li>
+<li>如果batch任务最后一个pod扔进task cache,该task ready，放进bind队列</li>
+<li>在bind队列里取task 进行bind，task互斥锁与普通pod bind时互斥</li>
+</ol>
+
+<blockquote>
+<p>使用
+batch任务使用，pod增加两个注解：</p>
+</blockquote>
+
+<pre><code>      annotations:
+        scheduling.k8s.io/group-name: qj-1
+        scheduling.k8s.io/group-pod-num: 3
+</code></pre>
+
+<p>pod加上这两个注解表示属于同一个task, num表示task里有多少pod。</p>
+
+<p>本来是再定义一个CRD去描述这个task，耦合会小一些，但是实现麻烦些，需要多监听一个CRD，偷懒就没这样做</p>
+
+<h1 id="实现">实现</h1>
+
+<p>延迟绑定流程：
+<img src="/batch-scheduler-flow.png" alt="" /></p>
+
+<ul>
+<li>如果是普通的pod，找到节点后assume就直接bind</li>
+<li>如果是批处理任务，直接扔到批处理缓存中返回</li>
+<li>有个协程一直检查批缓存中是否有成功的task (pod都齐了)</li>
+<li>成功的task扔进binding队列，worker取成功的task进行批量绑定，绑定时与普通pod互斥</li>
+</ul>
+
+<p>batch scheduler接口与成员
+<img src="/batch-scheduler.png" alt="" /></p>
+
+<p>Run 起一个协程检查成功的task并塞入队列
+RunBind 起一个task绑定协程
+PodQuePriority 去动态修改pod队列的优先级，让同task的pod优先调度</p>
+
+<p>执行流程：
+<img src="/batch-scheduler-run.png" alt="" /></p>
+
+<h2 id="延迟绑定">延迟绑定</h2>
+
+<p>scheduler/scheduler.go:</p>
+
+<pre><code>	//fanux if it is a batch pod, return
+	if sched.Config.BatchScheduler.IsBatchPod(assumedPod) {
+		err = sched.Config.BatchScheduler.HandleBatchPod(assumedPod)
+		if err != nil {
+			glog.Errorf(&quot;schedule batch pod failed: %v&quot;, assumedPod.Namespace, assumedPod.Name)
+		}
+		return
+	}
+</code></pre>
+
+<p>增加绑定互斥，防止batch任务和普通pod同事binding:</p>
+
+<pre><code>	go func() {
+		//fanux add bind mutex
+		sched.Config.BatchScheduler.Lock()
+		defer sched.Config.BatchScheduler.UnLock()
+
+		err := sched.bind(assumedPod, &amp;v1.Binding{
+</code></pre>
+
+<h2 id="检查资源是否充足checkresourceisenough">检查资源是否充足CheckResourceIsEnough</h2>
+
+<p>should&rsquo;t use filterFunc, needs nodelist</p>
+
+<p>scheduler/util/batch.go</p>
+
+<pre><code>package util
+
+import &quot;api/core/v1&quot;
+
+//CheckResourceIsEnough is
+func CheckResourceIsEnough(pod *v1.Pod, nodes []*v1.Node) (bool, error) {
+	return false, nil
+}
+</code></pre>
+
+<p>scheduler/core/generic_scheduler.go</p>
+
+<pre><code>	//fanux add checkBatchPodResource
+	flag, err := util.CheckResourceIsEnough(pod, filteredNodes)
+	if !flag || err != nil {
+		return &quot;&quot;, err
+	}
+
+	trace.Step(&quot;Prioritizing&quot;)
+</code></pre>
+
+<p>处理资源不足时的情况</p>
+
+<pre><code>	suggestedHost, err := sched.schedule(pod)
+
+	//fanux add handle if resource not enough
+	if strings.Contains(err.Error(), common.BatchResourceNotEnough) {
+		sched.Config.BatchScheduler.HandleResourceNotEnough(pod)
+	} else if err != nil {
+</code></pre>
+
+<h2 id="如何获取节点已经分配gpu的数量">如何获取节点已经分配GPU的数量</h2>
+
+<p>nodeInfo allocatableResource - requestedResource is avaliavle resource</p>
+
+<pre><code>	requestedResource *Resource
+	nonzeroRequest    *Resource
+	allocatableResource *Resource
+</code></pre>
+
+<p>GPU 是 ScalarResources, 资源名称叫 : <code>NVIDIAGPUResourceName = &quot;nvidia.com/gpu&quot;</code></p>
+
+<pre><code>type Resource struct {
+	MilliCPU         int64
+	Memory           int64
+	EphemeralStorage int64
+	// We store allowedPodNumber (which is Node.Status.Allocatable.Pods().Value())
+	// explicitly as int, to avoid conversions and improve performance.
+	AllowedPodNumber int
+	// ScalarResources
+	ScalarResources map[v1.ResourceName]int64
+}
+</code></pre>
+
+<h2 id="增加podupdater-可更新podcondition状态">增加podupdater，可更新podcondition状态</h2>
+
+<pre><code>	batchScheduler := batch.NewBatchScheduler(c.schedulerCache, c.podQueue, &amp;binder{c.client}, &amp;podConditionUpdater{c.client})
+</code></pre>
+
+<h2 id="需要把batch-scheduler的cache给generic-scheduler资源检查时需要用">需要把batch scheduler的cache给generic_scheduler资源检查时需要用</h2>
+
+<p>需要知道已经有哪些pod已经assume过了，把这个数量减掉才是batch任务还需要多少GPU</p>
+
+<p>core/generic_scheduler.go</p>
+
+<pre><code>	//fanux add batch Cache
+	//check batch pod resource is enough need batch scheduler cache
+	BatchCache common.TaskCache
+</code></pre>
+
+<pre><code>	//fanux add checkBatchPodResource
+	flag, err := common.CheckResourceIsEnough(pod, filteredNodes, g.cachedNodeInfoMap, g.BatchCache)
+</code></pre>
+
+<p>factory.go</p>
+
+<pre><code>	//fanux check batch resource is enough need batch scheduler cache
+	batchCache := batchScheduler.GetTaskCache()
+
+	algo := core.NewGenericScheduler(
+        ...
+		batchCache,
+	)
+</code></pre>
+
+<p>then checkresource :</p>
+
+<pre><code>	//shoud not use metadata, need use metadata - assumed pod num in batch cache
+	_, podNum := GetPodBathMeta(pod)
+	podNum -= batchCache.GetTaskAssumedPodNum(pod)
+</code></pre>
+
+<h2 id="检查资源是否充足详细算法">检查资源是否充足详细算法：</h2>
+
+<p>有很多细节</p>
+
+<pre><code>//获取pod需要多少GPU，这个需要把pod里容器配额加起来
+func GetPodGPUCount(pod *v1.Pod) (count int) {
+	for _, c := range pod.Spec.Containers {
+		limit, ok := c.Resources.Limits[NVIDIAGPUResourceName]
+		l, okay := limit.AsInt64()
+		if !ok || !okay {
+			continue
+		}
+		count += int(l)
+	}
+
+	glog.Infof(&quot;Pod [%s] need GPU [%d]&quot;, pod.GetName(), count)
+
+	return
+}
+
+//获取节点空闲GPU，需要把可分配的减去已经申请的
+func GetNodeFreeGPU(nodeInfo *cache.NodeInfo) int {
+	if nodeInfo == nil {
+		return 0
+	}
+
+	allocatable, ok := nodeInfo.AllocatableResource().ScalarResources[NVIDIAGPUResourceName]
+	if !ok {
+		glog.Errorf(&quot;can't fetch allocatable GPU : %v&quot;, nodeInfo)
+		return 0
+	}
+	glog.Infof(&quot;node [%s] allocatable GPU [%d]&quot;, nodeInfo.Node().Name, allocatable)
+
+	requested, ok := nodeInfo.RequestedResource().ScalarResources[NVIDIAGPUResourceName]
+	if !ok {
+		//glog.Errorf(&quot;can't fetch requested GPU : %v&quot;, nodeInfo)
+		//return 0
+		requested = 0
+	}
+	glog.Infof(&quot;node [%s] requested GPU [%d]&quot;, nodeInfo.Node().Name, requested)
+
+	available := allocatable - requested
+
+	glog.Infof(&quot;available node [%s] GPU : [%d]&quot;, nodeInfo.Node().Name, available)
+
+	return int(available)
+}
+
+//这里最关键的点是需要把annotations里面获取的task pod总数减去已经assume过的batch pod，这样才是真实所需
+func CheckResourceIsEnough(pod *v1.Pod, nodes []*v1.Node, cachedNodeInfoMap map[string]*cache.NodeInfo, batchCache TaskCache) (bool, error) {
+	//if is not batch pod, return true,nil
+	if !IsBatch(pod) {
+		glog.Infof(&quot;pod %s is not batch pod&quot;, pod.GetName())
+		return true, nil
+	}
+
+	//shoud not use metadata, need use metadata - ready pod num in batch cache
+	_, podNum := GetPodBathMeta(pod)
+	podNum -= batchCache.GetTaskAssumedPodNum(pod)
+
+	everyPodNeedsGPU := GetPodGPUCount(pod)
+	if everyPodNeedsGPU == 0 {
+		glog.Infof(&quot;pod %s require 0 GPU&quot;, pod.GetName())
+		return true, nil
+	}
+
+	// TODO maybe check nodes[1:], node[0] already allocate a pod, CPU and other metric may reach limit
+	for _, node := range nodes {
+		nodeInfo, ok := cachedNodeInfoMap[node.Name]
+		if !ok {
+			continue
+		}
+		nodeFree := GetNodeFreeGPU(nodeInfo)
+		podNum -= nodeFree / everyPodNeedsGPU
+		glog.Infof(&quot;pod: [%s] node: [%s] podNum [%d] nodeFree [%d] podNeed [%d]&quot;, pod.GetName(), node.Name, podNum, nodeFree, everyPodNeedsGPU)
+		if podNum &lt;= 0 {
+			return true, nil
+		}
+	}
+
+	return false, fmt.Errorf(&quot;BatchResourceNotEnough : pod name is %s&quot;, pod.GetName())
+}
+
+//判断是不是batch pod
+func IsBatch(pod *v1.Pod) bool {
+	g, n := GetPodBathMeta(pod)
+	if g == &quot;&quot; || n == 0 {
+		glog.Infof(&quot;The pod's group name is empty string,pod name is %v.&quot;, pod.GetName())
+		return false
+	}
+	return true
+}
+</code></pre>
+
+<h1 id="关于gpu的使用与发现">关于GPU的使用与发现</h1>
+
+<p><a href="https://github.com/sealyun/GPU/releases">资源包</a></p>
+
+<p>这里包含docker nv-docker GPU-device plugin
+install.sh&hellip;</p>
+
+<p>/etc/docker/daemon.json</p>
+
+<pre><code>[root@compute-gpu006 ~]# cat /etc/docker/daemon.json
+{
+    &quot;default-runtime&quot;:&quot;nvidia&quot;,
+    &quot;runtimes&quot;: {
+        &quot;nvidia&quot;: {
+            &quot;path&quot;: &quot;/usr/bin/nvidia-container-runtime&quot;,
+            &quot;runtimeArgs&quot;: []
+        }
+    }
+}
+</code></pre>
+
+<p>kubectl describe node xxx:</p>
+
+<pre><code>Capacity:
+ cpu:                72
+ ephemeral-storage:  222779Mi
+ hugepages-1Gi:      0
+ hugepages-2Mi:      2Gi
+ memory:             791014684Ki
+ nvidia.com/gpu:     2                # 这里就能看到GPU了
+ pods:               110
+Allocatable:
+ cpu:                72
+ ephemeral-storage:  210240641086
+ hugepages-1Gi:      0
+ hugepages-2Mi:      2Gi
+ memory:             788815132Ki
+ nvidia.com/gpu:     2
+ pods:               110
+</code></pre>
+
+<h1 id="总结">总结</h1>
+
+<p>原生调度器的设计就是pod one by one，所以做这个功能的开发还是改动非常大的，也是比较困难的，工作量不大，但是需要找到一个优雅的方案，
+合理的架构比较麻烦,想了很久做了这个侵入不太大的实现方案，欢迎大家一起讨论</p>
+                        </div>
+                        
+                        
+                        <div id="comments">
+                            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "devcows" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+                        </div>
+                        
+
+                    </div>
+                    
+
+                    
+
+                    
+
+                    <div class="col-md-3">
+
+                        
+
+                        
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Search</h3>
+    </div>
+
+    <div class="panel-body">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" role="search">
+            <div class="input-group">
+                <input type="search" name="q" class="form-control" placeholder="Search">
+                <input type="hidden" name="sitesearch" value="https://sealyun.com/">
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Categories</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="nav nav-pills nav-stacked">
+            
+            <li><a href="https://sealyun.com/categories/starting">starting (1)</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="panel sidebar-menu">
+    <div class="panel-heading">
+      <h3 class="panel-title">Tags</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="tag-cloud">
+            
+            <li><a href="https://sealyun.com/tags/dotscale"><i class="fa fa-tags"></i> dotscale</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/event"><i class="fa fa-tags"></i> event</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/install"><i class="fa fa-tags"></i> install</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/kubeadm"><i class="fa fa-tags"></i> kubeadm</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/network"><i class="fa fa-tags"></i> network</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sealos"><i class="fa fa-tags"></i> sealos</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sketchnote"><i class="fa fa-tags"></i> sketchnote</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+                        
+
+                    </div>
+                    
+
+                    
+
+                </div>
+                
+
+            </div>
+            
+        </div>
+        
+
+        <footer id="footer">
+    <div class="container">
+
+        
+        <div class="col-md-4 col-sm-6">
+            <h4>About us</h4>
+
+            把我们实践过程中好的东西拿出来给大家复用，收点小费，我们很用心，用我们产品也很值得
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+        <div class="col-md-4 col-sm-6">
+
+             
+            <h4>Recent posts</h4>
+
+            <div class="blog-entries">
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">
+                          
+                            <img src="https://sealyun.com//img/ovn-test.png" class="img-responsive" alt="从CNI到ovn">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">从CNI到ovn</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/23/macvtap/">
+                          
+                            <img src="https://sealyun.com//macvtap.jpg" class="img-responsive" alt="macvtap实践教程">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/23/macvtap/">macvtap实践教程</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">
+                          
+                            <img src="https://sealyun.com//lxcfs.jpg" class="img-responsive" alt="强隔离容器那些事">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">强隔离容器那些事</a></h5>
+                    </div>
+                </div>
+                
+            </div>
+
+            <hr class="hidden-md hidden-lg">
+             
+
+        </div>
+        
+
+        
+        <div class="col-md-4 col-sm-6">
+
+          <h4>Contact</h4>
+
+            <strong>fhtjob@hotmail.com</strong>
+      </p>
+      
+
+
+            <a href="/contact" class="btn btn-small btn-template-main">Go to contact page</a>
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+    </div>
+    
+</footer>
+
+
+
+
+
+
+
+<div id="copyright">
+    <div class="container">
+        <div class="col-md-12">
+            
+            <p class="pull-left">Copyright (c) 2015 - 2016, Beiming; all rights reserved.</p>
+            
+            <p class="pull-right">
+              Template by <a href="http://bootstrapious.com/free-templates">Bootstrapious</a>.
+              
+
+              Ported to Hugo by <a href="https://github.com/devcows/hugo-universal-theme">DevCows</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    </div>
+    
+
+    
+<script src="//code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0/jquery.counterup.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-parallax/1.1.3/jquery-parallax.js"></script>
+
+<script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+<script src="https://sealyun.com/js/hpneo.gmaps.js"></script>
+<script src="https://sealyun.com/js/gmaps.init.js"></script>
+<script src="https://sealyun.com/js/front.js"></script>
+
+
+<script src="https://sealyun.com/js/owl.carousel.min.js"></script>
+
+
+  </body>
+</html>
+
+<style>
+#post-content img {
+    width: 100%;
+    height: 100%;
+}
+</style>

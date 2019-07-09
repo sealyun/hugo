@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2803648cc5852dd3e9e46bbd0bf63366";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+    
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>kubernetes 用户token教程</title>
+  <meta name="author" content="" />
+
+  
+  <meta name="keywords" content="devows, hugo, go">	
+  
+
+  
+  <meta name="description" content="Site template made by devcows using hugo">	
+  
+
+  <meta name="generator" content="Hugo 0.54.0" />
+
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,500,700,800' rel='stylesheet' type='text/css'>
+
+  
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  
+  <link href="/css/animate.css" rel="stylesheet">
+
+  
+  
+    <link href="/css/style.green.css" rel="stylesheet" id="theme-stylesheet">
+  
+
+
+  
+  <link href="/css/custom.css" rel="stylesheet">
+
+  
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+  
+
+  <link href="/css/owl.carousel.css" rel="stylesheet">
+  <link href="/css/owl.theme.css" rel="stylesheet">
+
+  <link rel="alternate" href="https://sealyun.com/index.xml" type="application/rss+xml" title="SealYun">
+
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@GoHugoIO">
+  <meta name="twitter:title" content="kubernetes 用户token教程">
+  <meta name="twitter:image" content="https://sealyun.com/img/twitter-default.png">
+  <meta name="twitter:description" content="Site template made by devcows using hugo">
+
+  
+  <meta property="og:title" content="kubernetes 用户token教程" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sealyun.com/blog/2019/02/20/user-token//" />
+  <meta property="og:image" content="/img/logo.jpg" />
+
+</head>
+
+
+  <body>
+      <img src="http://localhost:1313/img/qrcode.png" style="width:140px;position:fixed;right:10px;bottom:10px;z-index:10;"/>
+      <img src="http://localhost:1313/img/qrcode1.jpg" style="width:140px;position:fixed;right:10px;bottom:160px;z-index:10;"/>
+
+    <div id="all">
+
+        <header>
+
+          <div class="navbar-affixed-top" data-spy="affix" data-offset-top="200">
+
+    <div class="navbar navbar-default yamm" role="navigation" id="navbar">
+
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand home" href="https://sealyun.com/">
+                    <img src="https://sealyun.com//img/logo.jpg" alt="kubernetes 用户token教程 logo" class="hidden-xs hidden-sm">
+                    <img src="https://sealyun.com//img/logo-small.png" alt="kubernetes 用户token教程 logo" class="visible-xs visible-sm">
+                    <span class="sr-only">kubernetes 用户token教程 - go to homepage</span>
+                </a>
+                <div class="navbar-buttons">
+                    <button type="button" class="navbar-toggle btn-template-main" data-toggle="collapse" data-target="#navigation">
+                      <span class="sr-only">Toggle Navigation</span>
+                        <i class="fa fa-align-justify"></i>
+                    </button>
+                </div>
+            </div>
+            
+
+            <div class="navbar-collapse collapse" id="navigation">
+                <ul class="nav navbar-nav navbar-right">
+                  
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/">首页</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown active">
+                    
+                    <a href="/blog/">博客</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="http://store.lameleg.com">kubernetes离线安装</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="https://sealyun.com/blog/2019/04/15/sealos2.0/">安装文档</a>
+                    
+                  </li>
+                  
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/faq">常见问题</a>
+                    
+                  </li>
+                  
+                </ul>
+            </div>
+            
+
+            <div class="collapse clearfix" id="search">
+
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-btn">
+
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+
+                </span>
+                    </div>
+                </form>
+
+            </div>
+            
+
+        </div>
+    </div>
+    
+
+</div>
+
+
+
+
+        </header>
+
+        <div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>kubernetes 用户token教程</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <div id="content">
+            <div class="container">
+
+                <div class="row">
+
+                    
+
+                    <div class="col-md-9" id="blog-post">
+
+                        <p class="text-muted text-uppercase mb-small text-right">By <a href="#">fanux</a> | February 20, 2019</p>
+
+                        <div id="post-content">
+                          <blockquote>
+<p><a href="https://sealyun.com/pro/products/">kubernetes集群三步安装</a></p>
+</blockquote>
+
+<h1 id="概述">概述</h1>
+
+<p>kubernetes server account的token很容易获取，但是User的token非常麻烦，本文给出一个极简的User token生成方式，让用户可以一个http请求就能获取到。</p>
+
+<h2 id="token主要用来干啥">token主要用来干啥</h2>
+
+<p>官方dashboard登录时需要。 如果通过使用kubeconfig文件登录而文件中又没有token的话会失败，现在大部分文章都介绍使用service account的token来登录dashboard，能通，不过有问题：
+第一：绑定角色时要指定类型是service account:</p>
+
+<pre><code>apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-dashboard
+  labels:
+    k8s-app: kubernetes-dashboard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount   # 这里不是User类型
+  name: kubernetes-dashboard
+  namespace: kube-system
+</code></pre>
+
+<p>第二：要理解kubeconfig里是解析证书把CN作为用户名的，这时service account即便与CN一样那还是两个账户，绑定角色时还需要绑定两次，有点像把service account给&rdquo;人&rdquo;用, 所以把service account的token扔给某个开发人员去用往往不合适，service account token更多时候是给程序用的。</p>
+
+<p>想直接调用https的，没有token就会：</p>
+
+<pre><code>[root@iZj6cegflzze2l7fpcqoerZ ssl]# curl https://172.31.12.61:6443/api/v1/namespaces/default/pods --insecure
+{
+  &quot;kind&quot;: &quot;Status&quot;,
+  &quot;apiVersion&quot;: &quot;v1&quot;,
+  &quot;metadata&quot;: {
+
+  },
+  &quot;status&quot;: &quot;Failure&quot;,
+  &quot;message&quot;: &quot;pods is forbidden: User \&quot;system:anonymous\&quot; cannot list resource \&quot;pods\&quot; in API group \&quot;\&quot; in the namespace \&quot;default\&quot;&quot;,
+  &quot;reason&quot;: &quot;Forbidden&quot;,
+  &quot;details&quot;: {
+    &quot;kind&quot;: &quot;pods&quot;
+  },
+  &quot;code&quot;: 403
+}
+</code></pre>
+
+<p>因为没有任何认证信息，所以匿名（anonymous）用户没有任何权限</p>
+
+<p>加了token是这样的：</p>
+
+<pre><code>[root@iZj6cegflzze2l7fpcqoerZ ssl]# curl -H &quot;Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkNnYzRPVEV5TlRVM0VnWm5hWFJvZFdJIn0.eyJpc3MiOiJodHRwczovL2RleC5leGFtcGxlLmNvbTo4MDgwIiwic3ViIjoiQ2djNE9URXlOVFUzRWdabmFYUm9kV0kiLCJhdWQiOiJleGFtcGxlLWFwcCIsImV4cCI6MTU1MTA5NzkwNiwiaWF0IjoxNTUwNzM3OTA2LCJlbWFpbCI6ImZodGpvYkBob3RtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJncm91cHMiOlsiZGV2Il0sIm5hbWUiOiJmYW51eCJ9.ZqKn461UW0aGtyjyqu2Dc5tiUzC-6eYLag542d3AvklUdZuw8i9XwyaUg_f1OAj0ZsEcOybOe9_PeGMaUYzU0OvlKPY-q2zbQVC-m6u6sQw6ZXx8pi0W8k4wQSJnMaOLddCfurlYufmr8kScDBQlnKapSR0F9mJzvpKkHD-XNshQKWhX3n03g7OfFgb4RuhLjKDNQnoGn7DfBNntibHlF9sPo0jC5JjqTZaGvoGmiRE4PAXwxA-RJifsWDNf_jW8lrDiY4NSO_3O081cia4N1GKht51q9W3eaNMvFDD9hje7abDdZoz9KPi2vc3zvgH7cNv0ExVHKaA0-dwAZgTx4g&quot; -k https://172.31.12.61:6443/api/v1/namespaces/default/pods
+{
+  &quot;kind&quot;: &quot;Status&quot;,
+  &quot;apiVersion&quot;: &quot;v1&quot;,
+  &quot;metadata&quot;: {
+
+  },
+  &quot;status&quot;: &quot;Failure&quot;,
+  &quot;message&quot;: &quot;pods is forbidden: User \&quot;https://dex.example.com:8080#fanux\&quot; cannot list resource \&quot;pods\&quot; in API group \&quot;\&quot; in the namespace \&quot;default\&quot;&quot;,
+  &quot;reason&quot;: &quot;Forbidden&quot;,
+  &quot;details&quot;: {
+    &quot;kind&quot;: &quot;pods&quot;
+  },
+  &quot;code&quot;: 403
+}
+</code></pre>
+
+<p>看，虽然还是403 但是已经有了用户信息，只要给该用户授权就可正常访问了，如何授权下文介绍</p>
+
+<h2 id="token种类介绍">token种类介绍</h2>
+
+<p>token的生成方式有很多，主要分成三种：
+1. service account token 这个创建service account就有，存在secret里 获取比较简单，但是要区分好 <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#users-in-kubernetes">User 和 service account区别</a>
+2. 普通的token，这种token就是个普通的字符串，一般是自己写一个认证的web hook, k8s认证时调用这个hook 查询token是否有效，比较low
+3. 基于openid的jwt(josn web token) 这种token，认证中心把用户信息放在json里，用私钥加密，k8s拿到token后用公钥解密，只要解密成功token就是合法的而且能拿到用户信息，不需要再像认证中心请求</p>
+
+<p>基于openid的jwt是本文介绍的重点。</p>
+
+<p>社区用的比较多的就是<a href="https://github.com/coreos/dex">dex</a>,是一个比较完整的实现，但是对于不熟悉该技术的朋友来说还是有点门槛的，容易绕进去。 而且还存在一些使用不方便的问题。
+如依赖复杂，首先得需要一个真正的用户管理程序，如ldap 或者一个auth2服务端，这还可以接受，关键是认证时可能需要依赖浏览器进行跳转授权，这在十分多的场景里就变的十分尴尬，就比如我们的场景压根没有
+界面，这样生成token就成了一个大问题。  其次集成到别的系统中时往往用户已经登录过了，所以需要一个二次授权的过程才能拿到token，依赖过重导致系统难以设计。
+然而如果不是集成到别的系统中，比如从0开发一个完成的PaaS平台那使用dex还是一个完美的方案。</p>
+
+<p>所以我们实现了一个简单粗暴的方案，完全解放了这个过程, 只care最核心的东西。</p>
+
+<h1 id="sealyun-fist介绍">sealyun fist介绍</h1>
+
+<p>我们想要啥?</p>
+
+<p>input:</p>
+
+<pre><code>{
+    &quot;User&quot;: &quot;fanux&quot;,
+    &quot;Group&quot;: [&quot;sealyun&quot;, &quot;develop&quot;]
+}
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>eyJhbGciOiJSUzI1NiIsImtpZCI6IkNnYzRPVEV5TlRVM0VnWm5hWFJvZFdJIn0.eyJpc3MiOiJodHRwczovL2RleC5leGFtcGxlLmNvbTo4MDgwIiwic3ViIjoiQ2djNE9URXlOVFUzRWdabmFYUm9kV0kiLCJhdWQiOiJleGFtcGxlLWFwcCIsImV4cCI6MTU1MTA5NzkwNiwiaWF0IjoxNTUwNzM3OTA2LCJlbWFpbCI6ImZodGpvYkBob3RtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJncm91cHMiOlsiZGV2Il0sIm5hbWUiOiJmYW51eCJ9.ZqKn461UW0aGtyjyqu2Dc5tiUzC-6eYLag542d3AvklUdZuw8i9XwyaUg_f1OAj0ZsEcOybOe9_PeGMaUYzU0OvlKPY-q2zbQVC-m6u6sQw6ZXx8pi0W8k4wQSJnMaOLddCfurlYufmr8kScDBQlnKapSR0F9mJzvpKkHD-XNshQKWhX3n03g7OfFgb4RuhLjKDNQnoGn7DfBNntibHlF9sPo0jC5JjqTZaGvoGmiRE4PAXwxA-RJifsWDNf_jW8lrDiY4NSO_3O081cia4N1GKht51q9W3eaNMvFDD9hje7abDdZoz9KPi2vc3zvgH7cNv0ExVHKaA0-dwAZgTx4g
+</code></pre>
+
+<p>结束,多简单，别整那么多没用的。</p>
+
+<p>所以为了实现上面的功能，我们开发了 <a href="https://github.com/fanux/fist">fist</a>, fist的auth模块把dex里最核心的token生成功能以及jwt功能实现了。</p>
+
+<h1 id="sealyun-fist-auth-使用教程">sealyun fist/auth 使用教程</h1>
+
+<h2 id="安装部署">安装部署</h2>
+
+<blockquote>
+<p>生成证书</p>
+</blockquote>
+
+<pre><code># mkdir /etc/kubernetes/pki/fist
+# cd /etc/kubernetes/pki/fist
+# sh gencert.sh # 脚本内容内代码
+</code></pre>
+
+<blockquote>
+<p>启动fist auth模块</p>
+</blockquote>
+
+<pre><code>kubectl create -f deploy/fist-auth.yaml
+</code></pre>
+
+<blockquote>
+<p>修改k8s apiserver启动参数</p>
+</blockquote>
+
+<pre><code>vim /etc/kubernetes/manifests/kube-apiserver.yaml
+</code></pre>
+
+<pre><code>  - command:
+    - kube-apiserver
+    - --oidc-issuer-url=https://fist.sealyun.svc.cluster.local:8080
+    - --oidc-client-id=example-app
+    - --oidc-ca-file=/etc/kubernetes/pki/fist/ca.pem
+    - --oidc-username-claim=name
+    - --oidc-groups-claim=groups
+</code></pre>
+
+<h2 id="获取及使用-token">获取及使用 token</h2>
+
+<blockquote>
+<p>获取token</p>
+</blockquote>
+
+<pre><code>curl https://fist.sealyun.svc.cluster.local:8080/token?user=fanux&amp;group=sealyun,develop --cacert ca.pem
+</code></pre>
+
+<blockquote>
+<p>使用token</p>
+</blockquote>
+
+<p>直接curl加bare token 见上文</p>
+
+<p>加入到kubeconfig中:</p>
+
+<pre><code>kubectl config set-credentials --token=eyJhbGciOiJSUzI1NiIsImtpZCI6IkNnYzRPVEV5TlRVM0VnWm5hWFJvZFdJIn0.eyJpc3MiOiJodHRwczovL2RleC5leGFtcGxlLmNvbTo4MDgwIiwic3ViIjoiQ2djNE9URXlOVFUzRWdabmFYUm9kV0kiLCJhdWQiOiJleGFtcGxlLWFwcCIsImV4cCI6MTU1MTEwMDI5MywiaWF0IjoxNTUwNzQwMjkzLCJlbWFpbCI6ImZodGpvYkBob3RtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJncm91cHMiOlsiZGV2Il0sIm5hbWUiOiJmYW51eCJ9.OAK4oIYqJszm1EACYW2neXTo738RW9kXFOIN5bOT4Z2CeKAvYqyOVKCWZf04xX45jwT78mATR3uas2YvRooDXlvxaD3K43ls4KBSG-Ofp-ynqlcVTpD3sUDqyux2iieNv4N6IyCv11smrU0lIlkrQC6oyxzTGae1FrJVGc5rHNsIRZHp2WrQvw83uLn_elHgUfSlsOq0cPtVONaAQWMAMi2DX-y5GCNpn1CDvudGJihqsTciPx7bj0AOXyiOznWhV186Ybk-Rgqn8h0eBaQhFMyNpwVt6oIP5pvJQs0uoODeRv6P3I3-AjKyuCllh9KDtlCVvSP4WtMUTfHQN4BigQ  kubernetes-admin
+</code></pre>
+
+<p>然后.kube/config 文件里的 user.client-certifacate-data 和 client-key-data就可以删了，再执行kubectl会：</p>
+
+<pre><code>[root@iZj6cegflzze2l7fpcqoerZ ~]# kubectl get pod
+Error from server (Forbidden): pods is forbidden: User &quot;https://dex.example.com:8080#fanux&quot; cannot list resource &quot;pods&quot; in API group &quot;&quot; in the namespace &quot;default&quot;
+</code></pre>
+
+<p>说明新用户成功了</p>
+
+<blockquote>
+<p>授权</p>
+</blockquote>
+
+<pre><code>[root@iZj6cegflzze2l7fpcqoerZ ~]# cat rolebind.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-secrets-global
+subjects:
+- kind: User
+  name: &quot;https://dex.example.com:8080#fanux&quot; # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin  # 超级用户给他
+  apiGroup: rbac.authorization.k8s.io
+</code></pre>
+
+<p>创建个role binding即可：</p>
+
+<pre><code>[root@iZj6cegflzze2l7fpcqoerZ ~]# kubectl  --kubeconfig /etc/kubernetes/admin.conf create  -f rolebind.yaml # 用管理员的kubeconfig
+clusterrolebinding.rbac.authorization.k8s.io/read-secrets-global created
+[root@iZj6cegflzze2l7fpcqoerZ ~]# kubectl get pod # 有权限访问pod了
+No resources found.
+</code></pre>
+
+<h1 id="原理介绍">原理介绍</h1>
+
+<h2 id="jwt原理">jwt原理</h2>
+
+<pre><code>                       https://fist.sealyun.cluster.local:8080
+k8s                                             jwt server
+ |   /.well-known/openid-configuration             |
+ |------------------------------------------------&gt;|  k8s通过此url发现一些信息，最重要的就是用于校验token公钥的地址
+ |   discover info                                 |
+ |&lt;------------------------------------------------|
+ |     /keys                                       |
+ |------------------------------------------------&gt;|  上一步拿到地址，这一步获取到公钥
+ |     public keys                                 |
+ |&lt;------------------------------------------------|
+ |                                                 |
+</code></pre>
+
+<p>discoer info 是个json:</p>
+
+<pre><code>{
+&quot;issuer&quot;: &quot;https://accounts.google.com&quot;,
+&quot;authorization_endpoint&quot;: &quot;https://accounts.google.com/o/oauth2/v2/auth&quot;,
+&quot;token_endpoint&quot;: &quot;https://oauth2.googleapis.com/token&quot;,
+&quot;userinfo_endpoint&quot;: &quot;https://openidconnect.googleapis.com/v1/userinfo&quot;,
+&quot;revocation_endpoint&quot;: &quot;https://oauth2.googleapis.com/revoke&quot;,
+&quot;jwks_uri&quot;: &quot;https://www.googleapis.com/oauth2/v3/certs&quot;,
+&quot;response_types_supported&quot;: [
+&quot;code&quot;,
+&quot;token&quot;,
+&quot;id_token&quot;,
+&quot;code token&quot;,
+&quot;code id_token&quot;,
+&quot;token id_token&quot;,
+&quot;code token id_token&quot;,
+&quot;none&quot;
+],
+...
+</code></pre>
+
+<p>public keys也是个json 类似：</p>
+
+<pre><code>{
+&quot;keys&quot;: [
+{
+&quot;e&quot;: &quot;AQAB&quot;,
+&quot;kty&quot;: &quot;RSA&quot;,
+&quot;alg&quot;: &quot;RS256&quot;,
+&quot;n&quot;: &quot;3MdFK4pXPvehMipDL_COfqn6o9soHgSaq_V1o8U_5gTZ-j9DxO9PV7BVncXBgHFctnp3JQ1QTDF7txeHeuLOS4KziRw5r4ohaj2WoOTqXh7lqVMR2YDAcBK46asS177NpkQ1CqHIsy3kNfqhXLwTaKfdlwdA_XUfRbKORWbq0kDxV35egx35nHl5qJ6aP6fcpsnnPvHf7KWO0zkdvwuR-IX79HjqUAEg5UERd5FK4y06PRbxuXHjAgVhHu_sk4reNXNp1HRuTYtQ26DFbVaIjsWb8-nQC8-7FkTjlw9FteAwLVGOm9sTLFp73jAf0pWLh7sJ02pBxZKjsxLO1Lvg7w&quot;,
+&quot;use&quot;: &quot;sig&quot;,
+&quot;kid&quot;: &quot;7c309e3a1c1999cb0404ab7125ee40b7cdbcaf7d&quot;
+},
+{
+&quot;alg&quot;: &quot;RS256&quot;,
+&quot;n&quot;: &quot;2K7epoJWl_B68lRUi1txaa0kEuIK4WHiHpi1yC4kPyu48d046yLlrwuvbQMbog2YTOZdVoG1D4zlWKHuVY00O80U1ocFmBl3fKVrUMakvHru0C0mAcEUQo7ItyEX7rpOVYtxlrVk6G8PY4EK61EB-Xe35P0zb2AMZn7Tvm9-tLcccqYlrYBO4SWOwd5uBSqc_WcNJXgnQ-9sYEZ0JUMhKZelEMrpX72hslmduiz-LMsXCnbS7jDGcUuSjHXVLM9tb1SQynx5Xz9xyGeN4rQLnFIKvgwpiqnvLpbMo6grhJwrz67d1X6MwpKtAcqZ2V2v4rQsjbblNH7GzF8ZsfOaqw&quot;,
+&quot;use&quot;: &quot;sig&quot;,
+&quot;kid&quot;: &quot;7d680d8c70d44e947133cbd499ebc1a61c3d5abc&quot;,
+&quot;e&quot;: &quot;AQAB&quot;,
+&quot;kty&quot;: &quot;RSA&quot;
+}
+]
+}
+</code></pre>
+
+<p>所以fist只需要实现这两个url 和 用私钥匙加密用户信息生成token即可。</p>
+
+<p>创建密钥对:</p>
+
+<pre><code>	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		log.Fatalf(&quot;gen rsa key: %v&quot;, err)
+	}
+	priv = jose.JSONWebKey{
+		Key:       key,
+		KeyID:     &quot;Cgc4OTEyNTU3EgZnaXRodWI&quot;,
+		Algorithm: &quot;RS256&quot;,
+		Use:       &quot;sig&quot;,
+	}
+	pub = jose.JSONWebKey{
+		Key:       key.Public(),
+		KeyID:     &quot;Cgc4OTEyNTU3EgZnaXRodWI&quot;,
+		Algorithm: &quot;RS256&quot;,
+		Use:       &quot;sig&quot;,
+	}
+</code></pre>
+
+<p>私钥加密：</p>
+
+<pre><code>	tok := idTokenClaims{
+		Issuer:        &quot;https://dex.example.com:8080&quot;,
+		Subject:       &quot;Cgc4OTEyNTU3EgZnaXRodWI&quot;,
+		Audience:      &quot;example-app&quot;,
+		Expiry:        time.Now().Add(time.Hour * 100).Unix(),
+		IssuedAt:      time.Now().Unix(),
+		Email:         &quot;fhtjob@hotmail.com&quot;,
+		EmailVerified: &amp;ev,
+		Groups:        []string{&quot;dev&quot;},
+		Name:          &quot;fanux&quot;,
+	}
+
+	payload, err := json.Marshal(&amp;tok)
+	if err != nil {
+		return
+	}
+
+	var idToken string
+	if idToken, err = signPayload(&amp;Priv, signingAlg, payload); err != nil {
+		return
+
+</code></pre>
+
+<h1 id="总结">总结</h1>
+
+<p>fist核心代码已经可用，不过为了更方便使用还需要进一步梳理，敬请期待。 鉴权仅是其其中一个功能，fist定位是一个极简的k8s管理平台。</p>
+
+<p>探讨可加QQ群：98488045</p>
+                        </div>
+                        
+                        
+                        <div id="comments">
+                            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "devcows" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+                        </div>
+                        
+
+                    </div>
+                    
+
+                    
+
+                    
+
+                    <div class="col-md-3">
+
+                        
+
+                        
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Search</h3>
+    </div>
+
+    <div class="panel-body">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" role="search">
+            <div class="input-group">
+                <input type="search" name="q" class="form-control" placeholder="Search">
+                <input type="hidden" name="sitesearch" value="https://sealyun.com/">
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Categories</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="nav nav-pills nav-stacked">
+            
+            <li><a href="https://sealyun.com/categories/starting">starting (1)</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="panel sidebar-menu">
+    <div class="panel-heading">
+      <h3 class="panel-title">Tags</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="tag-cloud">
+            
+            <li><a href="https://sealyun.com/tags/dotscale"><i class="fa fa-tags"></i> dotscale</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/event"><i class="fa fa-tags"></i> event</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/install"><i class="fa fa-tags"></i> install</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/kubeadm"><i class="fa fa-tags"></i> kubeadm</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/network"><i class="fa fa-tags"></i> network</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sealos"><i class="fa fa-tags"></i> sealos</a>
+            </li>
+            
+            <li><a href="https://sealyun.com/tags/sketchnote"><i class="fa fa-tags"></i> sketchnote</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+                        
+
+                    </div>
+                    
+
+                    
+
+                </div>
+                
+
+            </div>
+            
+        </div>
+        
+
+        <footer id="footer">
+    <div class="container">
+
+        
+        <div class="col-md-4 col-sm-6">
+            <h4>About us</h4>
+
+            把我们实践过程中好的东西拿出来给大家复用，收点小费，我们很用心，用我们产品也很值得
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+        <div class="col-md-4 col-sm-6">
+
+             
+            <h4>Recent posts</h4>
+
+            <div class="blog-entries">
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">
+                          
+                            <img src="https://sealyun.com//img/ovn-test.png" class="img-responsive" alt="从CNI到ovn">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/07/08/ovn-vni/">从CNI到ovn</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/23/macvtap/">
+                          
+                            <img src="https://sealyun.com//macvtap.jpg" class="img-responsive" alt="macvtap实践教程">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/23/macvtap/">macvtap实践教程</a></h5>
+                    </div>
+                </div>
+                
+                <div class="item same-height-row clearfix">
+                    <div class="image same-height-always">
+                        <a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">
+                          
+                            <img src="https://sealyun.com//lxcfs.jpg" class="img-responsive" alt="强隔离容器那些事">
+                          
+                        </a>
+                    </div>
+                    <div class="name same-height-always">
+                        <h5><a href="https://sealyun.com/blog/2019/06/22/kubernetes-vm/">强隔离容器那些事</a></h5>
+                    </div>
+                </div>
+                
+            </div>
+
+            <hr class="hidden-md hidden-lg">
+             
+
+        </div>
+        
+
+        
+        <div class="col-md-4 col-sm-6">
+
+          <h4>Contact</h4>
+
+            <strong>fhtjob@hotmail.com</strong>
+      </p>
+      
+
+
+            <a href="/contact" class="btn btn-small btn-template-main">Go to contact page</a>
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+    </div>
+    
+</footer>
+
+
+
+
+
+
+
+<div id="copyright">
+    <div class="container">
+        <div class="col-md-12">
+            
+            <p class="pull-left">Copyright (c) 2015 - 2016, Beiming; all rights reserved.</p>
+            
+            <p class="pull-right">
+              Template by <a href="http://bootstrapious.com/free-templates">Bootstrapious</a>.
+              
+
+              Ported to Hugo by <a href="https://github.com/devcows/hugo-universal-theme">DevCows</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    </div>
+    
+
+    
+<script src="//code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0/jquery.counterup.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-parallax/1.1.3/jquery-parallax.js"></script>
+
+<script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+<script src="https://sealyun.com/js/hpneo.gmaps.js"></script>
+<script src="https://sealyun.com/js/gmaps.init.js"></script>
+<script src="https://sealyun.com/js/front.js"></script>
+
+
+<script src="https://sealyun.com/js/owl.carousel.min.js"></script>
+
+
+  </body>
+</html>
+
+<style>
+#post-content img {
+    width: 100%;
+    height: 100%;
+}
+</style>
