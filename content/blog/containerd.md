@@ -16,13 +16,13 @@ menu = ""           # set "main" to add this content to the main menu
 - cri (Container runtime interface)
   - `cri` is a [containerd](https://containerd.io/) plugin implementation of Kubernetes [container runtime interface (CRI)](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/apis/cri/runtime/v1alpha2/api.proto).
   - cri是 kubernetes的容器运行时接口的容器插件实现。
+<!--more-->
   - ![CRI](/cri.jpg)
 - containerd
   - containerd is an industry-standard container runtime with an emphasis on simplicity, robustness and portability.
   - containerd完全支持运行容器的的CRI运行时规范。
   - cri在containerd1.1以上的版本的原生插件。它内置于containerd并默认启用。
   - ![containerd](/containerd.png)
-<!--more-->
 
 - cri-o
   - OCI-based implementation of Kubernetes Container Runtime Interface.
