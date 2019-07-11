@@ -192,3 +192,10 @@ kubeadm join 10.103.97.1:6443 --token 9vr73a.a8uxyaju799qwdjv \
     --master 10.103.97.100:6443 \
     --discovery-token-ca-cert-hash sha256:7c2e69131a36ae2a042a339b33381c6d0d43887e2de83720eff5359e26aec866
 ```
+
+> 1.14以上版本机器重启node节点notready
+
+这与开机没有加载ipvs内核模块有关，首先请确保ipvs已经加载.
+然后确保node kubelet已经正常启动
+最后查看lvscare的pod有没有启动
+如果都正常还是notready的话，重启lvscare pod即可
