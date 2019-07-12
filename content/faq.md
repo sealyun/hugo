@@ -199,3 +199,11 @@ kubeadm join 10.103.97.1:6443 --token 9vr73a.a8uxyaju799qwdjv \
 然后确保node kubelet已经正常启动
 最后查看lvscare的pod有没有启动
 如果都正常还是notready的话，重启lvscare pod即可
+
+> error execution phase preflight: couldn't validate the identity of the API 
+
+可能是token过期，需要在master上重新生成token再join:
+```
+kubeadm token create --print-join-command
+```
+用[sealos](https://github.com/fanux/sealos)时,join别忘记加 `--master` 参数[参考readme](https://github.com/fanux/sealos)
