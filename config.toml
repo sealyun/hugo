@@ -47,6 +47,12 @@ paginate = 10
     url  = "/faq"
     weight = 5
 
+[[menu.main]]
+    identifier = "changelog"
+    name = "版本变更说明"
+    url  = "/changelog"
+    weight = 6
+
 # Top bar social links menu
 
 [[menu.topbar]]

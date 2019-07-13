@@ -168,6 +168,20 @@ rtt min/avg/max/mdev = 0.712/0.712/0.712/0.000 ms
     ovs_version: "2.8.2"
 ```
 
+Interface是openvswitch核心概念之一，对应模拟的是交换机中插入port的网卡设备。一个Port通常只能有一个interface，但也可以有多个interfaces(Bond).
+
+interface type
+
+* system(如eth0),比如想把系统上的网卡挂在网桥上
+* internal(模拟网络设备，名字如果是和bridge的名字一样则叫local interface)
+* tap(一个tun/tap设备)
+* patch(一对虚拟设备，用来模拟插线电缆) 容器场景用的多
+* geneve(以太网通过geneve隧道)
+* gre(RFC2890)，ipsec_gre(RFC2890 over ipsec tunnel)
+* vxlan(基于以UDP为基础的VXLAN协议上的以太网隧道)
+* lisp(一个3层的隧道，还在实验阶段)
+* stt（Stateless TCP Tunnel，）
+
 查看interface
 ```sh
 [root@controller /]# ovs-vsctl list interface f1c0a9d0994d4_l
