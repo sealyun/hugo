@@ -4,6 +4,7 @@ date = "2019-02-05T10:54:24+02:00"
 draft = false
 title = "属于极客的k8s管理工具fist, 强大的webterminal"
 tags = ["event","dotScale","sketchnote"]
+banner = "fist/config-highlight.png"
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu

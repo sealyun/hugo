@@ -4,6 +4,7 @@ date = "2019-04-15T10:54:24+02:00"
 draft = false
 title = "最简单的kubernetes HA安装方式-sealos详解"
 tags = ["install","kubeadm","sealos"]
+banner = "img/banner-1.png"
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu

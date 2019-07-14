@@ -5,6 +5,7 @@ draft = false
 title = "sealyun kubernetes离线包文档"
 tags = ["event","dotScale","sketchnote"]
 image = "images/2014/Jul/titledotscale.png"
+banner = "show/dashboard.png"
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu

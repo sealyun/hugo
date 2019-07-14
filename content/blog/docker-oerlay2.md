@@ -5,6 +5,7 @@ draft = false
 title = "关于overlay2存储驱动的磁盘配额问题"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
+banner = "img/banner-1.png"
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++

@@ -6,6 +6,7 @@ title = "是时候表现一下我的vim了"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
+banner = "img/banner-1.png"
 menu = ""           # set "main" to add this content to the main menu
 +++
 

@@ -5,6 +5,7 @@ draft = false
 title = "kubernetes源码分析之kube-scheduler - 从代码看原理"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
+banner = "img/banner-1.png"
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++

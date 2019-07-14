@@ -6,6 +6,7 @@ title = "配置docker engine使engine挂掉时容器继续运行"
 tags = ["event","dotScale","sketchnote"]
 image = "images/2014/Jul/titledotscale.png"
 comments = true     # set false to hide Disqus comments
+banner = "img/banner-1.png"
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++

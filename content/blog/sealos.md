@@ -5,6 +5,7 @@ draft = false
 title = "构建生产环境可用的高可用kubernetes集群"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
+banner = "img/banner-1.png"
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++

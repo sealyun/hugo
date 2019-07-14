@@ -5,6 +5,7 @@ draft = false
 title = "kubernetes扩展资源类型"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
+banner = "img/banner-1.png"
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++

@@ -6,6 +6,7 @@ title = "containerd与kubernetes集成"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
+banner = "/cri.jpg"
 menu = ""           # set "main" to add this content to the main menu
 +++
 
