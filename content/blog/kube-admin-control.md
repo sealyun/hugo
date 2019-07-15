@@ -5,10 +5,9 @@ draft = false
 title = "kubernetes Admission Controller原理介绍"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
-banner = "img/banners/banner-1.png"
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
-banner = "/img/adminson-controller.png"
+banner = "img/adminson-controller.png"
 +++
 
 > Admission Controller介绍
