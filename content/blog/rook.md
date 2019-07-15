@@ -5,7 +5,7 @@ draft = false
 title = "rook使用教程，快速编排ceph"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
-banner = "img/banner-1.png"
+banner = "img/banners/banner-1.png"
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++

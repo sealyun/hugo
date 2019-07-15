@@ -6,7 +6,7 @@ title = "基于drone构建CI/CD系统,对接k8s"
 tags = ["event","dotScale","sketchnote"]
 comments = true     # set false to hide Disqus comments
 share = true        # set false to share buttons
-banner = "img/banner-1.png"
+banner = "img/banners/banner-1.png"
 menu = ""           # set "main" to add this content to the main menu
 +++
 
