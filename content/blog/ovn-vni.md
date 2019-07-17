@@ -154,7 +154,9 @@ ovs-vsctl set open . external-ids:ovn-encap-type=geneve,vxlan # 配置封装类�
 ovs-vsctl set open . external-ids:ovn-encap-ip=IP_ADDRESS # 配置overlay endpoint地址
 ```
 
+
 # OVS与容器
+![](/ovn-cni.png)
 ## ovs单机连通性
 
 创建容器, 设置net=none可以防止docker0默认网桥影响连通性测试
