@@ -163,7 +163,7 @@ Readiness probe failed: calico/node is not ready: felix is not ready: Get http:/
 配置好/etc/hosts
 
 或者修改网卡发现机制：
-calico网卡发现：
+calico网卡发现 conf/net/calico.yaml文件：
 ```
 - name: IP_AUTODETECTION_METHOD
               value: "interface=eth.*"   # 如果你的网卡不是eth开头，换成自己的，在yaml文件里修改
@@ -207,3 +207,15 @@ kubeadm join 10.103.97.1:6443 --token 9vr73a.a8uxyaju799qwdjv \
 kubeadm token create --print-join-command
 ```
 用[sealos](https://github.com/fanux/sealos)时,join别忘记加 `--master` 参数[参考readme](https://github.com/fanux/sealos)
+
+> kubelet能起来但是安装时卡住
+
+有位朋友centos7.3上安装master时卡住， docker 1.13.1,原因是系统兼容性问题，如果发现安装过程中kubelet已经能起来了，而容器一个没起，可能就是这个原因，
+起容器会报这个错：
+```
+ applying cgroup configuration for process caused \\\"Cannot set property TasksAccounting, or unknown property.
+```
+解决办法：
+```
+yum update
+```
