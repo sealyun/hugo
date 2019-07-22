@@ -219,3 +219,15 @@ kubeadm token create --print-join-command
 ```
 yum update
 ```
+
+> kubelet起不来
+
+在有些系统下可能会有这个问题：
+```
+Executable path is not absolute: sh /usr/bin/kubelet-pre-start.sh
+7月 22 13:59:21 ning systemd[1]: /etc/systemd/system/kubelet.service:7: Executable path is not absolute: sh /usr/bin/kubelet-pre-start.sh
+```
+因为找不到 `sh`这个命令导致
+
+修改 `kube/conf/kubelet.service`
+把 `ExecStartPre=sh` 改成 `ExecStartPre=/bin/bash`
