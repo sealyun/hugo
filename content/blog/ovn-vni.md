@@ -806,77 +806,96 @@ ovs-add-port() {
 所以在实现专有网络时只需要创建不同的逻辑交换机即可，不通过路由相连专有网络之间就会相互隔离。
 
 ## IP管理（DHCP）
-静态IP比较简单，这里主要讲DHCP实现
-
-DHCP也很简单，主要是给interface设置地址时通过DHCP客户端进行地址配置，其它的同上
+## 静态IP配置
+这里给ovn逻辑端口配置一个静态的IP，然后ovn会模拟DHCP协议给端口响应完成地址配置
 ```
-ovs-add-port-dhcp() {
-    bridge=$1
-    port=$2
-    lport=$3
+ovn-nbctl lr-add user1
+ovn-nbctl ls-add vpc1
 
-    ip netns add $port-ns
-    ovs-vsctl --may-exist add-port $bridge $port -- set interface $port type=internal
-    if [ ! -z "$lport" ]; then
-        ovs-vsctl set Interface $port external_ids:iface-id=$lport
-    fi
+#创建路由连接到vpc1端口，并分配mac 02:ac:10:ff:34:01 IP 172.66.1.10
+ovn-nbctl lrp-add user1 user1-vpc1 02:ac:10:ff:34:01 172.66.1.10/24
 
-    mac=$(ovn-nbctl lsp-get-port-security $lport | head -n 1)
-    ip link set $port netns $port-ns
-    # ip netns exec $port-ns ip link set dev $port name eth0
-    ip netns exec $port-ns ip link set $port address $mac
-    ip netns exec $port-ns ip link set $port up
-    ip netns exec $port-ns dhclient $port # 这里dhclient给interface配置IP地址
+ovn-nbctl lsp-add vpc1 vpc1-user1
+ovn-nbctl lsp-set-type vpc1-user1 router
+ovn-nbctl lsp-set-addresses vpc1-user1 02:ac:10:ff:34:01
+ovn-nbctl lsp-set-options vpc1-user1 router-port=user1-vpc1
+
+#创建路由连接到vpc2端口，并分配mac 02:ac:10:ff:34:02 IP 172.77.1.10
+ovn-nbctl lrp-add user1 user1-vpc2 02:ac:10:ff:34:02 172.77.1.10/24
+
+ovn-nbctl lsp-add vpc1 vpc1-vm1
+# 这里给逻辑端口配置IP地址
+ovn-nbctl lsp-set-addresses vpc1-vm1 "02:ac:10:ff:01:30 172.66.1.107" 
+# ovn-nbctl lsp-set-port-security vpc1-vm1 "02:ac:10:ff:01:30 172.66.1.101"
+
+options=$(ovn-nbctl create DHCP_Options cidr=172.66.1.0/24 \
+options="\"server_id\"=\"172.66.1.10\" \"server_mac\"=\"02:ac:10:ff:34:01\" \
+\"lease_time\"=\"3600\" \"router\"=\"172.66.1.10\"")
+
+echo "DHCP options is: " $options
+ovn-nbctl lsp-set-dhcpv4-options vpc1-vm1 $options
+ovn-nbctl lsp-get-dhcpv4-options vpc1-vm1
+
+ip netns add vm1
+ovs-vsctl add-port br-int vm1 -- set interface vm1 type=internal
+ip link set vm1 address 02:ac:10:ff:01:30
+ip link set vm1 netns vm1
+ovs-vsctl set Interface vm1 external_ids:iface-id=vpc1-vm1
+# 通过DHCP即可拿到地址
+ip netns exec vm1 dhclient vm1
+ip netns exec vm1 ip addr show vm1
+ip netns exec vm1 ip route show
+
+clean() {
+    ip netns del vm1
+    ovn-nbctl ls-del vpc1
+    ovs-vsctl del-port br-int vm1
 }
 ```
 
-在逻辑层面因为涉及到IP地址，所以就需要引入逻辑路由器和DHCP配置了
+## 动态获取IP地址
+ovn支持管理你的IP地址，只需要指定一个子网，就会给借口分配未被占用的IP地址：
+
+大部分操作与静态IP一样，注意下面几个重点注释地方：
 ```
-echo "创建两个逻辑交换机分别有一个端口"
-ls-create sw0
-ls-add-port sw0 sw0-port1 00:00:00:00:00:01
-ls-create sw1
-ls-add-port sw1 sw1-port1 00:00:00:00:10:01
+ovn-nbctl lr-add user1
+ovn-nbctl ls-add vpc1
+# [重点] 需要other_config，否则不会分配地址
+ovn-nbctl set Logical_Switch vpc1 other_config:subnet=172.66.1.10/24
 
-# 创建逻辑路由器
-ovn-nbctl lr-add lr0
+#创建路由连接到vpc1端口，并分配mac 02:ac:10:ff:34:01 IP 172.66.1.10
+ovn-nbctl lrp-add user1 user1-vpc1 02:ac:10:ff:34:01 172.66.1.10/24
 
-# 给路由器加个网关接口
-ovn-nbctl lrp-add lr0 sw0gw 00:00:00:01:00:01 192.168.33.1/24
-# 把sw0逻辑交换机挂到sw0gw网关接口上，这里交换机上的端口叫sw0gw-attachment 连接的是sw0gw端口
-ovn-nbctl -- lsp-add sw0 sw0gw-attachment \
-               -- set Logical_Switch_Port sw0gw-attachment \
-                  type=router \
-                  options:router-port=sw0gw \
-                  addresses='"00:00:00:01:00:01 192.168.33.1"'
+ovn-nbctl lsp-add vpc1 vpc1-user1
+ovn-nbctl lsp-set-type vpc1-user1 router
+ovn-nbctl lsp-set-addresses vpc1-user1 02:ac:10:ff:34:01
+ovn-nbctl lsp-set-options vpc1-user1 router-port=user1-vpc1
 
-# 同理操作sw1
-ovn-nbctl lrp-add lr0 sw1gw 00:00:00:01:00:02 192.168.34.1/24
-ovn-nbctl -- lsp-add sw1 sw1gw-attachment \
-               -- set Logical_Switch_Port sw1gw-attachment \
-                  type=router \
-                  options:router-port=sw1gw \
-                  addresses='"00:00:00:01:00:02 192.168.34.1"'
+ovn-nbctl lsp-add vpc1 vpc1-vm1
+# 【重点】这里不指定具体地址，而使用dynamic
+ovn-nbctl lsp-set-addresses vpc1-vm1 "02:ac:10:ff:01:30 dynamic"
+# ovn-nbctl lsp-set-addresses vpc1-vm1 "dynamic"
+# ovn-nbctl lsp-set-port-security vpc1-vm1 "02:ac:10:ff:01:30 172.66.1.106"
 
-# 设置DHCP配置,这里写死了mac地址与IP地址的映射关系, lease_time是租约时间
-sw0DHCP="$(ovn-nbctl create DHCP_Options cidr=192.168.33.10/24 \
-options="\"server_id\"=\"192.168.33.10\" \"server_mac\"=\"00:00:00:00:00:01\" \
-\"lease_time\"=\"3600\" \"router\"=\"192.168.33.1\"")"
-sw1DHCP="$(ovn-nbctl create DHCP_Options cidr=192.168.34.10/24 \
-options="\"server_id\"=\"192.168.34.10\" \"server_mac\"=\"00:00:00:00:10:01\" \
-\"lease_time\"=\"3600\" \"router\"=\"192.168.34.1\"")"
-ovn-nbctl dhcp-options-list
+options=$(ovn-nbctl create DHCP_Options cidr=172.66.1.0/24 \
+options="\"server_id\"=\"172.66.1.10\" \"server_mac\"=\"02:ac:10:ff:34:01\" \
+\"lease_time\"=\"3600\" \"router\"=\"172.66.1.10\"")
 
-# 给逻辑交换机端口设置DHCP规则
-ovn-nbctl lsp-set-dhcpv4-options sw0-port1 $sw0DHCP
-ovn-nbctl lsp-get-dhcpv4-options sw0-port1
+echo "DHCP options is: " $options
+ovn-nbctl lsp-set-dhcpv4-options vpc1-vm1 $options
+ovn-nbctl lsp-get-dhcpv4-options vpc1-vm1
+# 这里可以看到分配到的地址
+ovn-nbctl list logical_switch_port
 
-ovn-nbctl lsp-set-dhcpv4-options sw1-port1 $sw1DHCP
-ovn-nbctl lsp-get-dhcpv4-options sw1-port1
-
-# 逻辑端口与物理端口绑定并通过DHCP获取地址
-ovs-add-port-dhcp br-int lport1 sw0-port1
-ovs-add-port-dhcp br-int lport2 sw1-port1
+ip netns add vm1
+ovs-vsctl add-port br-int vm1 -- set interface vm1 type=internal
+ip link set vm1 address 02:ac:10:ff:01:30
+ip link set vm1 netns vm1
+ovs-vsctl set Interface vm1 external_ids:iface-id=vpc1-vm1
+# 通过dhclient就可以获取到地址了
+ip netns exec vm1 dhclient vm1
+ip netns exec vm1 ip addr show vm1
+ip netns exec vm1 ip route show
 ```
 
 # ovn ovs与CNI对接
