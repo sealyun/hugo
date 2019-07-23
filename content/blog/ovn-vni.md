@@ -4,7 +4,7 @@ date = "2019-07-08T13:50:46+02:00"
 tags = ["network"]
 categories = ["starting"]
 description = ""
-banner = "/img/ovn-test.png"
+banner = "/img/kube-ovn-vpc.png"
 +++
 
 诸如calico flannel等CNI实现，通过牺牲一些功能让网络复杂度得以大幅度降低是我极其推崇的，在云原生时代应用不再关心基础设施的场景下是一个明智之举，给网络调错带来了极大方便。
@@ -896,6 +896,51 @@ ovs-vsctl set Interface vm1 external_ids:iface-id=vpc1-vm1
 ip netns exec vm1 dhclient vm1
 ip netns exec vm1 ip addr show vm1
 ip netns exec vm1 ip route show
+```
+
+## 经典网络实现
+![](/kube-ovn-classics.jpg)
+```
+ovn-nbctl lsp-add out outs-wan
+ovn-nbctl lsp-set-addresses outs-wan unknown
+ovn-nbctl lsp-set-type outs-wan localnet # 连接物理网络端口类型
+ovn-nbctl lsp-set-options outs-wan network_name=wanNet # 做bridge mapping时需要
+```
+
+```
+ovs-vsctl add-br br-eth
+ovs-vsctl set Open_vSwitch . external-ids:ovn-bridge-mappings=wanNet:br-eth
+ovs-vsctl add-port br-eth eth0
+
+#配置网桥IP
+ip link set br-eth up
+ip addr add 192.168.66.111/23 dev br-eth
+```
+
+把虚拟机关联到逻辑网桥上，这样物理网卡与虚拟机就在一个网桥上了
+```
+ovs-vsctl set Interface vm1 external_ids:iface-id=vm1
+```
+
+## FIP实现
+![](/img/kube-ovn-vpc.png)
+其它部分的链接参考上文，这里主要是路由相关的操作
+
+vm想要出网那么必须要进行源地址转换，就和我们访问google一样，那我们机器的192.168.x.x的地址就会在路由器上被转化
+```
+#对vpc1
+ovn-nbctl -- --id=@nat create nat type="snat" logical_ip=172.66.1.0/24 \
+external_ip=192.168.66.45 -- add logical_router gateway_route nat @nat
+#会返回uuid
+56ad6c5b-8417-4314-95c4-a0d780b5ef0b
+```
+这里66.45是我们链接物理网络的一个地址，告诉路由器使用该地址进行转换
+
+实现FIP其实就是snat dnat都做：
+```
+#对vm3 172.66.1.103  绑定外网 192.168.66.46 
+ovn-nbctl -- --id=@nat create nat type="dnat_and_snat" logical_ip=172.66.1.103 \
+external_ip=192.168.66.46 -- add logical_router gateway_route nat @nat
 ```
 
 # ovn ovs与CNI对接
