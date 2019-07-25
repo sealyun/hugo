@@ -199,6 +199,25 @@ kubeadm join 10.103.97.1:6443 --token 9vr73a.a8uxyaju799qwdjv \
 然后确保node kubelet已经正常启动
 最后查看lvscare的pod有没有启动
 如果都正常还是notready的话，重启lvscare pod即可
+```
+# Open ipvs
+modprobe -- ip_vs
+modprobe -- ip_vs_rr
+modprobe -- ip_vs_wrr
+modprobe -- ip_vs_sh
+modprobe -- nf_conntrack_ipv4
+
+cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sysctl --system
+sysctl -w net.ipv4.ip_forward=1
+systemctl stop firewalld && systemctl disable firewalld
+swapoff -a
+setenforce 0
+```
+可以直接杀lvscare容器，kubelet会自动拉起
 
 > error execution phase preflight: couldn't validate the identity of the API 
 

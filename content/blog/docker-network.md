@@ -270,6 +270,14 @@ PING 172.17.1.1 (172.17.1.1) 56(84) bytes of data.
 64 bytes from 172.17.1.1: icmp_seq=1 ttl=64 time=0.038 ms
 64 bytes from 172.17.1.1: icmp_seq=2 ttl=64 time=0.041 ms
 ```
+
+PS：后面尝试并不能通，很奇怪，加上路由和给网桥配置地址后才通：
+```
+ip netns exec ns1 ip route add default via 172.17.1.254 dev eth1
+ip netns exec ns2 ip route add default via 172.17.1.254 dev eth1
+ip addr add 172.17.1.254/24 dev brtest
+```
+
 当然想在主机上能ping通容器的话需要给brtest加ip：
 ```
 [root@dev-86-208 ~]# ip addr add 172.17.1.254/24 dev brtest
