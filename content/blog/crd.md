@@ -1,6 +1,6 @@
 +++
 author = "fanux"
-date = "2019-07-01T10:54:24+02:00"
+date = "2019-07-20T10:54:24+02:00"
 draft = false
 title = "kubernetes CRD如此简单"
 tags = ["kubernetes","dev"]
