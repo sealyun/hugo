@@ -12,10 +12,10 @@ menu = ""           # set "main" to add this content to the main menu
 
 扩展kubernetes两个最常用最需要掌握的东西：自定义资源CRD 和 adminsion webhook, 本文教你如何十分钟掌握CRD开发.
 
-# 基本概念
 kubernetes允许用户自定义自己的资源对象，就如同deployment statefulset一样，这个应用非常广泛，比如prometheus opterator就自定义Prometheus对象，再加上一个自定义的controller监听到kubectl create Prometheus时就去创建Pod组成一个pormetheus集群。rook等等同理。
 
 我需要用kubernetes调度虚拟机，所以这里自定义一个 VirtualMachine 类型
+<!--more-->
 
 # [kubebuilder](https://github.com/kubernetes-sigs/kubebuilder)
 kubebuilder能帮我们节省大量工作，让开发CRD和adminsion webhook变得异常简单。
@@ -68,20 +68,20 @@ make run # 启动controller
 ```
 # kubectl get crd
 NAME                                           AGE
-virtulmachines.infra.genos.io                  52m
+virtulmachines.infra.sealyun.com                  52m
 ```
 
 来创建一个虚拟机：
 ```
 # kubectl apply -f config/samples/
-# kubectl get virtulmachines.infra.genos.io 
+# kubectl get virtulmachines.infra.sealyun.com 
 NAME                   AGE
 virtulmachine-sample   49m
 ```
 看一眼yaml文件：
 ```
 # cat config/samples/infra_v1_virtulmachine.yaml 
-apiVersion: infra.genos.io/v1
+apiVersion: infra.sealyun.com/v1
 kind: VirtulMachine
 metadata:
   name: virtulmachine-sample
@@ -93,6 +93,7 @@ spec:
 这里仅仅是把yaml存到etcd里了，我们controller监听到创建事件时啥事也没干。
 
 > 把controller部署到集群中
+
 ```
 make docker-build docker-push IMG=fanux/infra-controller
 make deploy
@@ -114,11 +115,7 @@ go mod vendor
 export GOPROXY=https://goproxy.io
 ```
 ```
-再改下Dockerfile, 加一行, 注释掉download：
-```
-COPY vendor/ vendor/
-# RUN go mod download
-```
+再改下Dockerfile, 注释掉download：
 
 修改后：
 ```
@@ -159,5 +156,116 @@ sealvm-controller-manager-metrics-service   ClusterIP   10.98.71.199   <none>   
 ```
 
 ## 开发
+
+### 增加对象数据参数
+看下config/samples下面的yaml文件：
+```
+apiVersion: infra.sealyun.com/v1
+kind: VirtulMachine
+metadata:
+  name: virtulmachine-sample
+spec:
+  # Add fields here
+  foo: bar
+```
+这里参数里有`foo:bar`， 那我们来加个虚拟CPU，内存信息：
+
+直接`api/v1/virtulmachine_types.go`即可
+```
+// VirtulMachineSpec defines the desired state of VirtulMachine
+// 在这里加信息
+type VirtulMachineSpec struct {
+	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+	CPU    string `json:"cpu"`   // 这是我增加的
+	Memory string `json:"memory"`
+}
+
+// VirtulMachineStatus defines the observed state of VirtulMachine
+// 在这里加状态信息，比如虚拟机是启动状态，停止状态啥的
+type VirtulMachineStatus struct {
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+}
+```
+然后make一下：
+```
+make && make install && make run
+```
+这时再去渲染一下controller的yaml就会发现CRD中已经带上CPU和内存信息了：
+
+`kustomize build config/default`
+```
+properties:
+  cpu:
+    description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+      Important: Run "make" to regenerate code after modifying this file'
+    type: string
+  memory:
+    type: string
+```
+
+修改一下yaml:
+```
+apiVersion: infra.sealyun.com/v1
+kind: VirtulMachine
+metadata:
+  name: virtulmachine-sample
+spec:
+  cpu: "1"
+  memory: "2G"
+```
+
+```
+# kubectl apply -f config/samples 
+virtulmachine.infra.sealyun.com "virtulmachine-sample" configured
+# kubectl get virtulmachines.infra.sealyun.com virtulmachine-sample -o yaml 
+apiVersion: infra.sealyun.com/v1
+kind: VirtulMachine
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"infra.sealyun.com/v1","kind":"VirtulMachine","metadata":{"annotations":{},"name":"virtulmachine-sample","namespace":"default"},"spec":{"cpu":"1","memory":"2G"}}
+  creationTimestamp: 2019-07-26T08:47:34Z
+  generation: 2
+  name: virtulmachine-sample
+  namespace: default
+  resourceVersion: "14811698"
+  selfLink: /apis/infra.sealyun.com/v1/namespaces/default/virtulmachines/virtulmachine-sample
+  uid: 030e2b9a-af82-11e9-b63e-5254bc16e436
+spec:      # 新的CRD已生效
+  cpu: "1"
+  memory: 2G 
+```
+Status 同理，就不再赘述了，比如我把status里加一个Create, 表示controller要去创建虚拟机了(主要一些控制层面的逻辑)，创建完了把状态改成Running
+
+### Reconcile 唯一需要实现的接口
+controller把轮训与事件监听都封装在这一个接口里了.你不需要关心怎么事件监听的.
+
+#### 获取虚拟机信息
+```
+func (r *VirtulMachineReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+	ctx = context.Background()
+	_ = r.Log.WithValues("virtulmachine", req.NamespacedName)
+
+	vm := &v1.VirtulMachine{}
+	if err := r.Get(ctx, req.NamespacedName, vm); err != nil { # 获取VM信息
+		log.Error(err, "unable to fetch vm")
+	} else {
+        fmt.Println(vm.Spec.CPU, vm.Spec.Memory) # 打印CPU内存信息
+	}
+
+	return ctrl.Result{}, nil
+}
+```
+`make && make install && make run`这个时候去创建一个虚拟机`kubectl apply -f config/samples`,日志里就会输出CPU内存了. List接口同理，我就不赘述了
+
+```
+r.List(ctx, &vms, client.InNamespace(req.Namespace), client.MatchingField(vmkey, req.Name))
+```
+
+#### 更新状态
+
+#### 删除
 
 探讨可加QQ群：98488045
