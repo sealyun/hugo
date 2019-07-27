@@ -5,7 +5,7 @@ draft = false
 title = "kubernetes CRD如此简单"
 tags = ["kubernetes","dev"]
 comments = true     # set false to hide Disqus comments
-banner = "img/banners/banner-1.png"
+banner = "img/CRD.png"
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
@@ -16,6 +16,8 @@ kubernetes允许用户自定义自己的资源对象，就如同deployment state
 
 我需要用kubernetes调度虚拟机，所以这里自定义一个 VirtualMachine 类型
 <!--more-->
+
+![](/img/CRD.png)
 
 # [kubebuilder](https://github.com/kubernetes-sigs/kubebuilder)
 kubebuilder能帮我们节省大量工作，让开发CRD和adminsion webhook变得异常简单。
