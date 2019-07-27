@@ -265,7 +265,99 @@ r.List(ctx, &vms, client.InNamespace(req.Namespace), client.MatchingField(vmkey,
 ```
 
 #### 更新状态
+在status结构体中加入状态字段：
+```
+type VirtulMachineStatus struct {
+	Status string `json:"status"`
+}
+```
+
+controller里去更新状态：
+```
+vm.Status.Status = "Running"
+if err := r.Status().Update(ctx, vm); err != nil {
+	log.Error(err, "unable to update vm status")
+}
+```
+
+如果出现:`the server could not find the requested resource` 这个错误，那么在CRD结构体上需要加个注释 `// +kubebuilder:subresource:status`：
+
+```
+// +kubebuilder:subresource:status
+// +kubebuilder:object:root=true
+
+type VirtulMachine struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec   VirtulMachineSpec   `json:"spec,omitempty"`
+	Status VirtulMachineStatus `json:"status,omitempty"`
+}
+```
+这样就好了
+
+编译启动后再去apply发现状态已经变成running：
+```
+# kubectl get virtulmachines.infra.sealyun.com virtulmachine-sample -o yaml
+...
+status:
+  status: Running 
+```
 
 #### 删除
+```
+time.Sleep(time.Second * 10)
+if err := r.Delete(ctx, vm); err != nil {
+	log.Error(err, "unable to delete vm ", "vm", vm)
+}
+```
+10s之后我们将GET不到
+
+#### 其它接口
+Reconcile结构体聚合了Client接口，所以client的所有方法都是可以直接调用，大部分是对CRD object的相关操作
+```
+type Client interface {
+	Reader
+	Writer
+	StatusClient
+}
+```
+```
+// Reader knows how to read and list Kubernetes objects.
+type Reader interface {
+	// Get retrieves an obj for the given object key from the Kubernetes Cluster.
+	// obj must be a struct pointer so that obj can be updated with the response
+	// returned by the Server.
+	Get(ctx context.Context, key ObjectKey, obj runtime.Object) error
+
+	// List retrieves list of objects for a given namespace and list options. On a
+	// successful call, Items field in the list will be populated with the
+	// result returned from the server.
+	List(ctx context.Context, list runtime.Object, opts ...ListOptionFunc) error
+}
+
+// Writer knows how to create, delete, and update Kubernetes objects.
+type Writer interface {
+	// Create saves the object obj in the Kubernetes cluster.
+	Create(ctx context.Context, obj runtime.Object, opts ...CreateOptionFunc) error
+
+	// Delete deletes the given obj from Kubernetes cluster.
+	Delete(ctx context.Context, obj runtime.Object, opts ...DeleteOptionFunc) error
+
+	// Update updates the given obj in the Kubernetes cluster. obj must be a
+	// struct pointer so that obj can be updated with the content returned by the Server.
+	Update(ctx context.Context, obj runtime.Object, opts ...UpdateOptionFunc) error
+
+	// Patch patches the given obj in the Kubernetes cluster. obj must be a
+	// struct pointer so that obj can be updated with the content returned by the Server.
+	Patch(ctx context.Context, obj runtime.Object, patch Patch, opts ...PatchOptionFunc) error
+}
+
+// StatusClient knows how to create a client which can update status subresource
+// for kubernetes objects.
+type StatusClient interface {
+	Status() StatusWriter
+}
+```
 
 探讨可加QQ群：98488045
