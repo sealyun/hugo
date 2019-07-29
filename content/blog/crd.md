@@ -315,6 +315,47 @@ if err := r.Delete(ctx, vm); err != nil {
 ```
 10s之后我们将GET不到
 
+### 删除回收器 Finalizers
+如果不使用Finalizers，kubectl delete 时直接就删了etcd数据，controller再想去拿CRD时已经拿不到了：
+```
+ERRO[0029] VirtulMachine.infra.sealyun.com "virtulmachine-sample" not foundunable to fetch vm  source="virtulmachine_controller.go:48"
+```
+
+所以在创建时我们需要给CRD加上Finalizer:
+```
+vm.ObjectMeta.Finalizers = append(vm.ObjectMeta.Finalizers, "virtulmachine.infra.sealyun.com")
+```
+然后删除时就只会给CRD打上一个删除时间戳，供我们做后续处理, 处理完了我们删除掉Finalizers：
+```
+如果 DeleteionTimestamp不存在
+    如果没有Finalizers
+        加上Finalizers,并更新CRD
+要不然，说明是要被删除的
+    如果存在Finalizers，删除Finalizers,并更新CRD
+```
+看个完整的代码示例：
+```
+if cronJob.ObjectMeta.DeletionTimestamp.IsZero() {
+        if !containsString(cronJob.ObjectMeta.Finalizers, myFinalizerName) {
+            cronJob.ObjectMeta.Finalizers = append(cronJob.ObjectMeta.Finalizers, myFinalizerName)
+            if err := r.Update(context.Background(), cronJob); err != nil {
+                return ctrl.Result{}, err
+            }
+        }
+    } else {
+        if containsString(cronJob.ObjectMeta.Finalizers, myFinalizerName) {
+            if err := r.deleteExternalResources(cronJob); err != nil {
+                return ctrl.Result{}, err
+            }
+
+            cronJob.ObjectMeta.Finalizers = removeString(cronJob.ObjectMeta.Finalizers, myFinalizerName)
+            if err := r.Update(context.Background(), cronJob); err != nil {
+                return ctrl.Result{}, err
+            }
+        }
+    }
+```
+
 #### 其它接口
 Reconcile结构体聚合了Client接口，所以client的所有方法都是可以直接调用，大部分是对CRD object的相关操作
 ```
