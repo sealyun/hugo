@@ -356,6 +356,16 @@ if cronJob.ObjectMeta.DeletionTimestamp.IsZero() {
     }
 ```
 
+### 失败重试
+假设我们A依赖B而B又后创建，那么在处理A CRD时直接返回失败即可，这样很快会重试
+
+### webhook
+kuberentes有三种webhook,admission webhook, authorization webhook and CRD conversion webhook.
+
+这里比如我们要给CRD设置一些默认值，又或者是用户创建时少填了一些参数，那么我们得禁止创建等等这些事。
+
+使用webhook也非常的简单，只需给定义的结构体实现 `Defaulter` 和 `Validator`接口即可.
+
 #### 其它接口
 Reconcile结构体聚合了Client接口，所以client的所有方法都是可以直接调用，大部分是对CRD object的相关操作
 ```
