@@ -1,5 +1,47 @@
 # 离线包Changelog
 
+> 1.14.5 与1.15.2版本
+
+社区：
+
+* 无重大更新
+
+sealyun:
+
+更新kubelet开机启动依赖, 开机自动启动ipvs，自动拉起其它所有服务：
+```
+[root@iZj6cgg9qmj6d5vq9wthk3Z ~]# cat /etc/systemd/system/kubelet.service
+[Unit]
+Description=kubelet: The Kubernetes Node Agent
+Documentation=http://kubernetes.io/docs/
+
+[Service]
+ExecStart=/usr/bin/kubelet
+ExecStartPre=/usr/bin/kubelet-pre-start.sh
+```
+
+```
+[root@iZj6cgg9qmj6d5vq9wthk3Z ~]# cat /usr/bin/kubelet-pre-start.sh
+#!/bin/bash
+# Open ipvs
+modprobe -- ip_vs
+modprobe -- ip_vs_rr
+modprobe -- ip_vs_wrr
+modprobe -- ip_vs_sh
+modprobe -- nf_conntrack_ipv4
+
+cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sysctl --system
+sysctl -w net.ipv4.ip_forward=1
+# systemctl stop firewalld && systemctl disable firewalld
+swapoff -a
+setenforce 0
+exit 0
+```
+
 > 1.14.4版本
 
 社区：
