@@ -250,4 +250,48 @@ EOF
 
 通过这种方式获取到clusterip，理解了这个原理就可以随意发挥了.
 
+# json patch
+同样可以通过指定json patch对yaml进行修改, yaml和json格式都支持：
+```
+cat <<EOF >$DEMO_HOME/ingress_patch.yaml
+- op: replace
+  path: /spec/rules/0/host  # 修改ingress中的host
+  value: foo.bar.io
+
+- op: add
+  path: /spec/rules/0/http/paths/-  # 增加path
+  value:
+    path: '/test'
+    backend:
+      serviceName: my-test
+      servicePort: 8081
+EOF
+```
+```
+cat <<EOF >>$DEMO_HOME/kustomization.yaml
+patchesJson6902:
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: my-ingress
+  path: ingress_patch.yaml
+EOF
+```
+
+还可以把一个patch打到多个对象上，比如我们给所有Deployment加探针啥的
+```
+cat <<EOF >>$DEMO_HOME/kustomization.yaml
+patches:
+- path: patch.yaml
+  target:
+    kind: Deployment
+EOF
+```
+
+# 总结
+个人是不太喜欢重的东西的，只是管理个yaml文件而已真的不用搞那么复杂。当初helm v2时想通过程序去调用时发现非常麻烦，还得找个swift项目中转，结果swift有些返回值非常之不友好，还需要自己去解析一波，还是挺痛苦的回忆。 
+
+我觉得简单yaml kustomize很够用,需要复杂精细的控制时helm也无可奈何还得靠operator发挥，这上下一挤压让helm处境就比较尴尬了。。。 kustomize还被集成到kubectl里了这样确实更方便了。
+
 探讨可加QQ群：98488045
