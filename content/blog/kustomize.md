@@ -5,7 +5,7 @@ draft = false
 title = "kustomize 颤抖吧helm!"
 tags = ["network","dev"]
 comments = true     # set false to hide Disqus comments
-banner = "kustomize.jpeg"
+banner = "img/kustomize.jpeg"
 share = true        # set false to share buttons
 menu = ""           # set "main" to add this content to the main menu
 +++
@@ -21,7 +21,7 @@ v3版本抛弃tiller算是个进步，但是听说要上撸啊（lua）我就瞬
 今天给大家介绍kustomize是如何让helm寝食难安，做梦都在颤抖的.
 
 <!--more-->
-![](https://sealyun.com/kustomize.jpeg)
+![](https://sealyun.com/img/kustomize.jpeg)
 
 # 安装
 kustomize已经集成在高版本(1.14+)的kubectl里了，可以使用 `kubectl apply -k [目录]` 来执行 
