@@ -250,3 +250,14 @@ Executable path is not absolute: sh /usr/bin/kubelet-pre-start.sh
 
 修改 `kube/conf/kubelet.service`
 把 `ExecStartPre=sh` 改成 `ExecStartPre=/bin/bash`
+
+> calico无法启动
+
+```
+[root@k8s03 ~]# kubectl logs calico-node-v4s8w -n kube-system
+Error from server (BadRequest): container "calico-node" in pod "calico-node-v4s8w" is waiting to start: PodInitializing
+```
+```
+Unable to update cni config: No networks found in /etc/cni/net.d
+```
+这是由于init container初始化失败， 把正常借点的/etc/cni拷贝到不正常的节点即可.

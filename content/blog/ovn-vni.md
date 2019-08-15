@@ -854,6 +854,8 @@ clean() {
 ```
 
 ## 动态获取IP地址
+[参考文章](https://developers.redhat.com/blog/2018/09/03/ovn-dynamic-ip-address-management/)
+
 ovn支持管理你的IP地址，只需要指定一个子网，就会给借口分配未被占用的IP地址：
 
 大部分操作与静态IP一样，注意下面几个重点注释地方：
@@ -896,6 +898,42 @@ ovs-vsctl set Interface vm1 external_ids:iface-id=vpc1-vm1
 ip netns exec vm1 dhclient vm1
 ip netns exec vm1 ip addr show vm1
 ip netns exec vm1 ip route show
+```
+
+可以查看到已分配的地址：
+```
+$ ovn-nbctl list logical_switch_port
+_uuid : 2d1fe408-f119-48d6-88c9-dff237c92856
+addresses : [dynamic]
+dhcpv4_options : []
+dhcpv6_options : []
+dynamic_addresses : "0a:00:00:00:00:01 192.168.0.2 fdd6:8cf5:9dc2:c30a:800:ff:fe00:1"
+enabled : []
+external_ids : {}
+name : "port1"
+options : {}
+parent_name : []
+port_security : []
+tag : []
+tag_request : []
+type : ""
+up : false
+
+_uuid : 43867394-8d3b-4e36-a90d-5f635d6a084c
+addresses : ["00:ac:00:ff:01:01 dynamic"]
+dhcpv4_options : []
+dhcpv6_options : []
+dynamic_addresses : "00:ac:00:ff:01:01 192.168.0.3 fdd6:8cf5:9dc2:c30a:2ac:ff:feff:101"
+enabled : []
+external_ids : {}
+name : "port2"
+options : {}
+parent_name : []
+port_security : []
+tag : []
+tag_request : []
+type : ""
+up : false
 ```
 
 ## 经典网络实现
