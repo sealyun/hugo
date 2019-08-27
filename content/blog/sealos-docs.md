@@ -2,7 +2,7 @@
 author = "fanux"
 date = "2019-04-15T10:54:24+02:00"
 draft = false
-title = "最简单的kubernetes HA安装方式-sealos详解"
+title = "最简单的kubernetesHA安装方式-sealos详解"
 tags = ["install","kubeadm","sealos"]
 banner = "img/banners/banner-1.png"
 comments = true     # set false to hide Disqus comments
