@@ -105,7 +105,7 @@ paginate = 10
     # Format dates with Go's time formatting
     date_format = "January 2, 2006"
 
-    logo = "/img/logo.jpg"
+    logo = "/img/logo.png"
     logo_small = "/img/logo-small.png"
     address = """<p><strong>fhtjob@hotmail.com</strong>
       </p>
