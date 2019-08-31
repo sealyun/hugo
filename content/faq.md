@@ -261,3 +261,15 @@ Error from server (BadRequest): container "calico-node" in pod "calico-node-v4s8
 Unable to update cni config: No networks found in /etc/cni/net.d
 ```
 这是由于init container初始化失败， 把正常借点的/etc/cni拷贝到不正常的节点即可.
+
+> prometheus pod都正常就是没监控数据
+
+可能是服务器时间没同步，同步下时间杀pod即可
+
+> ssh执行失败,no supported methods remain
+
+```
+Error create ssh session failed ssh: handshake failed: ssh: unable to authenticate, attempted methods [none password], no supported methods remain
+```
+
+原因找到，master与node机器密码必须一致，如果使用--passwd参数的话，密码不一样请使用免密钥，github.com/fanux/sealos/README.md 上有详细说明
