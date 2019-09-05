@@ -273,3 +273,33 @@ Error create ssh session failed ssh: handshake failed: ssh: unable to authentica
 ```
 
 原因找到，master与node机器密码必须一致，如果使用--passwd参数的话，密码不一样请使用免密钥，github.com/fanux/sealos/README.md 上有详细说明
+
+> ubuntu kubelet启动不了
+
+```
+/usr/bin/kubelet-pre-start.sh: 行 17: setenforce: 未找到命   
+```
+因为ubuntu 可能没装setenforce
+
+```
+在/etc/init.d/停止AppArmor脚本：
+sudo /etc/init.d/apparmor stop
+从系统中清除AppArmor。
+apt purge apparmor
+如果您担心配置文件被删除，请使用apt remove apparmor。
+更新并重新启动系统：
+apt update && upgrade -yuf
+reboot
+安装SELinux
+安装SELinux软件包并重启系统：
+apt install selinux
+reboot
+您可以通过尝试将SELinux设置为enforcing模式来确定SELinux是否在您的系统上强制执行安全性。
+root@ubuntu:~# setenforce 1
+root@ubuntu:~# getenforce
+Enforcing
+```
+
+或者
+
+如果装不了selinux 就改下压缩包就行，kube/bin/ubelet-pre-start.sh 把这行注释了  然后重新打包。
