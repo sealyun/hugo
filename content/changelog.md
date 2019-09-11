@@ -1,4 +1,20 @@
 # 离线包Changelog
+> 1.15.3版本
+
+社区：
+
+* 更新golang/x/net依赖项以引入CVE-2019-9512，CVE-2019-9514
+* 修复了使用内联卷源创建的VolumeAttachment API对象的验证。（＃80945，@tedyu）
+* KUBE-插件管理器已更新至v9.0.2固定在党魁选举中的错误（https://github.com/kubernetes/kubernetes/pull/80575）（＃80861，@mborsz）
+* 修复了ListOptions.AllowWatchBookmarks未在kube-apiserver中正确传播的错误。（＃80157，@ wojtek -t）
+* CSI的节点上的传递卷MountOptions到全局挂载（NodeStageVolume）（＃80191，@ davidz627）
+* kubeadm join --discovery-file使用具有嵌入凭据的发现文件时修复错误（＃80675，@ fabiziopandini）
+* 修正：支持原始块的csi插件不需要附加挂载失败（＃79920，@ cwdsuzhou）
+
+sealyun:
+ 
+* 使用patch的方式更新kubeadm代码
+* maxage 增加到99年
 
 > 1.14.5 与1.15.2版本
 
