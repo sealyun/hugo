@@ -469,6 +469,121 @@ project := store.GetByKey("some-namespace/some-project").(*v1alpha1.Project)
 ```
 如此很多情况下就不需要再去调用apiserver了，给apiserver减轻压力.
 
+# 在kubebuilder中进行访问
+通过获取manager中的reader, 但是这里只能读不能写，写的话需要mgr.GetClient() 但是这个就必须是长时间运行的
+
+[更多详情](https://github.com/kubernetes-sigs/kubebuilder/issues/947)
+[想加入apiclient功能PR](https://github.com/kubernetes-sigs/controller-runtime/pull/609)
+```
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+
+	"k8s.io/apimachinery/pkg/types"
+
+	v1 "github.com/fanux/sealvm/api/v1"
+	"github.com/prometheus/common/log"
+	"k8s.io/apimachinery/pkg/runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+)
+
+var scheme = runtime.NewScheme()
+
+func init() {
+	v1.AddToScheme(scheme)
+	clientgoscheme.AddToScheme(scheme)
+}
+
+func main() {
+	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+		Scheme: scheme,
+	})
+	if err != nil {
+		os.Exit(1)
+	}
+	client := mgr.GetAPIReader() // 如果是长时间运行用mgr.GetClient()
+	ctx := context.Background()
+	name := types.NamespacedName{Namespace: "default", Name: "virtulmachine-sample"}
+
+	vm := &v1.VirtulMachine{}
+	if err := client.Get(ctx, name, vm); err != nil {
+		log.Error(err, "unable to fetch vm")
+	} else {
+		fmt.Println(vm.Spec.CPU, vm.Spec.Memory, vm)
+	}
+}
+```
+推荐做法，直接调用client:
+
+```
+package main
+
+import (
+	"context"
+	"fmt"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"k8s.io/apimachinery/pkg/types"
+
+	v1 "github.com/fanux/sealvm/api/v1"
+	"github.com/prometheus/common/log"
+	"k8s.io/apimachinery/pkg/runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
+
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+)
+
+var scheme = runtime.NewScheme()
+
+func init() {
+	v1.AddToScheme(scheme)
+	clientgoscheme.AddToScheme(scheme)
+}
+
+func getClient() (client.Client, error){
+	config := ctrl.GetConfigOrDie()
+	if config == nil {
+		return nil, fmt.Errorf("config is nil")
+	}
+	options := ctrl.Options{Scheme:scheme}
+	// Set default values for options fields
+	//options = setOptionsDefaults(options)
+	//mapper, err := options.MapperProvider(config)
+	//if err != nil {
+	//	log.Error(err, "Failed to get API Group-Resources")
+	//	return nil, err
+	//}
+
+	client, err := client.New(config, client.Options{Scheme: options.Scheme})
+	if err !=nil {
+		return nil, err
+	}
+	return client,nil
+}
+
+func main() {
+	client,err := getClient()
+	if err != nil {
+		fmt.Println("client is nil",err)
+		return
+	}
+
+	ctx := context.Background()
+	name := types.NamespacedName{Namespace: "default", Name: "virtulmachine-sample"}
+
+	vm := &v1.VirtulMachine{}
+	if err = client.Get(ctx, name, vm); err != nil {
+		log.Error(err, "unable to fetch vm")
+	} else {
+		fmt.Println(vm.Spec.CPU, vm.Spec.Memory, vm)
+	}
+}
+```
+
 # 总结
 
 虽然现在很多工具给我们写CRD controller带来了极大的便捷，但是对于client-go这些基本的使用还是非常必要的，而官方client-go的开发文档和事例真的是少之又少，基本仅包含非常基本的操作。
